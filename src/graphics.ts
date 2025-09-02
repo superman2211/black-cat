@@ -1,6 +1,6 @@
 import { DEBUG } from "./debug";
 import { getIdByCharCode } from "./resources/font";
-import { cat0, cat1, cat2 } from "./resources/id";
+import { kate0, kate1, kate2, kate3, kate4, kate5, kate6 } from "./resources/id";
 import { images } from "./resources/images";
 import { drawImage, getContext, now } from "./utils/browser";
 import { mathFloor, mathMax, mathMin, mathRound } from "./utils/math";
@@ -16,9 +16,9 @@ export const height = 200;
 
 const offset = { x: 0, y: 0 };
 
-const animation = [cat0, cat1, cat2, cat1];
+const animation = [kate0, kate1, kate2, kate3, kate4, kate5, kate6];
 let animationFrame = 0;
-const animationSpeed = 10;
+const animationSpeed = 7;
 
 export const updateSize = () => {
     const screenWidth = window.innerWidth;
@@ -52,7 +52,7 @@ export const draw = () => {
 
     drawText(
         65, 50,
-        'BLACK CAT',
+        'BLACK KATE',
         0xffffff
     );
 }
