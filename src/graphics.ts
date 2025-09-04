@@ -1,6 +1,6 @@
 import { DEBUG } from "./debug";
+import { units } from "./engine/unit";
 import { getIdByCharCode } from "./resources/font";
-import { kate0, kate1, kate2, kate3, kate4, kate5, kate6 } from "./resources/id";
 import { images } from "./resources/images";
 import { drawImage, getContext, now } from "./utils/browser";
 import { mathFloor, mathMax, mathMin, mathRound } from "./utils/math";
@@ -15,10 +15,6 @@ export const width = 200;
 export const height = 200;
 
 const offset = { x: 0, y: 0 };
-
-const animation = [kate0, kate1, kate2, kate3, kate4, kate5, kate6];
-let animationFrame = 0;
-const animationSpeed = 7;
 
 export const updateSize = () => {
     const screenWidth = window.innerWidth;
@@ -43,18 +39,21 @@ export const draw = () => {
     context.fillStyle = "gray";
     context.fillRect(0, 0, width, height);
 
-    animationFrame += deltaS * animationSpeed;
-    let frame = mathFloor(animationFrame % animation.length);
-    const image = images[animation[frame]];
-    drawImage(context, image, mathRound(width / 2 - image.width / 2), mathRound(height / 2) - image.height / 2);
+    // let image = images[heroImage];
+    // drawImage(context, image, heroPosition.x, heroPosition.y);
+
+    for (const unit of units.values()) {
+        let image = images[unit.image];
+        drawImage(context, image, unit.position.x, unit.position.y);
+    }
 
     drawFPS();
 
-    drawText(
-        65, 50,
-        'BLACK KATE',
-        0xffffff
-    );
+    // drawText(
+    //     65, 50,
+    //     'BLACK KATE',
+    //     0xffffff
+    // );
 }
 
 const drawFPS = () => {
