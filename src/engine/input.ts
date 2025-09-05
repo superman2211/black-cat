@@ -1,3 +1,5 @@
+import { canvas } from "../graphics";
+import { unlockAudio } from "../resources/sound/audio";
 import { domDocument } from "../utils/browser";
 
 const keys: { [key: string]: boolean } = {};
@@ -5,6 +7,7 @@ export let anyKey = false;
 
 export const initInput = () => {
     domDocument.onkeydown = (e) => {
+        unlockAudio();
         anyKey = true;
         keys[e.keyCode] = true;
         e.preventDefault();
@@ -14,6 +17,14 @@ export const initInput = () => {
         anyKey = false;
         unpressKey(e.keyCode);
         e.preventDefault();
+    }
+
+    canvas.onmousedown = () => {
+        unlockAudio();
+    }
+
+    canvas.ontouchstart = () => {
+        unlockAudio();
     }
 }
 

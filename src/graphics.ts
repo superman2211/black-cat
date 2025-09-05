@@ -6,7 +6,7 @@ import { drawImage, getContext, now } from "./utils/browser";
 import { mathFloor, mathMax, mathMin, mathRound } from "./utils/math";
 import { deltaS, nowMS } from "./utils/time";
 
-const canvas = document.getElementById('c') as HTMLCanvasElement;
+export const canvas = document.getElementById('c') as HTMLCanvasElement;
 canvas.style.imageRendering = 'pixelated';
 
 const context = getContext(canvas);

@@ -11,6 +11,7 @@
         "sourceMap": true,
         "outDir": "dist/esm",
         "strict": true,
+        "allowJs": true,
         "lib": [
             "dom",
             "esnext"
