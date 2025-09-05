@@ -1,4 +1,4 @@
-import { chance, randomRange } from "../utils/math";
+import { chance, mathHypot, mathRound, randomRange } from "../utils/math";
 import { deltaS } from "../utils/time";
 import { animationDuration, AnimationFrame, getFrameImage, isAnimationFinished } from "./animation";
 
@@ -80,6 +80,9 @@ export const updateUnits = () => {
 
         switch (unit.state) {
             case UnitState.Stand:
+                unit.position.x = mathRound(unit.position.x);
+                unit.position.y = mathRound(unit.position.y);
+
                 currentAnimation = animations.stand;
 
                 if (unit.controller.move.x != 0 || unit.controller.move.y != 0) {
@@ -98,6 +101,13 @@ export const updateUnits = () => {
                 } else {
                     unit.state = UnitState.Stand;
                     unit.animationTime = 0;
+                }
+
+                const length = mathHypot(unit.controller.move.x, unit.controller.move.y);
+                if (length > 0) {
+                    const scale = 1 / length;
+                    unit.controller.move.x *= scale;
+                    unit.controller.move.y *= scale;
                 }
 
                 unit.position.x += unit.controller.move.x * config.walkSpeed * deltaS;
