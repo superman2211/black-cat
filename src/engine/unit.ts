@@ -158,11 +158,11 @@ const checkAttack = (unit: Unit) => {
     }
 
     if (unit.controller.hand) {
-        if (chance(0.5)) {
-            unit.state = UnitState.Jab;
-        } else {
+        // if (chance(0.5)) {
+        //     unit.state = UnitState.Jab;
+        // } else {
             unit.state = UnitState.Cross;
-        }
+        // }
 
         unit.animationTime = 0;
     }

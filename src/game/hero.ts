@@ -33,10 +33,11 @@ const config: UnitConfig = {
             { image: kate0, time: 0.05 },
         ],
         cross: [
-            { image: kate0, time: 0.1 },
+            // { image: kate0, time: 0.1 },
             { image: kate8, time: 0.1 },
             { image: kate9, time: 0.1 },
             { image: kate10, time: 0.1 },
+            { image: kate9, time: 0.1 },
         ],
         kick: [
             { image: kate0, time: 0.05 },
