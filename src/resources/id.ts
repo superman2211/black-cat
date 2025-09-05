@@ -50,5 +50,4 @@ export const kate10 = 48;
 export const kate11 = 49;
 export const kate12 = 50;
 export const kate13 = 51;
-export const kate14 = 52;
 export const sound_fail = 0;

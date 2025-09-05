@@ -21,6 +21,7 @@ export interface Unit {
         leg: boolean,
     },
     health: number,
+    direction: number,
     position: { x: number, y: number },
     animationTime: number,
     image: number,
@@ -51,6 +52,7 @@ export const addUnit = (config: UnitConfig): Unit => {
             leg: false
         },
         health: 0,
+        direction: 1,
         position: {
             x: 0,
             y: 0
@@ -148,6 +150,12 @@ export const updateUnits = () => {
                     unit.animationTime = 0;
                 }
                 break;
+        }
+
+        if (unit.controller.move.x > 0) {
+            unit.direction = 1;
+        } else if (unit.controller.move.x < 0) {
+            unit.direction = -1;
         }
 
         if (currentAnimation) {

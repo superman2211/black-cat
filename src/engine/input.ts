@@ -1,4 +1,4 @@
-import { canvas } from "../graphics";
+import { canvas } from "./graphics";
 import { unlockAudio } from "../resources/sound/audio";
 import { domDocument } from "../utils/browser";
 

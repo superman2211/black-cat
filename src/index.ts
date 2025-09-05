@@ -2,7 +2,7 @@ import { DEBUG } from "./debug";
 import { initInput } from "./engine/input";
 import { updateUnits } from "./engine/unit";
 import { updateHero } from "./game/hero";
-import { draw, updateSize } from "./graphics";
+import { draw, updateSize } from "./engine/graphics";
 import { loadResources } from "./resources/loader";
 import { playMusic } from "./resources/sound/audio";
 import { calculateTime } from "./utils/time";

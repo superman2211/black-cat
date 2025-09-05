@@ -1,6 +1,6 @@
 import { isKeyPressed, Key } from "../engine/input";
-import { addUnit, UnitConfig, units, UnitState } from "../engine/unit";
-import { kate0, kate1, kate10, kate11, kate12, kate13, kate14, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
+import { addUnit, UnitConfig } from "../engine/unit";
+import { kate0, kate1, kate10, kate11, kate12, kate13, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
 import { mathFloor } from "../utils/math";
 import { deltaS } from "../utils/time";
 
@@ -24,8 +24,8 @@ const config: UnitConfig = {
         walkV: [
             { image: kate11, time: 0.1 },
             { image: kate12, time: 0.1 },
+            { image: kate11, time: 0.1 },
             { image: kate13, time: 0.1 },
-            { image: kate14, time: 0.1 },
         ],
         jab: [
             { image: kate0, time: 0.1 },

@@ -1,10 +1,10 @@
-import { DEBUG } from "./debug";
-import { units } from "./engine/unit";
-import { getIdByCharCode } from "./resources/font";
-import { images } from "./resources/images";
-import { drawImage, getContext, now } from "./utils/browser";
-import { mathFloor, mathMax, mathMin, mathRound } from "./utils/math";
-import { deltaS, nowMS } from "./utils/time";
+import { DEBUG } from "../debug";
+import { units } from "./unit";
+import { getIdByCharCode } from "../resources/font";
+import { images } from "../resources/images";
+import { drawImage, getContext, now } from "../utils/browser";
+import { mathFloor, mathMax, mathMin, mathRound } from "../utils/math";
+import { deltaS, nowMS } from "../utils/time";
 
 export const canvas = document.getElementById('c') as HTMLCanvasElement;
 canvas.style.imageRendering = 'pixelated';
@@ -28,8 +28,8 @@ export const updateSize = () => {
     canvas.style.width = `${screenWidth}px`;
     canvas.style.height = `${screenHeight}px`;
 
-    offset.x = mathRound((canvas.width - width) / 2);
-    offset.y = mathRound((canvas.height - height) / 2);
+    offset.x = mathFloor((canvas.width - width) / 2);
+    offset.y = mathFloor((canvas.height - height) / 2);
 }
 
 export const draw = () => {
@@ -39,21 +39,35 @@ export const draw = () => {
     context.fillStyle = "gray";
     context.fillRect(0, 0, width, height);
 
-    // let image = images[heroImage];
-    // drawImage(context, image, heroPosition.x, heroPosition.y);
-
     for (const unit of units.values()) {
         let image = images[unit.image];
-        drawImage(context, image, unit.position.x, unit.position.y);
+        if (unit.direction > 0) {
+            drawImage(context, image, unit.position.x, unit.position.y);
+        } else {
+            drawTransformedImage(image, unit.position.x, unit.position.y, -1, 0, 0, 1, image.width, 0);
+        }
     }
 
     drawFPS();
 
     // drawText(
-    //     65, 50,
+    //     65, 0,
     //     'BLACK KATE',
     //     0xffffff
     // );
+}
+
+const drawTransformedImage = (
+    image: HTMLCanvasElement,
+    x: number, y: number,
+    a: number, b: number, c: number, d: number, tx: number, ty: number
+) => {
+    context.save();
+    context.transform(a, b, c, d, tx + mathRound(x), ty + mathRound(y));
+
+    drawImage(context, image, 0, 0);
+
+    context.restore();
 }
 
 const drawFPS = () => {
