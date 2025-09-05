@@ -28,7 +28,7 @@ const config: UnitConfig = {
             { image: kate13, time: 0.1 },
         ],
         jab: [
-            { image: kate0, time: 0.1 },
+            { image: kate0, time: 0.05 },
             { image: kate8, time: 0.1 },
         ],
         cross: [
