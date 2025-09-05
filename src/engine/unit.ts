@@ -87,20 +87,7 @@ export const updateUnits = () => {
                     unit.animationTime = 0;
                 }
 
-                if (unit.controller.leg) {
-                    unit.state = UnitState.Kick;
-                    unit.animationTime = 0;
-                }
-
-                if (unit.controller.hand) {
-                    if (chance(0.5)) {
-                        unit.state = UnitState.Jab;
-                    } else {
-                        unit.state = UnitState.Cross;
-                    }
-
-                    unit.animationTime = 0;
-                }
+                checkAttack(unit);
                 break;
 
             case UnitState.Walk:
@@ -112,6 +99,11 @@ export const updateUnits = () => {
                     unit.state = UnitState.Stand;
                     unit.animationTime = 0;
                 }
+
+                unit.position.x += unit.controller.move.x * config.walkSpeed * deltaS;
+                unit.position.y += unit.controller.move.y * config.walkSpeed * deltaS;
+
+                checkAttack(unit);
                 break;
 
             case UnitState.Jab:
@@ -142,12 +134,26 @@ export const updateUnits = () => {
                 break;
         }
 
-        unit.position.x += unit.controller.move.x * config.walkSpeed * deltaS;
-        unit.position.y += unit.controller.move.y * config.walkSpeed * deltaS;
-
         if (currentAnimation) {
             unit.animationTime += deltaS;
             unit.image = getFrameImage(currentAnimation, unit.animationTime);
         }
+    }
+}
+
+const checkAttack = (unit: Unit) => {
+    if (unit.controller.leg) {
+        unit.state = UnitState.Kick;
+        unit.animationTime = 0;
+    }
+
+    if (unit.controller.hand) {
+        if (chance(0.5)) {
+            unit.state = UnitState.Jab;
+        } else {
+            unit.state = UnitState.Cross;
+        }
+
+        unit.animationTime = 0;
     }
 }
