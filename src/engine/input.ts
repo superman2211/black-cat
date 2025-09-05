@@ -37,6 +37,8 @@ export const enum Key {
     D = 68,
     W = 87,
     S = 83,
+    Z = 90,
+    X = 88,
     Enter = 13,
     Space = 32,
 }

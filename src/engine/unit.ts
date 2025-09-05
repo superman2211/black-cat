@@ -30,7 +30,8 @@ export interface UnitConfig {
     walkSpeed: number,
     animations: {
         stand: Array<AnimationFrame>,
-        walk: Array<AnimationFrame>,
+        walkH: Array<AnimationFrame>,
+        walkV: Array<AnimationFrame>,
         jab: Array<AnimationFrame>,
         cross: Array<AnimationFrame>,
         kick: Array<AnimationFrame>,
@@ -80,7 +81,8 @@ export const updateUnits = () => {
         switch (unit.state) {
             case UnitState.Stand:
                 currentAnimation = animations.stand;
-                if (unit.controller.move.x != 0) {
+
+                if (unit.controller.move.x != 0 || unit.controller.move.y != 0) {
                     unit.state = UnitState.Walk;
                     unit.animationTime = 0;
                 }
@@ -102,8 +104,11 @@ export const updateUnits = () => {
                 break;
 
             case UnitState.Walk:
-                currentAnimation = animations.walk;
-                if (unit.controller.move.x == 0) {
+                if (unit.controller.move.x != 0) {
+                    currentAnimation = animations.walkH;
+                } else if (unit.controller.move.y != 0) {
+                    currentAnimation = animations.walkV;
+                } else {
                     unit.state = UnitState.Stand;
                     unit.animationTime = 0;
                 }
@@ -138,6 +143,7 @@ export const updateUnits = () => {
         }
 
         unit.position.x += unit.controller.move.x * config.walkSpeed * deltaS;
+        unit.position.y += unit.controller.move.y * config.walkSpeed * deltaS;
 
         if (currentAnimation) {
             unit.animationTime += deltaS;

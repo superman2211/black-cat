@@ -1,6 +1,6 @@
 import { isKeyPressed, Key } from "../engine/input";
 import { addUnit, UnitConfig, units, UnitState } from "../engine/unit";
-import { kate0, kate1, kate10, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
+import { kate0, kate1, kate10, kate11, kate12, kate13, kate14, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
 import { mathFloor } from "../utils/math";
 import { deltaS } from "../utils/time";
 
@@ -15,11 +15,17 @@ const config: UnitConfig = {
             { image: kate0, time: 0.2 },
             { image: kate3, time: 0.2 },
         ],
-        walk: [
+        walkH: [
             { image: kate0, time: 0.1 },
             { image: kate4, time: 0.1 },
             { image: kate5, time: 0.1 },
             { image: kate4, time: 0.1 },
+        ],
+        walkV: [
+            { image: kate11, time: 0.1 },
+            { image: kate12, time: 0.1 },
+            { image: kate13, time: 0.1 },
+            { image: kate14, time: 0.1 },
         ],
         jab: [
             { image: kate0, time: 0.05 },
@@ -47,6 +53,7 @@ hero.position.x = 100;
 
 export const updateHero = () => {
     hero.controller.move.x = 0;
+    hero.controller.move.y = 0;
     hero.controller.leg = false;
     hero.controller.hand = false;
 
@@ -58,11 +65,19 @@ export const updateHero = () => {
         hero.controller.move.x = 1;
     }
 
-    if (isKeyPressed(Key.Up)) {
+    if (isKeyPressed(Key.Up) || isKeyPressed(Key.W)) {
+        hero.controller.move.y = -1;
+    }
+
+    if (isKeyPressed(Key.Down) || isKeyPressed(Key.S)) {
+        hero.controller.move.y = 1;
+    }
+
+    if (isKeyPressed(Key.Z)) {
         hero.controller.leg = true;
     }
 
-    if (isKeyPressed(Key.Down)) {
+    if (isKeyPressed(Key.X)) {
         hero.controller.hand = true;
     }
 }
