@@ -120,7 +120,11 @@ export const updateUnits = () => {
                 currentAnimation = animations.jab;
 
                 if (isAnimationFinished(currentAnimation, unit.animationTime)) {
-                    unit.state = UnitState.Stand;
+                    if (unit.controller.hand) {
+                        unit.state = UnitState.Cross;
+                    } else {
+                        unit.state = UnitState.Stand;
+                    }
                     unit.animationTime = 0;
                 }
                 break;
@@ -129,8 +133,10 @@ export const updateUnits = () => {
                 currentAnimation = animations.cross;
 
                 if (isAnimationFinished(currentAnimation, unit.animationTime)) {
-                    unit.state = UnitState.Stand;
-                    unit.animationTime = 0;
+                    if (!unit.controller.hand) {
+                        unit.state = UnitState.Stand;
+                        unit.animationTime = 0;
+                    }
                 }
                 break;
 
@@ -158,12 +164,7 @@ const checkAttack = (unit: Unit) => {
     }
 
     if (unit.controller.hand) {
-        // if (chance(0.5)) {
-        //     unit.state = UnitState.Jab;
-        // } else {
-            unit.state = UnitState.Cross;
-        // }
-
+        unit.state = UnitState.Jab;
         unit.animationTime = 0;
     }
 }
