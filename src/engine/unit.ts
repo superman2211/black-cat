@@ -1,3 +1,4 @@
+import { chance, randomRange } from "../utils/math";
 import { deltaS } from "../utils/time";
 import { animationDuration, AnimationFrame, getFrameImage, isAnimationFinished } from "./animation";
 
@@ -88,6 +89,16 @@ export const updateUnits = () => {
                     unit.state = UnitState.Kick;
                     unit.animationTime = 0;
                 }
+
+                if (unit.controller.hand) {
+                    if (chance(0.5)) {
+                        unit.state = UnitState.Jab;
+                    } else {
+                        unit.state = UnitState.Cross;
+                    }
+
+                    unit.animationTime = 0;
+                }
                 break;
 
             case UnitState.Walk:
@@ -100,10 +111,20 @@ export const updateUnits = () => {
 
             case UnitState.Jab:
                 currentAnimation = animations.jab;
+
+                if (isAnimationFinished(currentAnimation, unit.animationTime)) {
+                    unit.state = UnitState.Stand;
+                    unit.animationTime = 0;
+                }
                 break;
 
             case UnitState.Cross:
                 currentAnimation = animations.cross;
+
+                if (isAnimationFinished(currentAnimation, unit.animationTime)) {
+                    unit.state = UnitState.Stand;
+                    unit.animationTime = 0;
+                }
                 break;
 
             case UnitState.Kick:

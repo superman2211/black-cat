@@ -14,6 +14,7 @@ export const mathPI2 = mathPI * 2;
 export const limit = (min: number, max: number, value: number) => mathMin(max, mathMax(min, value));
 export const lerp = (min: number, max: number, value: number) => min + value * (max - min);
 export const randomRange = (min: number, max: number): number => lerp(min, max, mathRandom());
+export const chance = (chance: number): boolean => mathRandom() < chance;
 
 export function randomSelect<T>(values: T[]): T {
     return values[mathRound(randomRange(0, values.length - 1))];
