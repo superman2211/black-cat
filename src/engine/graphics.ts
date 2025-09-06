@@ -1,12 +1,13 @@
 import { DEBUG } from "../debug";
 import { units } from "./unit";
 import { getIdByCharCode } from "../resources/font";
-import { images } from "../resources/images";
+import { getColoredImage, images } from "../resources/images";
 import { drawImage, getContext, now } from "../utils/browser";
 import { mathFloor, mathMax, mathMin, mathRound } from "../utils/math";
 import { deltaS, nowMS } from "../utils/time";
 import { getStage } from "./stage";
 import { Sprite } from "./sprite";
+import { drawGradientH, drawGradientV } from "../utils/image";
 
 export const canvas = document.getElementById('c') as HTMLCanvasElement;
 canvas.style.imageRendering = 'pixelated';
@@ -43,6 +44,7 @@ export const draw = () => {
     context.save();
     context.translate(mathRound(-stage.camera.x), mathRound(-stage.camera.y));
 
+
     drawSprite(stage.back);
 
     for (const unit of units.values()) {
@@ -50,6 +52,24 @@ export const draw = () => {
     }
 
     context.restore();
+
+    const border = 10;
+    if (canvas.width < canvas.height) {
+        drawGradientV(context, 0, -border, gameWidth, border, 0xff000000, 0);
+        drawGradientV(context, 0, gameHeight, gameWidth, border, 0, 0xff000000);
+
+        context.fillStyle = "black";
+        context.fillRect(0, - offset.y, gameWidth, offset.y - border);
+        context.fillRect(0, gameHeight + border, gameWidth, gameHeight);
+
+    } else {
+        drawGradientH(context, -border, 0, border, gameHeight, 0xff000000, 0);
+        drawGradientH(context, gameWidth, 0, border, gameHeight, 0, 0xff000000);
+
+        context.fillStyle = "black";
+        context.fillRect(- offset.x, 0, offset.x - border, gameWidth);
+        context.fillRect(gameWidth + border, 0, gameWidth, gameHeight);
+    }
 
     drawFPS();
 
@@ -99,8 +119,8 @@ const drawText = (x: number, y: number, text: string, color: number) => {
         const code = text[i].toUpperCase().charCodeAt(0);
         const id = getIdByCharCode(code);
         if (id !== undefined) {
-            // const char = getColoredImage(id, color);
-            let image = images[id];
+            const char = getColoredImage(id, color);
+            let image = images[char];
             if (image !== undefined) {
                 drawImage(context, image, x + i * 8, y);
             }

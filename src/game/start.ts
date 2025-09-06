@@ -1,7 +1,7 @@
 import { getStage, setStage } from "../engine/stage"
 import { clearUnits } from "../engine/unit";
 import { createHero, getHero } from "./hero";
-import { getBarStage } from "./levels/bar"
+import { getBarStage } from "./stages/bar"
 
 export const start = () => {
     setStage(getBarStage());
