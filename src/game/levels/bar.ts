@@ -1,37 +1,53 @@
 import { Stage } from "../../engine/stage";
 import { barFloor0, barFloor1, barFloor2, barFloor3, barWall0, barWall1, barWall2, barWall3, barWall4, barWall5 } from "../../resources/id";
-import { images } from "../../resources/images";
+import { addImage, images } from "../../resources/images";
 import { createCanvas, drawImage, getContext } from "../../utils/browser"
-import { generateRandomTileImage, generateTileImage } from "../../utils/image-generator";
-import { mathCeil, mathRandom, randomSelect } from "../../utils/math";
+import { drawCommands, generateRandomTileImage, generateTileImage } from "../../utils/image";
+import { mathRandom, randomChancesSelect, randomSelect } from "../../utils/math";
 import { createGradient, formatColor } from "../../utils/pattern";
 
 export const getBarStage = (): Stage => {
-    const width = 400;
-    const height = 150;
-    const wallHeight = 100;
+    const floorWidth = 400;
+    const floorHeight = 150;
+    const wallHeight = 95;
 
-    const floor = { image: generateFloorImage(width, height) }
-    const wall = { image: generateWallImage(width, wallHeight), x: 0, y: -wallHeight };
+    const floorCanvas = generateFloorImage(floorWidth, floorHeight);
+    const wallCanvas = generateWallImage(floorWidth, wallHeight);
+
+    const backCanvas = createCanvas();
+    const backContext = getContext(backCanvas);
+    backCanvas.width = floorWidth;
+    backCanvas.height = floorHeight + wallHeight;
+    drawImage(backContext, wallCanvas, 0, 0);
+    drawImage(backContext, floorCanvas, 0, wallHeight);
+
+    const back = addImage(backCanvas);
+
+    const borderX = 10;
+    const borderY = 5;
 
     return {
-        width,
-        height,
-        floor,
-        wall,
-        cameraPosition: { x: 0, y: 0 },
+        bounds: {
+            x: borderX,
+            y: wallHeight + borderY,
+            w: floorWidth - borderX * 2,
+            h: floorHeight - borderY * 2,
+        },
+        back: { image: back },
+        camera: { x: 0, y: 0 },
     }
 }
 
-const generateFloorImage = (width: number, height: number): number => {
-    let id = generateRandomTileImage(width, height, [barFloor0, barFloor1, barFloor2, barFloor3])
-
-    const image = images[id];
+const generateFloorImage = (width: number, height: number): HTMLCanvasElement => {
+    const image = generateRandomTileImage(width, height, [barFloor0, barFloor1, barFloor2, barFloor3], [3, 2, 1, 1]);
     const context = getContext(image);
 
     const border = 30;
 
-    context.fillStyle = createGradient(context, 0, 0, 0, border, 0x55000000, 0);
+    context.fillStyle = "black";
+    context.fillRect(0, 0, image.width, 1);
+
+    context.fillStyle = createGradient(context, 0, 0, 0, border, 0x77000000, 0);
     context.fillRect(0, 0, image.width, border);
 
     context.fillStyle = createGradient(context, 0, image.height, 0, image.height - border, 0x77000000, 0);
@@ -39,32 +55,21 @@ const generateFloorImage = (width: number, height: number): number => {
 
     noise(10, image);
 
-    return id;
+    return image;
 }
 
-const drawCommands = (commands: Array<number>, context: CanvasRenderingContext2D) => {
-    for (let i = 0; i < commands.length; i += 3) {
-        const id = commands[i];
-        const x = commands[i + 1];
-        const y = commands[i + 2];
-        const image = images[id];
-        drawImage(context, image, x, y);
-    }
-}
-
-const generateWallImage = (width: number, height: number): number => {
-    const id = generateTileImage(width, height, barWall0);
-
-    const image = images[id];
+const generateWallImage = (width: number, height: number): HTMLCanvasElement => {
+    const image = generateTileImage(width, height, barWall0);
     const context = getContext(image);
 
     const columns = [barWall1, barWall2, barWall3];
+    const columnsChances = [2, 1, 1];
 
     const columnStep = 50;
 
     for (let x = 0; x < width; x += columnStep) {
         for (let y = 0; y < width; y += 16) {
-            const columnImage = images[randomSelect(columns)];
+            const columnImage = images[randomChancesSelect(columns, columnsChances)];
             drawImage(context, columnImage, x, y);
         }
     }
@@ -83,12 +88,12 @@ const generateWallImage = (width: number, height: number): number => {
 
     const border = 40;
 
-    context.fillStyle = createGradient(context, 0, image.height, 0, image.height - border, 0x55000000, 0);
+    context.fillStyle = createGradient(context, 0, image.height, 0, image.height - border, 0x77000000, 0);
     context.fillRect(0, image.height - border, image.width, border);
 
     noise(10, image);
 
-    return id;
+    return image;
 }
 
 export const noise = (offset: number, canvas: HTMLCanvasElement) => {

@@ -38,22 +38,19 @@ export const draw = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.setTransform(1, 0, 0, 1, offset.x, offset.y);
 
-    context.fillStyle = "gray";
-    context.fillRect(0, 0, gameWidth, gameHeight);
-
     const stage = getStage();
 
     context.save();
-    context.translate(mathRound(-stage.cameraPosition.x), mathRound(-stage.cameraPosition.y));
+    context.translate(mathRound(-stage.camera.x), mathRound(-stage.camera.y));
 
-    drawSprite(stage.wall);
-    drawSprite(stage.floor);
+    drawSprite(stage.back);
 
     for (const unit of units.values()) {
         drawSprite(unit.sprite);
     }
 
     context.restore();
+
     drawFPS();
 
     // drawText(

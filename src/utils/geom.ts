@@ -3,6 +3,13 @@ export interface Vector2 {
     y: number,
 }
 
+export interface Box2 {
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+}
+
 export interface Transform {
     a: number,
     b: number,

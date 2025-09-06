@@ -9,6 +9,7 @@ import { calculateTime } from "./utils/time";
 import background from "./resources/background";
 import { start } from "./game/start";
 import { updateCameraPosition } from "./game/game";
+import { limitCamera } from "./engine/stage";
 
 if (DEBUG) {
     console.warn("debug mode");
@@ -22,7 +23,9 @@ const update = () => {
     updateHero();
     updateUnits();
     limitUnitsPositions();
+
     updateCameraPosition();
+    limitCamera();
     updateUnitsSpritePositions();
 
     draw();

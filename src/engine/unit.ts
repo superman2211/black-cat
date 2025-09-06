@@ -89,8 +89,8 @@ export const limitUnitsPositions = () => {
     const stage = getStage();
 
     for (const unit of units.values()) {
-        unit.position.x = limit(0, stage.width, unit.position.x);
-        unit.position.y = limit(0, stage.height, unit.position.y);
+        unit.position.x = limit(stage.bounds.x, stage.bounds.x + stage.bounds.w, unit.position.x);
+        unit.position.y = limit(stage.bounds.y, stage.bounds.y + stage.bounds.h, unit.position.y);
     }
 }
 

@@ -20,3 +20,20 @@ export const chance = (chance: number): boolean => mathRandom() < chance;
 export function randomSelect<T>(values: T[]): T {
     return values[mathRound(randomRange(0, values.length - 1))];
 }
+
+export function randomChancesSelect<T>(values: T[], chances: Array<number>): T {
+    const total = chances.reduce((p, c) => p + c, 0);
+
+    const chance = mathRandom() * total;
+    
+    let c = 0;
+
+    for(let i = 0; i < values.length; i++) {
+        c += chances[i];
+        if (chance < c) {
+            return values[i];
+        }
+    }
+
+    return values[0];
+}

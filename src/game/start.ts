@@ -10,6 +10,6 @@ export const start = () => {
 
     const stage = getStage();
     const hero = getHero();
-    hero.position.x = 50;
-    hero.position.y = 0;//stage.height / 2;
+    hero.position.x = stage.bounds.x + 50;
+    hero.position.y = stage.bounds.y + stage.bounds.h / 2;
 }

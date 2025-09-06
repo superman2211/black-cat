@@ -1,8 +1,8 @@
 import { images } from "../resources/images";
-import { createCanvas, getContext } from "./browser";
-import { mathCeil, randomSelect } from "./math";
+import { createCanvas, drawImage, getContext } from "./browser";
+import { mathCeil, randomChancesSelect, randomSelect } from "./math";
 
-export const generateRandomTileImage = (width: number, height: number, ids: Array<number>): number => {
+export const generateRandomTileImage = (width: number, height: number, ids: Array<number>, chances: Array<number>): HTMLCanvasElement => {
     const canvas = createCanvas();
     const context = getContext(canvas);
 
@@ -16,18 +16,15 @@ export const generateRandomTileImage = (width: number, height: number, ids: Arra
 
     for (let x = 0; x < sx; x++) {
         for (let y = 0; y < sy; y++) {
-            image = images[randomSelect(ids)];
+            image = images[randomChancesSelect(ids, chances)];
             context.drawImage(image, x * image.width, y * image.height);
         }
     }
 
-    let id = images.length;
-    images.push(canvas);
-
-    return id;
+    return canvas;
 }
 
-export const generateTileImage = (width: number, height: number, imageId: number): number => {
+export const generateTileImage = (width: number, height: number, imageId: number): HTMLCanvasElement => {
     const canvas = createCanvas();
     const context = getContext(canvas);
 
@@ -45,8 +42,15 @@ export const generateTileImage = (width: number, height: number, imageId: number
         }
     }
 
-    let id = images.length;
-    images.push(canvas);
+    return canvas;
+}
 
-    return id;
+export const drawCommands = (commands: Array<number>, context: CanvasRenderingContext2D) => {
+    for (let i = 0; i < commands.length; i += 3) {
+        const id = commands[i];
+        const x = commands[i + 1];
+        const y = commands[i + 2];
+        const image = images[id];
+        drawImage(context, image, x, y);
+    }
 }
