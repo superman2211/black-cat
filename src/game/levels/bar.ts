@@ -32,6 +32,16 @@ const generateFloorImage = (width: number, height: number): number => {
     return id;
 }
 
+const drawCommands = (commands: Array<number>, context: CanvasRenderingContext2D) => {
+    for (let i = 0; i < commands.length; i += 3) {
+        const id = commands[i];
+        const x = commands[i + 1];
+        const y = commands[i + 2];
+        const image = images[id];
+        drawImage(context, image, x, y);
+    }
+}
+
 const generateWallImage = (width: number, height: number): number => {
     const id = generateTileImage(width, height, barWall0);
 
@@ -49,15 +59,17 @@ const generateWallImage = (width: number, height: number): number => {
         }
     }
 
+    drawCommands(
+        [
+            barWall4, columnStep - 13, 0,
+            barWall4, columnStep * 3 - 13, 0,
+            barWall4, columnStep * 6 - 13, 0,
 
-    const wallpaper0 = images[barWall4];
-    drawImage(context, wallpaper0, columnStep - 13, 0);
-    drawImage(context, wallpaper0, columnStep * 3 - 13, 0);
-    drawImage(context, wallpaper0, columnStep * 6 - 13, 0);
-
-    const wallpaper1 = images[barWall5];
-    drawImage(context, wallpaper1, columnStep * 2 - 17, 0);
-    drawImage(context, wallpaper1, columnStep * 5 - 30, 0);
+            barWall5, columnStep * 2 - 17, 0,
+            barWall5, columnStep * 5 - 30, 0
+        ],
+        context,
+    )
 
     noise(10, image);
 
