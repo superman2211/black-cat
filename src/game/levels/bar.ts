@@ -4,6 +4,7 @@ import { images } from "../../resources/images";
 import { createCanvas, drawImage, getContext } from "../../utils/browser"
 import { generateRandomTileImage, generateTileImage } from "../../utils/image-generator";
 import { mathCeil, mathRandom, randomSelect } from "../../utils/math";
+import { createGradient, formatColor } from "../../utils/pattern";
 
 export const getBarStage = (): Stage => {
     const width = 400;
@@ -26,6 +27,15 @@ const generateFloorImage = (width: number, height: number): number => {
     let id = generateRandomTileImage(width, height, [barFloor0, barFloor1, barFloor2, barFloor3])
 
     const image = images[id];
+    const context = getContext(image);
+
+    const border = 30;
+
+    context.fillStyle = createGradient(context, 0, 0, 0, border, 0x55000000, 0);
+    context.fillRect(0, 0, image.width, border);
+
+    context.fillStyle = createGradient(context, 0, image.height, 0, image.height - border, 0x77000000, 0);
+    context.fillRect(0, image.height - border, image.width, border);
 
     noise(10, image);
 
@@ -70,6 +80,11 @@ const generateWallImage = (width: number, height: number): number => {
         ],
         context,
     )
+
+    const border = 40;
+
+    context.fillStyle = createGradient(context, 0, image.height, 0, image.height - border, 0x55000000, 0);
+    context.fillRect(0, image.height - border, image.width, border);
 
     noise(10, image);
 
