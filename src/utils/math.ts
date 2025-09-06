@@ -1,6 +1,7 @@
 const math = Math;
 
 export const mathFloor = math.floor;
+export const mathCeil = math.ceil;
 export const mathRound = math.round;
 export const mathMin = math.min;
 export const mathMax = math.max;

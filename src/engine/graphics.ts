@@ -5,14 +5,16 @@ import { images } from "../resources/images";
 import { drawImage, getContext, now } from "../utils/browser";
 import { mathFloor, mathMax, mathMin, mathRound } from "../utils/math";
 import { deltaS, nowMS } from "../utils/time";
+import { getStage } from "./stage";
+import { Sprite } from "./sprite";
 
 export const canvas = document.getElementById('c') as HTMLCanvasElement;
 canvas.style.imageRendering = 'pixelated';
 
 const context = getContext(canvas);
 
-export const width = 200;
-export const height = 200;
+export const gameWidth = 200;
+export const gameHeight = 200;
 
 const offset = { x: 0, y: 0 };
 
@@ -20,16 +22,16 @@ export const updateSize = () => {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
 
-    const scale = mathMin(screenWidth / width, screenHeight / height);
+    const scale = mathMin(screenWidth / gameWidth, screenHeight / gameHeight);
 
-    canvas.width = mathMax(width, screenWidth / scale);
-    canvas.height = mathMax(height, screenHeight / scale);
+    canvas.width = mathMax(gameWidth, screenWidth / scale);
+    canvas.height = mathMax(gameHeight, screenHeight / scale);
 
     canvas.style.width = `${screenWidth}px`;
     canvas.style.height = `${screenHeight}px`;
 
-    offset.x = mathFloor((canvas.width - width) / 2);
-    offset.y = mathFloor((canvas.height - height) / 2);
+    offset.x = mathFloor((canvas.width - gameWidth) / 2);
+    offset.y = mathFloor((canvas.height - gameHeight) / 2);
 }
 
 export const draw = () => {
@@ -37,17 +39,20 @@ export const draw = () => {
     context.setTransform(1, 0, 0, 1, offset.x, offset.y);
 
     context.fillStyle = "gray";
-    context.fillRect(0, 0, width, height);
+    context.fillRect(0, 0, gameWidth, gameHeight);
+
+    const stage = getStage();
+
+    context.save();
+    context.translate(mathRound(-stage.cameraPosition.x), mathRound(-stage.cameraPosition.y));
+
+    drawSprite(stage.floor);
 
     for (const unit of units.values()) {
-        let image = images[unit.image];
-        if (unit.direction > 0) {
-            drawImage(context, image, unit.position.x, unit.position.y);
-        } else {
-            drawTransformedImage(image, unit.position.x, unit.position.y, -1, 0, 0, 1, image.width, 0);
-        }
+        drawSprite(unit.sprite);
     }
 
+    context.restore();
     drawFPS();
 
     // drawText(
@@ -57,13 +62,13 @@ export const draw = () => {
     // );
 }
 
-const drawTransformedImage = (
-    image: HTMLCanvasElement,
-    x: number, y: number,
-    a: number, b: number, c: number, d: number, tx: number, ty: number
+const drawSprite = (
+    sprite: Sprite
 ) => {
     context.save();
-    context.transform(a, b, c, d, tx + mathRound(x), ty + mathRound(y));
+    context.transform(1, 0, 0, 1, mathRound(sprite.x || 0), mathRound(sprite.y || 0));
+
+    let image = images[sprite.image];
 
     drawImage(context, image, 0, 0);
 

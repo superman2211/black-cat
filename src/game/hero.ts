@@ -1,11 +1,12 @@
 import { isKeyPressed, Key } from "../engine/input";
-import { addUnit, UnitConfig } from "../engine/unit";
+import { addUnit, Unit, UnitConfig } from "../engine/unit";
 import { kate0, kate1, kate10, kate11, kate12, kate13, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
 import { mathFloor } from "../utils/math";
 import { deltaS } from "../utils/time";
 
 const config: UnitConfig = {
     walkSpeed: 30,
+    offset: { x: 16, y: 29 },
     animations: {
         stand: [
             { image: kate0, time: 0.2 },
@@ -46,11 +47,21 @@ const config: UnitConfig = {
     }
 };
 
-export const hero = addUnit(config);
-hero.position.y = 100;
-hero.position.x = 100;
+let hero: Unit | undefined;
+
+export const createHero = () => {
+    hero = addUnit(config);
+}
+
+export const getHero = (): Unit => {
+    return hero!;
+}
 
 export const updateHero = () => {
+    if (!hero) {
+        return;
+    }
+
     hero.controller.move.x = 0;
     hero.controller.move.y = 0;
     hero.controller.leg = false;

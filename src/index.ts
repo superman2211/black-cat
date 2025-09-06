@@ -1,12 +1,14 @@
 import { DEBUG } from "./debug";
 import { initInput } from "./engine/input";
-import { updateUnits } from "./engine/unit";
+import { limitUnitsPositions, updateUnits, updateUnitsSpritePositions } from "./engine/unit";
 import { updateHero } from "./game/hero";
 import { draw, updateSize } from "./engine/graphics";
 import { loadResources } from "./resources/loader";
 import { playMusic } from "./resources/sound/audio";
 import { calculateTime } from "./utils/time";
 import background from "./resources/background";
+import { start } from "./game/start";
+import { updateCameraPosition } from "./game/game";
 
 if (DEBUG) {
     console.warn("debug mode");
@@ -19,6 +21,9 @@ const update = () => {
 
     updateHero();
     updateUnits();
+    limitUnitsPositions();
+    updateCameraPosition();
+    updateUnitsSpritePositions();
 
     draw();
 
@@ -29,6 +34,7 @@ async function main() {
     await loadResources();
     playMusic(background);
     initInput();
+    start();
     update();
 }
 
