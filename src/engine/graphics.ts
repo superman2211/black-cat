@@ -46,6 +46,7 @@ export const draw = () => {
     context.save();
     context.translate(mathRound(-stage.cameraPosition.x), mathRound(-stage.cameraPosition.y));
 
+    drawSprite(stage.wall);
     drawSprite(stage.floor);
 
     for (const unit of units.values()) {

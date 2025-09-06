@@ -5,6 +5,7 @@ export interface Stage {
     width: number,
     height: number,
     floor: Sprite,
+    wall: Sprite,
     cameraPosition: Vector2,
 }
 
