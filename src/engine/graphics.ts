@@ -67,9 +67,17 @@ const drawSprite = (
     sprite: Sprite
 ) => {
     context.save();
-    context.transform(1, 0, 0, 1, mathRound(sprite.x || 0), mathRound(sprite.y || 0));
 
-    let image = images[sprite.image];
+    const tx = mathRound(sprite.x || 0);
+    const ty = mathRound(sprite.y || 0);
+
+    const image = images[sprite.image];
+
+    if (sprite.flipX) {
+        context.transform(-1, 0, 0, 1, tx + image.width, ty);
+    } else {
+        context.transform(1, 0, 0, 1, tx, ty);
+    }
 
     drawImage(context, image, 0, 0);
 
