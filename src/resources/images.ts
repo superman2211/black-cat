@@ -4,6 +4,7 @@ import { cloneCanvas, filterImage } from "../utils/image";
 export const images: HTMLCanvasElement[] = [];
 
 const coloredImages: { [key: string]: number } = {};
+const shadowImages: { [key: number]: number } = {};
 
 export const addImage = (image: HTMLCanvasElement): number => {
     const id = images.length;
@@ -14,7 +15,7 @@ export const addImage = (image: HTMLCanvasElement): number => {
 export const getColoredImage = (id: number, color: number): number => {
     const key = `${id}_${color}`;
     if (!coloredImages[key]) {
-
+        const a = (color >> 24) & 0xff;
         const r = (color >> 16) & 0xff;
         const g = (color >> 8) & 0xff;
         const b = color & 0xff;
@@ -25,6 +26,9 @@ export const getColoredImage = (id: number, color: number): number => {
             color[0] = r;
             color[1] = g;
             color[2] = b;
+            if (color[3]) {
+                color[3] = a;
+            }
         });
 
         coloredImages[key] = addImage(coloredImage);

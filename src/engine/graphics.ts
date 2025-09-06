@@ -44,8 +44,11 @@ export const draw = () => {
     context.save();
     context.translate(mathRound(-stage.camera.x), mathRound(-stage.camera.y));
 
-
     drawSprite(stage.back);
+
+    for (const unit of units.values()) {
+        drawSprite(unit.shadow);
+    }
 
     for (const unit of units.values()) {
         drawSprite(unit.sprite);
@@ -53,22 +56,13 @@ export const draw = () => {
 
     context.restore();
 
-    const border = 10;
+    context.fillStyle = "black";
     if (canvas.width < canvas.height) {
-        drawGradientV(context, 0, -border, gameWidth, border, 0xff000000, 0);
-        drawGradientV(context, 0, gameHeight, gameWidth, border, 0, 0xff000000);
-
-        context.fillStyle = "black";
-        context.fillRect(0, - offset.y, gameWidth, offset.y - border);
-        context.fillRect(0, gameHeight + border, gameWidth, gameHeight);
-
+        context.fillRect(0, - offset.y, gameWidth, offset.y);
+        context.fillRect(0, gameHeight, gameWidth, gameHeight);
     } else {
-        drawGradientH(context, -border, 0, border, gameHeight, 0xff000000, 0);
-        drawGradientH(context, gameWidth, 0, border, gameHeight, 0, 0xff000000);
-
-        context.fillStyle = "black";
-        context.fillRect(- offset.x, 0, offset.x - border, gameWidth);
-        context.fillRect(gameWidth + border, 0, gameWidth, gameHeight);
+        context.fillRect(- offset.x, 0, offset.x, gameWidth);
+        context.fillRect(gameWidth, 0, gameWidth, gameHeight);
     }
 
     drawFPS();
@@ -85,16 +79,22 @@ const drawSprite = (
 ) => {
     context.save();
 
-    const tx = mathRound(sprite.x || 0);
-    const ty = mathRound(sprite.y || 0);
-
     const image = images[sprite.image];
 
+    let a = 1;
+    let b = 0;
+    let c = 0;
+    let d = sprite.scaleY || 1;
+
+    let tx = mathRound(sprite.x || 0);
+    let ty = mathRound(sprite.y || 0);
+
     if (sprite.flipX) {
-        context.transform(-1, 0, 0, 1, tx + image.width, ty);
-    } else {
-        context.transform(1, 0, 0, 1, tx, ty);
+        a = -1;
+        tx += image.width;
     }
+
+    context.transform(a, b, c, d, tx, ty);
 
     drawImage(context, image, 0, 0);
 
@@ -109,7 +109,7 @@ const drawFPS = () => {
         drawText(
             3, 3,
             `FPS ${fps} TIME ${frameTime}`,
-            0xffffff
+            0x99ffffff
         );
     }
 }

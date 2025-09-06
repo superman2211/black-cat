@@ -3,4 +3,5 @@ export interface Sprite {
     x?: number,
     y?: number,
     flipX?: boolean,
+    scaleY?: number,
 }

@@ -1,3 +1,4 @@
+import { getColoredImage, images } from "../resources/images";
 import { Vector2 } from "../utils/geom";
 import { chance, limit, mathHypot, mathRound, randomRange } from "../utils/math";
 import { deltaS } from "../utils/time";
@@ -28,6 +29,7 @@ export interface Unit {
     position: Vector2,
     animationTime: number,
     sprite: Sprite,
+    shadow: Sprite,
 }
 
 export interface UnitConfig {
@@ -64,6 +66,9 @@ export const addUnit = (config: UnitConfig): Unit => {
         animationTime: 0,
         sprite: {
             image: 0,
+        },
+        shadow: {
+            image: 0,
         }
     };
 
@@ -82,8 +87,6 @@ export const removeUnit = (unit: Unit) => {
 export const clearUnits = () => {
     units.splice(0, units.length);
 }
-
-
 
 export const limitUnitsPositions = () => {
     const stage = getStage();
@@ -188,6 +191,9 @@ const updateUnit = (unit: Unit) => {
         unit.animationTime += deltaS;
         unit.sprite.image = getFrameImage(currentAnimation, unit.animationTime);
         unit.sprite.flipX = unit.direction < 0;
+
+        unit.shadow.image = getColoredImage(unit.sprite.image, 0x55000000);
+        unit.shadow.flipX = unit.sprite.flipX;
     }
 }
 
@@ -199,8 +205,15 @@ export const updateUnitsSpritePositions = () => {
 
 const updateUnitSpritePosition = (unit: Unit) => {
     const config = unit.config;
+
     unit.sprite.x = unit.position.x - config.offset.x;
     unit.sprite.y = unit.position.y - config.offset.y;
+
+    const image = images[unit.shadow.image];
+
+    unit.shadow.scaleY = 0.4;
+    unit.shadow.x = unit.position.x - config.offset.x + 0;
+    unit.shadow.y = unit.position.y - config.offset.y * unit.shadow.scaleY;
 }
 
 const checkAttack = (unit: Unit) => {
