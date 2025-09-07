@@ -10,6 +10,7 @@ import background from "./resources/background";
 import { start } from "./game/start";
 import { updateCameraPosition } from "./game/game";
 import { limitCamera } from "./engine/stage";
+import { generateMobsConfigs, updateMobs } from "./game/mob";
 
 if (DEBUG) {
     console.warn("debug mode");
@@ -21,6 +22,7 @@ const update = () => {
     updateSize();
 
     updateHero();
+    updateMobs();
     updateUnits();
     limitUnitsPositions();
 
@@ -37,6 +39,7 @@ async function main() {
     await loadResources();
     playMusic(background);
     initInput();
+    generateMobsConfigs();
     start();
     update();
 }

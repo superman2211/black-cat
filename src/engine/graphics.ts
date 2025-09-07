@@ -46,11 +46,13 @@ export const draw = () => {
 
     drawSprite(stage.back);
 
-    for (const unit of units.values()) {
+    units.sort((a, b) => a.position.y - b.position.y);
+
+    for (const unit of units) {
         drawSprite(unit.shadow);
     }
 
-    for (const unit of units.values()) {
+    for (const unit of units) {
         drawSprite(unit.sprite);
     }
 

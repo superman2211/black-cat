@@ -77,11 +77,11 @@ export const filterImage = (canvas: HTMLCanvasElement, filter: (color: Uint8Clam
     let i = 0;
 
     while (i < pixels.length) {
-        const color = pixels.slice(i, i + 4);
+        const pixel = pixels.slice(i, i + 4);
 
-        filter(color);
+        filter(pixel);
 
-        pixels.set(color, i);
+        pixels.set(pixel, i);
 
         i += 4;
     }
@@ -96,4 +96,56 @@ export const cloneCanvas = (source: HTMLCanvasElement): HTMLCanvasElement => {
     target.height = source.height;
     context.drawImage(source, 0, 0);
     return target;
+}
+
+export const getPallette = (canvas: HTMLCanvasElement): Array<number> => {
+    const pallette: Array<number> = [];
+
+    filterImage(canvas, (pixel) => {
+        const color = pixelToColor(pixel);
+        if (pallette.indexOf(color) == -1) {
+            pallette.push(color);
+        }
+    });
+
+    return pallette;
+}
+
+export const applyPallette = (canvas: HTMLCanvasElement, sourcePallette: Array<number>, targetPallette: Array<number>) => {
+    filterImage(canvas, (pixel) => {
+        const sourceColor = pixelToColor(pixel);
+
+        const index = sourcePallette.indexOf(sourceColor);
+
+        if (index != -1) {
+            const targetColor = targetPallette[index];
+
+            colorToPixel(targetColor, pixel);
+        }
+    });
+}
+
+const u32 = new Uint32Array(1);
+
+export const pixelToColor = (pixel: Uint8ClampedArray): number => {
+    const r = pixel[0];
+    const g = pixel[1];
+    const b = pixel[2];
+    const a = pixel[3];
+
+    u32[0] = (a << 24) | (r << 16) | (g << 8) | b;
+
+    return u32[0];
+}
+
+export const colorToPixel = (color: number, pixel: Uint8ClampedArray) => {
+    const a = (color >> 24) & 0xff;
+    const r = (color >> 16) & 0xff;
+    const g = (color >> 8) & 0xff;
+    const b = color & 0xff;
+
+    pixel[0] = r;
+    pixel[1] = g;
+    pixel[2] = b;
+    pixel[3] = a;
 }

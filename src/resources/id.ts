@@ -60,4 +60,6 @@ export const kate10 = 58;
 export const kate11 = 59;
 export const kate12 = 60;
 export const kate13 = 61;
+export const man0 = 62;
+export const man1 = 63;
 export const sound_fail = 0;
