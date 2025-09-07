@@ -1,6 +1,6 @@
 import { AnimationFrame } from "../engine/animation";
-import { addUnit, Unit, UnitConfig } from "../engine/unit";
-import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9 } from "../resources/id";
+import { addUnit, Unit, UnitConfig, units } from "../engine/unit";
+import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9, man13, man14 } from "../resources/id";
 import { addImage, images } from "../resources/images";
 import { cloneObject } from "../utils/browser";
 import { Vector2 } from "../utils/geom";
@@ -23,6 +23,8 @@ const pallette = [
 ];
 
 const config: UnitConfig = {
+    mob: true,
+    health: 100,
     walkSpeed: 20,
     offset: { x: 16, y: 31 },
     animations: {
@@ -60,7 +62,23 @@ const config: UnitConfig = {
             { image: man0, time: 0.2 },
             { image: man11, time: 0.2 },
             { image: man12, time: 0.2 },
+            { image: man11, time: 0.2 },
+        ],
+        damage: [
+            { image: man0, time: 0.1 },
+            { image: man13, time: 0.5 },
+            { image: man0, time: 0.1 },
+        ],
+        dead: [
+            { image: man0, time: 0.1 },
+            { image: man13, time: 0.5 },
+            { image: man14, time: 5.0 },
         ]
+    },
+    damages: {
+        [man6]: 10, // jab
+        [man8]: 20, // cross
+        [man12]: 30, // kick
     }
 };
 
@@ -138,26 +156,83 @@ export const clearMobs = () => {
     mobs.splice(0, mobs.length);
 }
 
+export const removeMob = (mob: Unit) => {
+    const index = mobs.indexOf(mob);
+    if (index != -1) {
+        mobs.splice(index, 1);
+    }
+}
+
 export const updateMobs = () => {
     const hero = getHero();
 
     for (const mob of mobs) {
+        updateMob(mob, hero);
+    }
+}
+
+const updateMob = (mob: Unit, hero: Unit) => {
+    if (mob.health <= 0) {
+        return;
+    }
+
+    if (units.indexOf(mob) == -1) {
+        removeMob(mob);
+    }
+
+    mob.controller.move.x = 0;
+    mob.controller.move.y = 0;
+    mob.controller.leg = false;
+    mob.controller.hand = false;
+
+    const direction = Vector2.subtract(hero.position, mob.position);
+    const distance = Vector2.length(direction);
+
+    if (distance > 15) {
+        Vector2.normalize(direction);
+        mob.controller.move.x = direction.x;
+        mob.controller.move.y = direction.y;
+    } else {
         mob.controller.move.x = 0;
         mob.controller.move.y = 0;
-        mob.controller.leg = false;
-        mob.controller.hand = false;
+    }
+}
 
-        const direction = Vector2.subtract(hero.position, mob.position);
-        const distance = Vector2.length(direction);
+export const collideMobs = () => {
+    const minDistance = 10;
 
-        if (distance > 15) {
-            Vector2.normalize(direction);
-            mob.controller.move.x = direction.x;
-            mob.controller.move.y = direction.y;
-            // console.log(distance, direction);
-        } else {
-            mob.controller.move.x = 0;
-            mob.controller.move.y = 0;
+    for (let i = 0; i < mobs.length; i++) {
+        const unit0 = mobs[i];
+
+        if (unit0.health <= 0) {
+            continue;
+        }
+
+        for (let j = i + 1; j < mobs.length; j++) {
+            const unit1 = mobs[j];
+
+            if (unit1.health <= 0) {
+                continue;
+            }
+
+            let direction = Vector2.subtract(unit0.position, unit1.position);
+
+            if (direction.x == 0 && direction.y == 0) {
+                direction.x = 1;
+            }
+
+            const distance = Vector2.length(direction);
+
+            if (distance < minDistance) {
+                const scale = (minDistance - distance) / distance;
+                const offset = Vector2.scale(direction, scale);
+
+                unit0.position.x += offset.x;
+                unit0.position.y += offset.y;
+
+                unit1.position.x -= offset.x;
+                unit1.position.y -= offset.y;
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 import { DEBUG } from "./debug";
 import { initInput } from "./engine/input";
-import { collideUnits, limitUnitsPositions, updateUnits, updateUnitsSpritePositions } from "./engine/unit";
+import { applyUnitsDamage, limitUnitsPositions, updateUnits, updateUnitsSpritePositions } from "./engine/unit";
 import { updateHero } from "./game/hero";
 import { draw, updateSize } from "./engine/graphics";
 import { loadResources } from "./resources/loader";
@@ -10,7 +10,7 @@ import background from "./resources/background";
 import { start } from "./game/start";
 import { updateCameraPosition } from "./game/game";
 import { limitCamera } from "./engine/stage";
-import { generateMobsConfigs, updateMobs } from "./game/mob";
+import { collideMobs, generateMobsConfigs, updateMobs } from "./game/mob";
 
 if (DEBUG) {
     console.warn("debug mode");
@@ -23,8 +23,9 @@ const update = () => {
 
     updateHero();
     updateMobs();
+    collideMobs();
     updateUnits();
-    collideUnits();
+    applyUnitsDamage();
     limitUnitsPositions();
 
     updateCameraPosition();

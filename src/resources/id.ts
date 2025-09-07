@@ -73,4 +73,7 @@ export const man9 = 71;
 export const man10 = 72;
 export const man11 = 73;
 export const man12 = 74;
+export const man13 = 75;
+export const man14 = 76;
+export const man15 = 77;
 export const sound_fail = 0;

@@ -1,10 +1,10 @@
 import { isKeyPressed, Key } from "../engine/input";
 import { addUnit, Unit, UnitConfig } from "../engine/unit";
 import { kate0, kate1, kate10, kate11, kate12, kate13, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
-import { mathFloor } from "../utils/math";
-import { deltaS } from "../utils/time";
 
 const config: UnitConfig = {
+    mob: false,
+    health: 1000,
     walkSpeed: 30,
     offset: { x: 16, y: 29 },
     animations: {
@@ -43,7 +43,18 @@ const config: UnitConfig = {
             { image: kate6, time: 0.05 },
             { image: kate7, time: 0.1 },
             { image: kate6, time: 0.1 },
+        ],
+        damage: [
+            { image: kate0, time: 1.0 },
+        ],
+        dead: [
+            { image: kate0, time: 1.0 },
         ]
+    },
+    damages: {
+        [kate8]: 20, // jab
+        [kate10]: 30, // cross
+        [kate7]: 50, // kick
     }
 };
 
@@ -59,6 +70,10 @@ export const getHero = (): Unit => {
 
 export const updateHero = () => {
     if (!hero) {
+        return;
+    }
+
+    if (hero.health <= 0) {
         return;
     }
 

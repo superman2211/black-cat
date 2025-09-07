@@ -1,6 +1,6 @@
 import { getColoredImage, images } from "../resources/images";
 import { Vector2 } from "../utils/geom";
-import { chance, limit, mathHypot, mathRound, randomRange } from "../utils/math";
+import { chance, limit, mathAbs, mathHypot, mathRound, randomRange } from "../utils/math";
 import { deltaS } from "../utils/time";
 import { animationDuration, AnimationFrame, getFrameImage, isAnimationFinished } from "./animation";
 import { Sprite } from "./sprite";
@@ -14,6 +14,8 @@ export const enum UnitState {
     Jab,
     Cross,
     Kick,
+    Damage,
+    Dead,
 }
 
 export interface Unit {
@@ -30,9 +32,13 @@ export interface Unit {
     animationTime: number,
     sprite: Sprite,
     shadow: Sprite,
+    frame: number,
+    damage: number,
 }
 
 export interface UnitConfig {
+    mob: boolean,
+    health: number,
     walkSpeed: number,
     offset: Vector2,
     animations: {
@@ -42,7 +48,10 @@ export interface UnitConfig {
         jab: Array<AnimationFrame>,
         cross: Array<AnimationFrame>,
         kick: Array<AnimationFrame>,
-    }
+        damage: Array<AnimationFrame>,
+        dead: Array<AnimationFrame>,
+    },
+    damages: { [key: number]: number },
 }
 
 export const addUnit = (config: UnitConfig): Unit => {
@@ -57,7 +66,7 @@ export const addUnit = (config: UnitConfig): Unit => {
             hand: false,
             leg: false
         },
-        health: 0,
+        health: config.health,
         direction: 1,
         position: {
             x: 0,
@@ -69,7 +78,9 @@ export const addUnit = (config: UnitConfig): Unit => {
         },
         shadow: {
             image: 0,
-        }
+        },
+        damage: 0,
+        frame: 0,
     };
 
     units.push(unit);
@@ -103,36 +114,6 @@ export const updateUnits = () => {
     }
 }
 
-export const collideUnits = () => {
-    const minDistance = 5;
-
-    for (let i = 0; i < units.length; i++) {
-        const unit0 = units[i];
-        for (let j = i + 1; j < units.length; j++) {
-            const unit1 = units[j];
-
-            let direction = Vector2.subtract(unit0.position, unit1.position);
-
-            if (direction.x == 0 && direction.y == 0) {
-                direction.x = 1;
-            }
-
-            const distance = Vector2.length(direction);
-
-            if (distance < minDistance) {
-                const scale = (minDistance - distance) / distance;
-                const offset = Vector2.scale(direction, scale);
-
-                unit0.position.x += offset.x;
-                unit0.position.y += offset.y;
-
-                unit1.position.x -= offset.x;
-                unit1.position.y -= offset.y;
-            }
-        }
-    }
-}
-
 const updateUnit = (unit: Unit) => {
     let currentAnimation = null;
 
@@ -152,13 +133,14 @@ const updateUnit = (unit: Unit) => {
             break;
 
         case UnitState.Walk:
-            if (unit.controller.move.x != 0) {
-                currentAnimation = animations.walkH;
-            } else if (unit.controller.move.y != 0) {
-                currentAnimation = animations.walkV;
-            } else {
+            if (unit.controller.move.x == 0 && unit.controller.move.y == 0) {
                 unit.state = UnitState.Stand;
                 unit.animationTime = 0;
+            }
+            else if (mathAbs(unit.controller.move.x) > mathAbs(unit.controller.move.y)) {
+                currentAnimation = animations.walkH;
+            } else {
+                currentAnimation = animations.walkV;
             }
 
             Vector2.normalize(unit.controller.move);
@@ -201,6 +183,25 @@ const updateUnit = (unit: Unit) => {
                 unit.animationTime = 0;
             }
             break;
+
+        case UnitState.Damage:
+            currentAnimation = animations.damage;
+
+            if (isAnimationFinished(currentAnimation, unit.animationTime)) {
+                unit.state = UnitState.Stand;
+                unit.animationTime = 0;
+            }
+            break;
+
+        case UnitState.Dead:
+            currentAnimation = animations.dead;
+
+            const duration = animationDuration(currentAnimation);
+            if (duration <= unit.animationTime + deltaS) {
+                removeUnit(unit);
+                currentAnimation = null;
+            }
+            break;
     }
 
     if (unit.controller.move.x > 0) {
@@ -215,12 +216,63 @@ const updateUnit = (unit: Unit) => {
         unit.sprite.image = getFrameImage(currentAnimation, unit.animationTime);
         unit.sprite.flipX = unit.direction < 0;
 
-        // if (unit.config.animations.walkH.length == 1) {
-        //     console.log(unit.animationTime, currentAnimation.length, unit.sprite.image);
-        // }
-
         unit.shadow.image = getColoredImage(unit.sprite.image, 0x55000000);
         unit.shadow.flipX = unit.sprite.flipX;
+    }
+
+    unit.damage = 0;
+    if (unit.frame != unit.sprite.image) {
+        unit.frame = unit.sprite.image;
+        unit.damage = config.damages[unit.frame] || 0;
+    }
+}
+
+export const applyUnitsDamage = () => {
+    for (const current of units) {
+        if (current.health <= 0) {
+            continue;
+        }
+
+        if (!current.damage) {
+            continue;
+        }
+
+        let opponent: Unit | null = null;
+        let opponentDistance = 99999;
+
+        for (const unit of units) {
+            if (unit.health <= 0) {
+                continue;
+            }
+
+            if (current.config.mob != unit.config.mob) {
+                const direction = unit.position.x - current.position.x;
+                if (direction * current.direction > 0) {
+                    const distance = Vector2.distance(current.position, unit.position);
+                    if (distance < 15) {
+                        if (!opponent || opponentDistance > distance) {
+                            opponent = unit;
+                            opponentDistance = distance;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (opponent) {
+            opponent.health -= current.damage;
+
+            const targetState = opponent.health > 0 ? UnitState.Damage : UnitState.Dead;
+
+            if (opponent.state != targetState) {
+                opponent.state = targetState;
+                opponent.animationTime = 0;
+            }
+
+            opponent.position.x += current.direction * 3;
+
+            console.log("apply damage", current.damage, "health", opponent.health);
+        }
     }
 }
 
