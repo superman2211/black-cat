@@ -1,6 +1,6 @@
 import { AnimationFrame } from "../engine/animation";
 import { addUnit, Unit, UnitConfig, units } from "../engine/unit";
-import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9, man13, man14 } from "../resources/id";
+import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9, man13, man14, man15, man16, man17 } from "../resources/id";
 import { addImage, images } from "../resources/images";
 import { cloneObject } from "../utils/browser";
 import { Vector2 } from "../utils/geom";
@@ -65,14 +65,16 @@ const config: UnitConfig = {
             { image: man11, time: 0.2 },
         ],
         damage: [
-            { image: man0, time: 0.1 },
             { image: man13, time: 0.5 },
             { image: man0, time: 0.1 },
         ],
         dead: [
             { image: man0, time: 0.1 },
-            { image: man13, time: 0.5 },
-            { image: man14, time: 5.0 },
+            { image: man13, time: 0.2 },
+            { image: man14, time: 0.2 },
+            { image: man15, time: 0.2 },
+            { image: man16, time: 0.3 },
+            { image: man17, time: 5.0 },
         ]
     },
     damages: {

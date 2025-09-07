@@ -76,4 +76,6 @@ export const man12 = 74;
 export const man13 = 75;
 export const man14 = 76;
 export const man15 = 77;
+export const man16 = 78;
+export const man17 = 79;
 export const sound_fail = 0;
