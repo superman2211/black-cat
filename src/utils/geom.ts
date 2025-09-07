@@ -1,3 +1,5 @@
+import { mathHypot } from "./math"
+
 export interface Vector2 {
     x: number,
     y: number,
@@ -17,4 +19,34 @@ export interface Transform {
     d: number,
     tx: number,
     ty: number,
+}
+
+export namespace Vector2 {
+    export const normalize = (a: Vector2) => {
+        const l = length(a);
+        if (l > 0) {
+            a.x /= l;
+            a.y /= l;
+        }
+    }
+
+    export const length = (a: Vector2): number => {
+        return mathHypot(a.x, a.y);
+    }
+
+    export const distance = (a: Vector2, b: Vector2): number => {
+        return mathHypot(a.x - b.x, a.y - b.y);
+    }
+
+    export const add = (a: Vector2, b: Vector2): Vector2 => {
+        return { x: a.x + b.x, y: a.y + b.y };
+    }
+
+    export const subtract = (a: Vector2, b: Vector2): Vector2 => {
+        return { x: a.x - b.x, y: a.y - b.y };
+    }
+
+    export const scale = (a: Vector2, s: number): Vector2 => {
+        return { x: a.x * s, y: a.y * s };
+    }
 }

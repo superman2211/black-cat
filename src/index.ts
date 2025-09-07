@@ -1,6 +1,6 @@
 import { DEBUG } from "./debug";
 import { initInput } from "./engine/input";
-import { limitUnitsPositions, updateUnits, updateUnitsSpritePositions } from "./engine/unit";
+import { collideUnits, limitUnitsPositions, updateUnits, updateUnitsSpritePositions } from "./engine/unit";
 import { updateHero } from "./game/hero";
 import { draw, updateSize } from "./engine/graphics";
 import { loadResources } from "./resources/loader";
@@ -24,6 +24,7 @@ const update = () => {
     updateHero();
     updateMobs();
     updateUnits();
+    collideUnits();
     limitUnitsPositions();
 
     updateCameraPosition();

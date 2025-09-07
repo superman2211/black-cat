@@ -3,7 +3,10 @@ import { addUnit, Unit, UnitConfig } from "../engine/unit";
 import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9 } from "../resources/id";
 import { addImage, images } from "../resources/images";
 import { cloneObject } from "../utils/browser";
+import { Vector2 } from "../utils/geom";
 import { applyPallette, cloneCanvas } from "../utils/image";
+import { randomRange } from "../utils/math";
+import { getHero } from "./hero";
 
 export const mobs: Array<Unit> = [];
 
@@ -20,7 +23,7 @@ const pallette = [
 ];
 
 const config: UnitConfig = {
-    walkSpeed: 30,
+    walkSpeed: 20,
     offset: { x: 16, y: 31 },
     animations: {
         stand: [
@@ -97,6 +100,8 @@ export const generateMobsConfigs = () => {
 const generateConfig = (targetPallette: number[], palletteName: string): UnitConfig => {
     const newConfig: UnitConfig = cloneObject(config);
 
+    newConfig.walkSpeed = randomRange(10, 20);
+
     const animations = newConfig.animations as any;
     for (const name in animations) {
         const animation = animations[name] as Array<AnimationFrame>;
@@ -134,35 +139,26 @@ export const clearMobs = () => {
 }
 
 export const updateMobs = () => {
+    const hero = getHero();
+
     for (const mob of mobs) {
         mob.controller.move.x = 0;
         mob.controller.move.y = 0;
         mob.controller.leg = false;
         mob.controller.hand = false;
 
-        // if (isKeyPressed(Key.Left) || isKeyPressed(Key.A)) {
-        //     mob.controller.move.x = -1;
-        // }
+        const direction = Vector2.subtract(hero.position, mob.position);
+        const distance = Vector2.length(direction);
 
-        // if (isKeyPressed(Key.Right) || isKeyPressed(Key.D)) {
-        //     mob.controller.move.x = 1;
-        // }
-
-        // if (isKeyPressed(Key.Up) || isKeyPressed(Key.W)) {
-        //     mob.controller.move.y = -1;
-        // }
-
-        // if (isKeyPressed(Key.Down) || isKeyPressed(Key.S)) {
-        //     mob.controller.move.y = 1;
-        // }
-
-        // if (isKeyPressed(Key.Z)) {
-        //     mob.controller.leg = true;
-        // }
-
-        // if (isKeyPressed(Key.X)) {
-        //     mob.controller.hand = true;
-        // }
+        if (distance > 15) {
+            Vector2.normalize(direction);
+            mob.controller.move.x = direction.x;
+            mob.controller.move.y = direction.y;
+            // console.log(distance, direction);
+        } else {
+            mob.controller.move.x = 0;
+            mob.controller.move.y = 0;
+        }
     }
 }
 

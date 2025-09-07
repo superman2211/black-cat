@@ -103,6 +103,36 @@ export const updateUnits = () => {
     }
 }
 
+export const collideUnits = () => {
+    const minDistance = 5;
+
+    for (let i = 0; i < units.length; i++) {
+        const unit0 = units[i];
+        for (let j = i + 1; j < units.length; j++) {
+            const unit1 = units[j];
+
+            let direction = Vector2.subtract(unit0.position, unit1.position);
+
+            if (direction.x == 0 && direction.y == 0) {
+                direction.x = 1;
+            }
+
+            const distance = Vector2.length(direction);
+
+            if (distance < minDistance) {
+                const scale = (minDistance - distance) / distance;
+                const offset = Vector2.scale(direction, scale);
+
+                unit0.position.x += offset.x;
+                unit0.position.y += offset.y;
+
+                unit1.position.x -= offset.x;
+                unit1.position.y -= offset.y;
+            }
+        }
+    }
+}
+
 const updateUnit = (unit: Unit) => {
     let currentAnimation = null;
 
@@ -111,9 +141,6 @@ const updateUnit = (unit: Unit) => {
 
     switch (unit.state) {
         case UnitState.Stand:
-            unit.position.x = mathRound(unit.position.x);
-            unit.position.y = mathRound(unit.position.y);
-
             currentAnimation = animations.stand;
 
             if (unit.controller.move.x != 0 || unit.controller.move.y != 0) {
@@ -134,12 +161,7 @@ const updateUnit = (unit: Unit) => {
                 unit.animationTime = 0;
             }
 
-            const length = mathHypot(unit.controller.move.x, unit.controller.move.y);
-            if (length > 0) {
-                const scale = 1 / length;
-                unit.controller.move.x *= scale;
-                unit.controller.move.y *= scale;
-            }
+            Vector2.normalize(unit.controller.move);
 
             unit.position.x += unit.controller.move.x * config.walkSpeed * deltaS;
             unit.position.y += unit.controller.move.y * config.walkSpeed * deltaS;
