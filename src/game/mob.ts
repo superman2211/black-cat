@@ -1,10 +1,9 @@
 import { AnimationFrame } from "../engine/animation";
-import { isKeyPressed, Key } from "../engine/input";
 import { addUnit, Unit, UnitConfig } from "../engine/unit";
-import { man0 } from "../resources/id";
+import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9 } from "../resources/id";
 import { addImage, images } from "../resources/images";
 import { cloneObject } from "../utils/browser";
-import { applyPallette, cloneCanvas, filterImage, getPallette } from "../utils/image";
+import { applyPallette, cloneCanvas } from "../utils/image";
 
 export const mobs: Array<Unit> = [];
 
@@ -25,22 +24,39 @@ const config: UnitConfig = {
     offset: { x: 16, y: 31 },
     animations: {
         stand: [
-            { image: man0, time: 0.2 },
+            { image: man0, time: 0.3 },
+            { image: man1, time: 0.3 },
+            { image: man0, time: 0.3 },
+            { image: man2, time: 0.3 },
+            { image: man3, time: 0.3 },
+            { image: man2, time: 0.3 },
         ],
         walkH: [
             { image: man0, time: 0.2 },
+            { image: man4, time: 0.2 },
+            { image: man0, time: 0.2 },
+            { image: man5, time: 0.2 },
         ],
         walkV: [
             { image: man0, time: 0.2 },
+            { image: man9, time: 0.2 },
+            { image: man0, time: 0.2 },
+            { image: man10, time: 0.2 },
         ],
         jab: [
             { image: man0, time: 0.2 },
+            { image: man6, time: 0.2 },
         ],
         cross: [
-            { image: man0, time: 0.2 },
+            { image: man6, time: 0.2 },
+            { image: man7, time: 0.2 },
+            { image: man8, time: 0.2 },
+            { image: man7, time: 0.2 },
         ],
         kick: [
             { image: man0, time: 0.2 },
+            { image: man11, time: 0.2 },
+            { image: man12, time: 0.2 },
         ]
     }
 };
@@ -48,10 +64,10 @@ const config: UnitConfig = {
 const configs: Array<UnitConfig> = [];
 
 export const generateMobsConfigs = () => {
-    const pallette = getPallette(images[man0]);
-    for (const color of pallette) {
-        console.log(`0x${color.toString(16)}`);
-    }
+    // const pallette = getPallette(images[man0]);
+    // for (const color of pallette) {
+    //     console.log(`0x${color.toString(16)}`);
+    // }
 
     configs.push(generateConfig([
         0xff000000, // hair
@@ -100,7 +116,7 @@ const imagesPallete: { [key: string]: number } = {};
 const getPalletteImage = (id: number, sourcePallette: Array<number>, targetPallette: Array<number>, palletteName: string) => {
     const key = `${id}_${palletteName}`;
     if (!imagesPallete[key]) {
-        const target = cloneCanvas(images[man0]);
+        const target = cloneCanvas(images[id]);
         applyPallette(target, sourcePallette, targetPallette);
         imagesPallete[key] = addImage(target);
     }

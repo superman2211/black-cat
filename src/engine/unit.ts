@@ -189,8 +189,13 @@ const updateUnit = (unit: Unit) => {
 
     if (currentAnimation) {
         unit.animationTime += deltaS;
+
         unit.sprite.image = getFrameImage(currentAnimation, unit.animationTime);
         unit.sprite.flipX = unit.direction < 0;
+
+        // if (unit.config.animations.walkH.length == 1) {
+        //     console.log(unit.animationTime, currentAnimation.length, unit.sprite.image);
+        // }
 
         unit.shadow.image = getColoredImage(unit.sprite.image, 0x55000000);
         unit.shadow.flipX = unit.sprite.flipX;
