@@ -8,6 +8,7 @@ import { deltaS, nowMS } from "../utils/time";
 import { getStage } from "./stage";
 import { Sprite } from "./sprite";
 import { drawGradientH, drawGradientV } from "../utils/image";
+import { effects } from "./effect";
 
 export const canvas = document.getElementById('c') as HTMLCanvasElement;
 canvas.style.imageRendering = 'pixelated';
@@ -54,6 +55,10 @@ export const draw = () => {
 
     for (const unit of units) {
         drawSprite(unit.sprite);
+    }
+
+    for (const effect of effects) {
+        drawSprite(effect.sprite);
     }
 
     context.restore();

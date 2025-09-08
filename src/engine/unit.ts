@@ -3,6 +3,7 @@ import { Vector2 } from "../utils/geom";
 import { chance, limit, mathAbs, mathHypot, mathRound, randomChancesSelect, randomRange, randomSelect } from "../utils/math";
 import { deltaS } from "../utils/time";
 import { animationDuration, AnimationFrame, getFrameImage, isAnimationFinished } from "./animation";
+import { addEffect, hitEffect, hitMiniEffect, hitRedEffect } from "./effect";
 import { Sprite } from "./sprite";
 import { getStage } from "./stage";
 
@@ -282,6 +283,16 @@ export const applyUnitsDamage = () => {
 
             opponent.speed.x += current.direction * current.damage / 100 * 300;
             current.speed.x += current.direction * 10;
+
+            if (current.damage >= 20) {
+                addEffect(hitEffect, Vector2.add(opponent.position, { x: 0, y: -16 }));
+            } else {
+                if (chance(0.5)) {
+                    addEffect(hitRedEffect, Vector2.add(opponent.position, { x: 0, y: -16 }));
+                } else {
+                    addEffect(hitMiniEffect, Vector2.add(opponent.position, { x: 0, y: -16 }));
+                }
+            }
 
             if (opponent.health > 0) {
                 opponent.state = UnitState.Damage;
