@@ -44,17 +44,26 @@ const config: UnitConfig = {
             { image: kate7, time: 0.1 },
             { image: kate6, time: 0.1 },
         ],
-        damage: [
+        damage1: [
             { image: kate0, time: 1.0 },
         ],
-        dead: [
+        damage2: [
+            { image: kate0, time: 1.0 },
+        ],
+        knockdown: [
+            { image: kate0, time: 1.0 },
+        ],
+        dead1: [
+            { image: kate0, time: 1.0 },
+        ],
+        dead2: [
             { image: kate0, time: 1.0 },
         ]
     },
     damages: {
-        [kate8]: 20, // jab
-        [kate10]: 30, // cross
-        [kate7]: 50, // kick
+        [kate8]: 10, // jab
+        [kate10]: 20, // cross
+        [kate7]: 30, // kick
     }
 };
 

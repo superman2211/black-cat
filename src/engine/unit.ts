@@ -1,6 +1,6 @@
 import { getColoredImage, images } from "../resources/images";
 import { Vector2 } from "../utils/geom";
-import { chance, limit, mathAbs, mathHypot, mathRound, randomRange } from "../utils/math";
+import { chance, limit, mathAbs, mathHypot, mathRound, randomChancesSelect, randomRange, randomSelect } from "../utils/math";
 import { deltaS } from "../utils/time";
 import { animationDuration, AnimationFrame, getFrameImage, isAnimationFinished } from "./animation";
 import { Sprite } from "./sprite";
@@ -30,7 +30,9 @@ export interface Unit {
     health: number,
     direction: number,
     position: Vector2,
+    speed: Vector2,
     animationTime: number,
+    animation?: Array<AnimationFrame>,
     sprite: Sprite,
     shadow: Sprite,
     frame: number,
@@ -49,8 +51,11 @@ export interface UnitConfig {
         jab: Array<AnimationFrame>,
         cross: Array<AnimationFrame>,
         kick: Array<AnimationFrame>,
-        damage: Array<AnimationFrame>,
-        dead: Array<AnimationFrame>,
+        damage1: Array<AnimationFrame>,
+        damage2: Array<AnimationFrame>,
+        knockdown: Array<AnimationFrame>,
+        dead1: Array<AnimationFrame>,
+        dead2: Array<AnimationFrame>,
     },
     damages: { [key: number]: number },
 }
@@ -71,6 +76,10 @@ export const addUnit = (config: UnitConfig): Unit => {
         health: config.health,
         direction: 1,
         position: {
+            x: 0,
+            y: 0
+        },
+        speed: {
             x: 0,
             y: 0
         },
@@ -187,16 +196,17 @@ const updateUnit = (unit: Unit) => {
             break;
 
         case UnitState.Damage:
-            currentAnimation = animations.damage;
+            currentAnimation = unit.animation || animations.damage1;
 
             if (isAnimationFinished(currentAnimation, unit.animationTime)) {
                 unit.state = UnitState.Stand;
                 unit.animationTime = 0;
+                unit.animation = undefined;
             }
             break;
 
         case UnitState.Dead:
-            currentAnimation = animations.dead;
+            currentAnimation = unit.animation || animations.dead1;
 
             const duration = animationDuration(currentAnimation);
             if (duration <= unit.animationTime + deltaS) {
@@ -205,6 +215,12 @@ const updateUnit = (unit: Unit) => {
             }
             break;
     }
+
+    unit.position.x += unit.speed.x * deltaS;
+    unit.position.y += unit.speed.y * deltaS;
+
+    unit.speed.x *= 0.9;
+    unit.speed.y *= 0.9;
 
     if (unit.controller.move.x > 0) {
         unit.direction = 1;
@@ -251,7 +267,7 @@ export const applyUnitsDamage = () => {
                 const direction = unit.position.x - current.position.x;
                 if (direction * current.direction > 0) {
                     const distance = Vector2.distance(current.position, unit.position);
-                    if (distance < 15) {
+                    if (distance < 30) {
                         if (!opponent || opponentDistance > distance) {
                             opponent = unit;
                             opponentDistance = distance;
@@ -264,14 +280,26 @@ export const applyUnitsDamage = () => {
         if (opponent) {
             opponent.health -= current.damage;
 
-            const targetState = opponent.health > 0 ? UnitState.Damage : UnitState.Dead;
+            opponent.speed.x += current.direction * current.damage / 100 * 300;
+            current.speed.x += current.direction * 10;
 
-            if (opponent.state != targetState) {
-                opponent.state = targetState;
+            if (opponent.health > 0) {
+                opponent.state = UnitState.Damage;
+
+                if (opponent.animation != opponent.config.animations.knockdown) {
+                    opponent.animationTime = 0;
+                }
+
+                opponent.animation = randomSelect([
+                    opponent.config.animations.damage1,
+                    opponent.config.animations.damage2,
+                    opponent.config.animations.knockdown,
+                ]);
+            } else {
+                opponent.state = UnitState.Dead;
+                opponent.animation = randomSelect([opponent.config.animations.dead1, opponent.config.animations.dead2]);
                 opponent.animationTime = 0;
             }
-
-            opponent.position.x += current.direction * 3;
 
             console.log("apply damage", current.damage, "health", opponent.health);
         }
