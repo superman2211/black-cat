@@ -1,11 +1,11 @@
 import { AnimationFrame } from "../engine/animation";
-import { addUnit, Unit, UnitConfig, units } from "../engine/unit";
+import { addUnit, Unit, UnitConfig, units, UnitState } from "../engine/unit";
 import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9, man13, man14, man15, man16, man17 } from "../resources/id";
 import { addImage, images } from "../resources/images";
 import { cloneObject } from "../utils/browser";
 import { Vector2 } from "../utils/geom";
 import { applyPallette, cloneCanvas } from "../utils/image";
-import { randomRange } from "../utils/math";
+import { chance, mathRandom, randomRange } from "../utils/math";
 import { getHero } from "./hero";
 
 export const mobs: Array<Unit> = [];
@@ -186,17 +186,31 @@ const updateMob = (mob: Unit, hero: Unit) => {
     mob.controller.move.y = 0;
     mob.controller.leg = false;
     mob.controller.hand = false;
+    mob.controller.cross = false;
 
-    const direction = Vector2.subtract(hero.position, mob.position);
-    const distance = Vector2.length(direction);
+    const fightDistance = 15;
 
-    if (distance > 15) {
-        Vector2.normalize(direction);
-        mob.controller.move.x = direction.x;
-        mob.controller.move.y = direction.y;
-    } else {
-        mob.controller.move.x = 0;
-        mob.controller.move.y = 0;
+    if (mob.state == UnitState.Stand || mob.state == UnitState.Walk) {
+        const direction = Vector2.subtract(hero.position, mob.position);
+        const distance = Vector2.length(direction);
+
+        if (distance > fightDistance) {
+            Vector2.normalize(direction);
+            mob.controller.move.x = direction.x;
+            mob.controller.move.y = direction.y;
+        } else {
+            mob.controller.move.x = 0;
+            mob.controller.move.y = 0;
+
+            const rnd = mathRandom();
+            if (rnd < 0.5) {
+                mob.controller.hand = true;
+            } else if (rnd < 0.8) {
+                mob.controller.cross = true;
+            } else {
+                mob.controller.leg = true;
+            }
+        }
     }
 }
 

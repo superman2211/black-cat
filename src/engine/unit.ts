@@ -24,6 +24,7 @@ export interface Unit {
     controller: {
         move: Vector2,
         hand: boolean,
+        cross: boolean,
         leg: boolean,
     },
     health: number,
@@ -64,7 +65,8 @@ export const addUnit = (config: UnitConfig): Unit => {
                 y: 0
             },
             hand: false,
-            leg: false
+            leg: false,
+            cross: false
         },
         health: config.health,
         direction: 1,
@@ -303,6 +305,11 @@ const checkAttack = (unit: Unit) => {
 
     if (unit.controller.hand) {
         unit.state = UnitState.Jab;
+        unit.animationTime = 0;
+    }
+
+    if (unit.controller.cross) {
+        unit.state = UnitState.Cross;
         unit.animationTime = 0;
     }
 }
