@@ -19,16 +19,16 @@ export interface EffectConfig {
 
 export const hitEffect: EffectConfig = {
     animation: [
-        { image: hit0, time: 0.2 },
-        { image: hit1, time: 0.2 },
-        { image: hit2, time: 0.2 },
+        { image: hit0, time: 0.1 },
+        { image: hit1, time: 0.1 },
+        { image: hit2, time: 0.1 },
     ],
     offset: { x: 16, y: 16 }
 }
 
 export const hitMiniEffect: EffectConfig = {
     animation: [
-        { image: hitMini0, time: 0.2 },
+        { image: hitMini0, time: 0.1 },
         { image: hitMini1, time: 0.2 },
         { image: hitMini2, time: 0.2 },
     ],
@@ -37,7 +37,7 @@ export const hitMiniEffect: EffectConfig = {
 
 export const hitRedEffect: EffectConfig = {
     animation: [
-        { image: hitRed0, time: 0.2 },
+        { image: hitRed0, time: 0.1 },
         { image: hitRed1, time: 0.2 },
         { image: hitRed2, time: 0.2 },
     ],

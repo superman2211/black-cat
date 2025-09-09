@@ -1,6 +1,6 @@
 import { getColoredImage, images } from "../resources/images";
 import { Vector2 } from "../utils/geom";
-import { chance, limit, mathAbs, mathHypot, mathRound, randomChancesSelect, randomRange, randomSelect } from "../utils/math";
+import { chance, limit, mathAbs, mathHypot, mathRound, numberMax, randomChancesSelect, randomRange, randomSelect } from "../utils/math";
 import { deltaS } from "../utils/time";
 import { animationDuration, AnimationFrame, getFrameImage, isAnimationFinished } from "./animation";
 import { addEffect, hitEffect, hitMiniEffect, hitRedEffect } from "./effect";
@@ -257,7 +257,8 @@ export const applyUnitsDamage = () => {
         }
 
         let opponent: Unit | null = null;
-        let opponentDistance = 99999;
+        let opponentDistanceX = numberMax;
+        let opponentDistanceY = numberMax;
 
         for (const unit of units) {
             if (unit.health <= 0) {
@@ -265,13 +266,15 @@ export const applyUnitsDamage = () => {
             }
 
             if (current.config.mob != unit.config.mob) {
-                const direction = unit.position.x - current.position.x;
-                if (direction * current.direction > 0) {
-                    const distance = Vector2.distance(current.position, unit.position);
-                    if (distance < 30) {
-                        if (!opponent || opponentDistance > distance) {
+                const directionX = unit.position.x - current.position.x;
+                if (directionX * current.direction > 0) {
+                    const distanceX = mathAbs(directionX);
+                    const distanceY = mathAbs(current.position.y - unit.position.y);
+                    if (distanceX < 25 && distanceY < 10) {
+                        if (!opponent || opponentDistanceX > distanceX || opponentDistanceY > distanceY) {
                             opponent = unit;
-                            opponentDistance = distance;
+                            opponentDistanceX = distanceX;
+                            opponentDistanceY = distanceY;
                         }
                     }
                 }
@@ -284,15 +287,19 @@ export const applyUnitsDamage = () => {
             opponent.speed.x += current.direction * current.damage / 100 * 300;
             current.speed.x += current.direction * 10;
 
-            if (current.damage >= 20) {
-                addEffect(hitEffect, Vector2.add(opponent.position, { x: 0, y: -16 }));
-            } else {
-                if (chance(0.5)) {
-                    addEffect(hitRedEffect, Vector2.add(opponent.position, { x: 0, y: -16 }));
+            const effect = (() => {
+                if (current.damage >= 20) {
+                    return hitEffect;
                 } else {
-                    addEffect(hitMiniEffect, Vector2.add(opponent.position, { x: 0, y: -16 }));
+                    if (chance(0.5)) {
+                        return hitRedEffect;
+                    } else {
+                        return hitMiniEffect;
+                    }
                 }
-            }
+            })();
+
+            addEffect(effect, Vector2.add(opponent.position, { x: randomRange(-3, 3), y: randomRange(-14, -18) }));
 
             if (opponent.health > 0) {
                 opponent.state = UnitState.Damage;
@@ -311,8 +318,6 @@ export const applyUnitsDamage = () => {
                 opponent.animation = randomSelect([opponent.config.animations.dead1, opponent.config.animations.dead2]);
                 opponent.animationTime = 0;
             }
-
-            console.log("apply damage", current.damage, "health", opponent.health);
         }
     }
 }

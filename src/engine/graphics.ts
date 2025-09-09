@@ -49,9 +49,12 @@ export const draw = () => {
 
     units.sort((a, b) => a.position.y - b.position.y);
 
+    context.shadowBlur = 2;
+    context.shadowColor = "black";
     for (const unit of units) {
         drawSprite(unit.shadow);
     }
+    context.shadowBlur = 0;
 
     for (const unit of units) {
         drawSprite(unit.sprite);

@@ -11,9 +11,9 @@ export const start = () => {
 
     const stage = getStage();
 
-    const bob = createMob(0);
-    bob.position.x = stage.bounds.x + 100;
-    bob.position.y = stage.bounds.y + stage.bounds.h / 2;
+    // const bob = createMob(0);
+    // bob.position.x = stage.bounds.x + 100;
+    // bob.position.y = stage.bounds.y + stage.bounds.h / 2;
 
     // const jack = createMob(1);
     // jack.position.x = stage.bounds.x + 120;

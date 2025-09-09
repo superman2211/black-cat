@@ -1,4 +1,5 @@
 import { AnimationFrame } from "../engine/animation";
+import { getStage } from "../engine/stage";
 import { addUnit, Unit, UnitConfig, units, UnitState } from "../engine/unit";
 import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9, man13, man14, man15, man16, man17, man18, man19, man20, man21 } from "../resources/id";
 import { addImage, images } from "../resources/images";
@@ -188,12 +189,12 @@ export const updateMobs = () => {
 }
 
 const updateMob = (mob: Unit, hero: Unit) => {
-    if (mob.health <= 0) {
-        return;
-    }
-
     if (units.indexOf(mob) == -1) {
         removeMob(mob);
+    }
+
+    if (mob.health <= 0) {
+        return;
     }
 
     mob.controller.move.x = 0;
@@ -228,43 +229,12 @@ const updateMob = (mob: Unit, hero: Unit) => {
     }
 }
 
-export const collideMobs = () => {
-    const minDistance = 10;
+export const generateMobs = () => {
+    if (mobs.length < 2) {
+        const stage = getStage();
 
-    for (let i = 0; i < mobs.length; i++) {
-        const unit0 = mobs[i];
-
-        if (unit0.health <= 0) {
-            continue;
-        }
-
-        for (let j = i + 1; j < mobs.length; j++) {
-            const unit1 = mobs[j];
-
-            if (unit1.health <= 0) {
-                continue;
-            }
-
-            let direction = Vector2.subtract(unit0.position, unit1.position);
-
-            if (direction.x == 0 && direction.y == 0) {
-                direction.x = 1;
-            }
-
-            const distance = Vector2.length(direction);
-
-            if (distance < minDistance) {
-                const scale = (minDistance - distance) / distance;
-                const offset = Vector2.scale(direction, scale);
-
-                unit0.position.x += offset.x;
-                unit0.position.y += offset.y;
-
-                unit1.position.x -= offset.x;
-                unit1.position.y -= offset.y;
-            }
-        }
+        const bob = chance(0.5) ? createMob(0) : createMob(1);
+        bob.position.x = stage.bounds.x + 100 + randomRange(-40, 40);
+        bob.position.y = stage.bounds.y + stage.bounds.h / 2 + randomRange(-40, 40);
     }
 }
-
-

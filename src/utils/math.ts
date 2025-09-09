@@ -11,6 +11,7 @@ export const mathRandom = math.random;
 export const mathAtan2 = math.atan2;
 export const mathPI = math.PI;
 export const mathPI2 = mathPI * 2;
+export const numberMax = Number.MAX_VALUE;
 
 export const limit = (min: number, max: number, value: number) => mathMin(max, mathMax(min, value));
 export const lerp = (min: number, max: number, value: number) => min + value * (max - min);

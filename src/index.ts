@@ -10,7 +10,7 @@ import background from "./resources/background";
 import { start } from "./game/start";
 import { updateCameraPosition } from "./game/game";
 import { limitCamera } from "./engine/stage";
-import { collideMobs, generateMobsConfigs, updateMobs } from "./game/mob";
+import { generateMobs, generateMobsConfigs, updateMobs } from "./game/mob";
 import { updateEffects } from "./engine/effect";
 
 if (DEBUG) {
@@ -24,11 +24,11 @@ const update = () => {
 
     updateHero();
     updateMobs();
-    collideMobs();
     updateUnits();
     applyUnitsDamage();
     limitUnitsPositions();
     updateEffects();
+    generateMobs();
 
     updateCameraPosition();
     limitCamera();
