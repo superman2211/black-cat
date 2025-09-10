@@ -4,6 +4,7 @@ import { chance, limit, mathAbs, mathHypot, mathRound, numberMax, randomChancesS
 import { deltaS } from "../utils/time";
 import { animationDuration, AnimationFrame, getFrameImage, isAnimationFinished } from "./animation";
 import { addEffect, hitEffect, hitMiniEffect, hitRedEffect } from "./effect";
+import { entities, removeEntity } from "./entity";
 import { Sprite } from "./sprite";
 import { getStage } from "./stage";
 
@@ -96,6 +97,7 @@ export const addUnit = (config: UnitConfig): Unit => {
     };
 
     units.push(unit);
+    entities.push(unit);
 
     return unit;
 }
@@ -105,6 +107,7 @@ export const removeUnit = (unit: Unit) => {
     if (index != -1) {
         units.splice(index, 1);
     }
+    removeEntity(unit);
 }
 
 export const clearUnits = () => {

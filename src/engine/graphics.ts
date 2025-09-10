@@ -9,6 +9,8 @@ import { getStage } from "./stage";
 import { drawSprite, Sprite } from "./sprite";
 import { drawGradientH, drawGradientV } from "../utils/image";
 import { effects } from "./effect";
+import { entities, Entity } from "./entity";
+import { formatColor } from "../utils/pattern";
 
 export const canvas = document.getElementById('c') as HTMLCanvasElement;
 canvas.style.imageRendering = 'pixelated';
@@ -47,8 +49,6 @@ export const draw = () => {
 
     drawSprite(context, stage.back);
 
-    units.sort((a, b) => a.position.y - b.position.y);
-
     context.shadowBlur = 2;
     context.shadowColor = "black";
     for (const unit of units) {
@@ -56,9 +56,21 @@ export const draw = () => {
     }
     context.shadowBlur = 0;
 
-    for (const unit of units) {
-        drawSprite(context, unit.sprite);
+    entities.sort((a, b) => a.position.y == b.position.y ? b.position.x - a.position.x : a.position.y - b.position.y);
+
+    for (const entity of entities) {
+        drawSprite(context, entity.sprite);
     }
+
+    // for (const item of stage.items) {
+    //     context.fillStyle = formatColor(0x55ff0000);
+    //     context.fillRect(
+    //         item.position.x + item.bounds.x,
+    //         item.position.y + item.bounds.y,
+    //         item.bounds.w,
+    //         item.bounds.h,
+    //     );
+    // }
 
     for (const effect of effects) {
         drawSprite(context, effect.sprite);

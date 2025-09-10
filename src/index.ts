@@ -12,6 +12,7 @@ import { updateCameraPosition } from "./game/game";
 import { limitCamera } from "./engine/stage";
 import { generateMobs, generateMobsConfigs, updateMobs } from "./game/mob";
 import { updateEffects } from "./engine/effect";
+import { collisionItems } from "./engine/item";
 
 if (DEBUG) {
     console.warn("debug mode");
@@ -25,10 +26,11 @@ const update = () => {
     updateHero();
     updateMobs();
     updateUnits();
+    collisionItems();
     applyUnitsDamage();
     limitUnitsPositions();
     updateEffects();
-    generateMobs();
+    // generateMobs();
 
     updateCameraPosition();
     limitCamera();

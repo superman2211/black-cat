@@ -1,7 +1,7 @@
+import { Item } from "../../engine/item";
 import { drawSprite, drawSprites } from "../../engine/sprite";
-import { Sprite } from "../../engine/sprite";
 import { Stage } from "../../engine/stage";
-import { barFloor0, barFloor1, barFloor2, barFloor3, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../../resources/id";
+import { barFloor0, barFloor1, barFloor2, barFloor3, barItem0, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../../resources/id";
 import { addImage, images, noise } from "../../resources/images";
 import { createCanvas, drawImage, getContext } from "../../utils/browser"
 import { drawCommands, drawGradientV, generateRandomTileImage, generateTileImage } from "../../utils/image";
@@ -27,6 +27,15 @@ export const getBarStage = (): Stage => {
     const borderX = 10;
     const borderY = 5;
 
+    const items: Array<Item> = [];
+
+    for (let i = 0; i < 10; i++) {
+        addBarCounter(items, 90 + i * 21, 120);
+    }
+
+    addBarCounter(items, 84, 114);
+    addBarCounter(items, 273, 114);
+
     return {
         bounds: {
             x: borderX,
@@ -36,7 +45,19 @@ export const getBarStage = (): Stage => {
         },
         back: { image: back },
         camera: { x: 0, y: 0 },
+        items
     }
+}
+
+const addBarCounter = (items: Array<Item>, x: number, y: number) => {
+    items.push(
+        {
+            sprite: { image: barItem0 },
+            position: { x, y },
+            offset: { x: 16, y: 32 },
+            bounds: { x: -16, y: -10, w: 32, h: 12 }
+        },
+    );
 }
 
 const generateFloorImage = (width: number, height: number): HTMLCanvasElement => {
@@ -84,9 +105,9 @@ const generateWallImage = (width: number, height: number): HTMLCanvasElement => 
         context,
     );
 
-    drawShelf(context, 89, 20);
-    drawShelf(context, 159, 20);
-    drawShelf(context, 229, 20);
+    drawShelf(context, 89, 30);
+    drawShelf(context, 159, 30);
+    drawShelf(context, 229, 30);
 
     const border = 40;
     drawGradientV(context, 0, image.height - border, image.width, border, 0, 0x77000000);

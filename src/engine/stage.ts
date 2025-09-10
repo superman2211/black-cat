@@ -1,19 +1,30 @@
 import { images } from "../resources/images";
 import { Box2, Vector2 } from "../utils/geom";
+import { entities, Entity } from "./entity";
 import { gameHeight, gameWidth } from "./graphics";
+import { Item } from "./item";
 import { Sprite } from "./sprite";
 
 export interface Stage {
     bounds: Box2,
     back: Sprite,
     camera: Vector2,
+    items: Array<Item>,
 }
 
 let stage: Stage | undefined;
 
 export const getStage = () => stage!;
 
-export const setStage = (value: Stage) => stage = value;
+export const setStage = (value: Stage) => {
+    stage = value;
+
+    for (const item of stage.items) {
+        item.sprite.x = item.position.x - item.offset.x;
+        item.sprite.y = item.position.y - item.offset.y;
+        entities.push(item);
+    }
+}
 
 export const limitCamera = () => {
     const stage = getStage();
