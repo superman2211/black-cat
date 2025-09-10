@@ -1,6 +1,8 @@
+import { drawSprite, drawSprites } from "../../engine/sprite";
+import { Sprite } from "../../engine/sprite";
 import { Stage } from "../../engine/stage";
-import { barFloor0, barFloor1, barFloor2, barFloor3, barWall0, barWall1, barWall2, barWall3, barWall4, barWall5 } from "../../resources/id";
-import { addImage, images } from "../../resources/images";
+import { barFloor0, barFloor1, barFloor2, barFloor3, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../../resources/id";
+import { addImage, images, noise } from "../../resources/images";
 import { createCanvas, drawImage, getContext } from "../../utils/browser"
 import { drawCommands, drawGradientV, generateRandomTileImage, generateTileImage } from "../../utils/image";
 import { mathRandom, randomChancesSelect, randomSelect } from "../../utils/math";
@@ -61,7 +63,7 @@ const generateWallImage = (width: number, height: number): HTMLCanvasElement => 
     const columns = [barWall1, barWall2, barWall3];
     const columnsChances = [2, 1, 1];
 
-    const columnStep = 50;
+    const columnStep = 70;
 
     for (let x = 0; x < width; x += columnStep) {
         for (let y = 0; y < width; y += 16) {
@@ -80,7 +82,11 @@ const generateWallImage = (width: number, height: number): HTMLCanvasElement => 
             barWall5, columnStep * 5 - 30, 0
         ],
         context,
-    )
+    );
+
+    drawShelf(context, 89, 20);
+    drawShelf(context, 159, 20);
+    drawShelf(context, 229, 20);
 
     const border = 40;
     drawGradientV(context, 0, image.height - border, image.width, border, 0, 0x77000000);
@@ -90,20 +96,38 @@ const generateWallImage = (width: number, height: number): HTMLCanvasElement => 
     return image;
 }
 
-export const noise = (offset: number, canvas: HTMLCanvasElement) => {
-    const context = getContext(canvas);
-    const offset2 = offset / 2;
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    let i = 0;
-    while (i < data.length) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-        data[i] = r - offset2 + offset * mathRandom();
-        data[i + 1] = g - offset2 + offset * mathRandom();
-        data[i + 2] = b - offset2 + offset * mathRandom();
-        i += 4;
+const drawBottles = (context: CanvasRenderingContext2D, bottles: Array<number>, x: number, y: number) => {
+    for (let i = 0; i < 6; i++) {
+        const image = randomSelect(bottles);
+        drawSprite(context, { image, x: i * 7 + x, y });
     }
-    context.putImageData(imageData, 0, 0);
 }
+
+function drawShelf(context: CanvasRenderingContext2D, x: number, y: number) {
+    context.setTransform(1, 0, 0, 1, x, y);
+
+    drawSprites(context, [
+        { image: barWall6 },
+        { image: barWall7, y: 16 },
+        { image: barWall6, y: 32, flipY: true },
+        { image: barWall8, x: 16 },
+        { image: barWall6, x: 32, flipX: true },
+        { image: barWall7, x: 32, y: 16, flipX: true },
+        { image: barWall6, x: 32, y: 32, flipY: true, flipX: true },
+        { image: barWall9, x: 16, y: 16 },
+        { image: barWall8, x: 16, y: 32, flipY: true },
+        { image: barWall10, x: 3, y: 15 },
+        { image: barWall10, x: 16, y: 15 },
+        { image: barWall10, x: 29, y: 15 },
+        { image: barWall10, x: 3, y: 30 },
+        { image: barWall10, x: 16, y: 30 },
+        { image: barWall10, x: 29, y: 30 },
+    ]);
+
+    drawBottles(context, [bottle0, bottle1, bottle2], -1, -1);
+    drawBottles(context, [bottle2, bottle3, bottle1], -1, 14);
+    drawBottles(context, [bottle4], -1, 28);
+
+    context.resetTransform();
+}
+

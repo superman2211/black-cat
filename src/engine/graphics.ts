@@ -6,7 +6,7 @@ import { drawImage, getContext, now } from "../utils/browser";
 import { mathFloor, mathMax, mathMin, mathRound } from "../utils/math";
 import { deltaS, nowMS } from "../utils/time";
 import { getStage } from "./stage";
-import { Sprite } from "./sprite";
+import { drawSprite, Sprite } from "./sprite";
 import { drawGradientH, drawGradientV } from "../utils/image";
 import { effects } from "./effect";
 
@@ -45,23 +45,23 @@ export const draw = () => {
     context.save();
     context.translate(mathRound(-stage.camera.x), mathRound(-stage.camera.y));
 
-    drawSprite(stage.back);
+    drawSprite(context, stage.back);
 
     units.sort((a, b) => a.position.y - b.position.y);
 
     context.shadowBlur = 2;
     context.shadowColor = "black";
     for (const unit of units) {
-        drawSprite(unit.shadow);
+        drawSprite(context, unit.shadow);
     }
     context.shadowBlur = 0;
 
     for (const unit of units) {
-        drawSprite(unit.sprite);
+        drawSprite(context, unit.sprite);
     }
 
     for (const effect of effects) {
-        drawSprite(effect.sprite);
+        drawSprite(context, effect.sprite);
     }
 
     context.restore();
@@ -82,33 +82,6 @@ export const draw = () => {
     //     'BLACK KATE',
     //     0xffffff
     // );
-}
-
-const drawSprite = (
-    sprite: Sprite
-) => {
-    context.save();
-
-    const image = images[sprite.image];
-
-    let a = 1;
-    let b = 0;
-    let c = 0;
-    let d = sprite.scaleY || 1;
-
-    let tx = mathRound(sprite.x || 0);
-    let ty = mathRound(sprite.y || 0);
-
-    if (sprite.flipX) {
-        a = -1;
-        tx += image.width;
-    }
-
-    context.transform(a, b, c, d, tx, ty);
-
-    drawImage(context, image, 0, 0);
-
-    context.restore();
 }
 
 const drawFPS = () => {
