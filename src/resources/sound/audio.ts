@@ -5,7 +5,7 @@ import { zzfxX as audioContext, zzfx, zzfxM, zzfxP, zzfxX } from "./zzfx";
 export const musicGainNode = audioContext.createGain();
 export const effectGainNode = audioContext.createGain();
 
-musicGainNode.gain.value = 0.2;
+musicGainNode.gain.value = 0.3;
 effectGainNode.gain.value = 0.6;
 
 const effextHit = [, , 418, .01, .01, .03, 4, 2.1, -1, , , , , .2, , .2, , .67, .03, , 107];
@@ -26,7 +26,6 @@ const playMusic = async () => {
   node.loop = true;
   node.start();
 
-  musicGainNode.gain.value = 0.5;
   musicGainNode.connect(zzfxX.destination);
 
   zzfxX.resume();
