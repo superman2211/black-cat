@@ -1,6 +1,6 @@
 import { images } from "../resources/images";
 import { createCanvas, drawImage, getContext } from "./browser";
-import { mathCeil, randomChancesSelect, randomSelect } from "./math";
+import { mathCeil, mathRandom, randomChancesSelect, randomSelect } from "./math";
 import { createGradient } from "./pattern";
 
 export const generateRandomTileImage = (width: number, height: number, ids: Array<number>, chances: Array<number>): HTMLCanvasElement => {
@@ -148,4 +148,22 @@ export const colorToPixel = (color: number, pixel: Uint8ClampedArray) => {
     pixel[1] = g;
     pixel[2] = b;
     pixel[3] = a;
+}
+
+export const noise = (offset: number, canvas: HTMLCanvasElement) => {
+    const context = getContext(canvas);
+    const offset2 = offset / 2;
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    let i = 0;
+    while (i < data.length) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        data[i] = r - offset2 + offset * mathRandom();
+        data[i + 1] = g - offset2 + offset * mathRandom();
+        data[i + 2] = b - offset2 + offset * mathRandom();
+        i += 4;
+    }
+    context.putImageData(imageData, 0, 0);
 }

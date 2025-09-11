@@ -1,11 +1,11 @@
-import { Item } from "../../engine/item";
-import { drawSprite, drawSprites } from "../../engine/sprite";
-import { Stage } from "../../engine/stage";
-import { barBigItems0, barFloor0, barFloor1, barFloor2, barFloor3, barItem0, barItem1, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../../resources/id";
-import { addImage, getColoredImage, images, noise } from "../../resources/images";
-import { createCanvas, drawImage, getContext } from "../../utils/browser"
-import { drawCommands, drawGradientV, generateRandomTileImage, generateTileImage } from "../../utils/image";
-import { mathRandom, randomChancesSelect, randomSelect } from "../../utils/math";
+import { Item } from "../engine/item";
+import { drawSprite, drawSprites } from "../engine/sprite";
+import { Stage } from "../engine/stage";
+import { barBigItems0, barFloor0, barFloor1, barFloor2, barFloor3, barItem0, barItem1, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../resources/id";
+import { addImage, addNoiseToImage, getColoredImage, images } from "../resources/images";
+import { createCanvas, drawImage, getContext } from "../utils/browser"
+import { drawCommands, drawGradientV, generateRandomTileImage, generateTileImage, noise } from "../utils/image";
+import { randomChancesSelect, randomSelect } from "../utils/math";
 
 export const getBarStage = (): Stage => {
     const floorWidth = 400;
@@ -27,6 +27,8 @@ export const getBarStage = (): Stage => {
     const borderX = 10;
     const borderY = 5;
 
+    addNoiseToImage(barItem0);
+
     const items: Array<Item> = [];
 
     for (let i = 0; i < 10; i++) {
@@ -36,9 +38,13 @@ export const getBarStage = (): Stage => {
     addBarCounter(items, 84, 114);
     addBarCounter(items, 273, 114);
 
+    addNoiseToImage(barItem1);
+
     for (let i = 0; i < 10; i++) {
         addBarStool(items, 100 + i * 20, 130);
     }
+
+    addNoiseToImage(barBigItems0);
 
     for (let i = 0; i < 6; i++) {
         addTableArmchair(items, 80 + i * 45, 240);
