@@ -1,4 +1,5 @@
 import { getColoredImage, images } from "../resources/images";
+import { playHit, playKick } from "../resources/sound/audio";
 import { Vector2 } from "../utils/geom";
 import { chance, limit, mathAbs, mathHypot, mathRound, numberMax, randomChancesSelect, randomRange, randomSelect } from "../utils/math";
 import { deltaS } from "../utils/time";
@@ -292,8 +293,10 @@ export const applyUnitsDamage = () => {
 
             const effect = (() => {
                 if (current.damage >= 20) {
+                    playKick();
                     return hitEffect;
                 } else {
+                    playHit();
                     if (chance(0.5)) {
                         return hitRedEffect;
                     } else {
@@ -303,6 +306,8 @@ export const applyUnitsDamage = () => {
             })();
 
             addEffect(effect, Vector2.add(opponent.position, { x: randomRange(-3, 3), y: randomRange(-14, -18) }));
+
+            
 
             if (opponent.health > 0) {
                 opponent.state = UnitState.Damage;

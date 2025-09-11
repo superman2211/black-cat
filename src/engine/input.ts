@@ -7,6 +7,7 @@ export let anyKey = false;
 
 export const initInput = () => {
     domDocument.onkeydown = (e) => {
+        // console.log(e.keyCode);
         unlockAudio();
         anyKey = true;
         keys[e.keyCode] = true;
@@ -39,6 +40,10 @@ export const enum Key {
     S = 83,
     Z = 90,
     X = 88,
+    U = 85,
+    I = 73,
+    J = 74,
+    K = 75,
     Enter = 13,
     Space = 32,
 }

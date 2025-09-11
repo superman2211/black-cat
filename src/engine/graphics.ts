@@ -11,6 +11,7 @@ import { drawGradientH, drawGradientV } from "../utils/image";
 import { effects } from "./effect";
 import { entities, Entity } from "./entity";
 import { formatColor } from "../utils/pattern";
+import { effectGainNode, musicGainNode } from "../resources/sound/audio";
 
 export const canvas = document.getElementById('c') as HTMLCanvasElement;
 canvas.style.imageRendering = 'pixelated';
@@ -92,7 +93,7 @@ export const draw = () => {
         context.fillRect(gameWidth, 0, gameWidth, gameHeight);
     }
 
-    drawFPS();
+    drawDebug();
 
     // drawText(
     //     65, 0,
@@ -101,16 +102,36 @@ export const draw = () => {
     // );
 }
 
-const drawFPS = () => {
+const drawDebug = () => {
     if (DEBUG) {
+        context.shadowBlur = 3;
+        context.shadowColor = "black";
+
         const frameTime = (now() - nowMS).toFixed();
         const fps = (1 / deltaS).toFixed();
 
         drawText(
             3, 3,
             `FPS ${fps} TIME ${frameTime}`,
-            0x99ffffff
+            0xffffffff
         );
+
+        const musicVolume = mathRound(musicGainNode.gain.value * 100);
+        const effectVolume = mathRound(effectGainNode.gain.value * 100);
+
+        drawText(
+            3, 3 + 16,
+            `MUSIC ${musicVolume}`,
+            0xff00ffff
+        );
+
+        drawText(
+            3, 3 + 32,
+            `EFFECT ${musicVolume}`,
+            0xffff00ff
+        );
+
+        context.shadowBlur = 0;
     }
 }
 

@@ -6,13 +6,14 @@ import { draw, updateSize } from "./engine/graphics";
 import { loadResources } from "./resources/loader";
 import { playMusic } from "./resources/sound/audio";
 import { calculateTime } from "./utils/time";
-import background from "./resources/background";
+import background from "./resources/sound/background";
 import { start } from "./game/start";
 import { updateCameraPosition } from "./game/game";
 import { limitCamera } from "./engine/stage";
 import { generateMobs, generateMobsConfigs, updateMobs } from "./game/mob";
 import { updateEffects } from "./engine/effect";
 import { collisionItems } from "./engine/item";
+import { controlAudio } from "./resources/sound/control";
 
 if (DEBUG) {
     console.warn("debug mode");
@@ -23,6 +24,7 @@ const update = () => {
     calculateTime();
     updateSize();
 
+    generateMobs();
     updateHero();
     updateMobs();
     updateUnits();
@@ -30,7 +32,6 @@ const update = () => {
     applyUnitsDamage();
     limitUnitsPositions();
     updateEffects();
-    // generateMobs();
 
     updateCameraPosition();
     limitCamera();
@@ -38,12 +39,14 @@ const update = () => {
 
     draw();
 
+    controlAudio();
+
     requestAnimationFrame(update);
 };
 
 async function main() {
     await loadResources();
-    playMusic(background);
+    playMusic();
     initInput();
     generateMobsConfigs();
     start();
