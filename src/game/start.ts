@@ -25,5 +25,5 @@ export const start = () => {
 
     const hero = getHero();
     hero.position.x = stage.bounds.x + 250;
-    hero.position.y = stage.bounds.y + 30;//stage.bounds.h / 2;
+    hero.position.y = stage.bounds.y + stage.bounds.h / 2;
 }

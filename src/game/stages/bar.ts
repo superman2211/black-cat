@@ -1,7 +1,7 @@
 import { Item } from "../../engine/item";
 import { drawSprite, drawSprites } from "../../engine/sprite";
 import { Stage } from "../../engine/stage";
-import { barFloor0, barFloor1, barFloor2, barFloor3, barItem0, barItem1, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../../resources/id";
+import { barBigItems0, barFloor0, barFloor1, barFloor2, barFloor3, barItem0, barItem1, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../../resources/id";
 import { addImage, getColoredImage, images, noise } from "../../resources/images";
 import { createCanvas, drawImage, getContext } from "../../utils/browser"
 import { drawCommands, drawGradientV, generateRandomTileImage, generateTileImage } from "../../utils/image";
@@ -40,6 +40,10 @@ export const getBarStage = (): Stage => {
         addBarStool(items, 100 + i * 20, 130);
     }
 
+    for (let i = 0; i < 6; i++) {
+        addTableArmchair(items, 80 + i * 45, 240);
+    }
+
     return {
         bounds: {
             x: borderX,
@@ -72,6 +76,17 @@ const addBarStool = (items: Array<Item>, x: number, y: number) => {
             offset: { x: 16, y: 32 },
             bounds: { x: -6, y: -7, w: 12, h: 10 },
             shadow: { image: getColoredImage(barItem1, 0x55000000), scaleY: 0.4 }
+        },
+    );
+}
+
+const addTableArmchair = (items: Array<Item>, x: number, y: number) => {
+    items.push(
+        {
+            sprite: { image: barBigItems0 },
+            position: { x, y },
+            offset: { x: 32, y: 64 },
+            bounds: { x: -34, y: -22, w: 68, h: 25 },
         },
     );
 }
