@@ -1,12 +1,14 @@
 import { Box2, Vector2 } from "../utils/geom";
 import { mathMin } from "../utils/math";
 import { Entity } from "./entity";
+import { Sprite } from "./sprite";
 import { getStage } from "./stage";
 import { units } from "./unit";
 
 export interface Item extends Entity {
     offset: Vector2,
     bounds: Box2,
+    shadow?: Sprite,
 }
 
 export const collisionItems = () => {

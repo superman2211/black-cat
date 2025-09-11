@@ -22,6 +22,12 @@ export const setStage = (value: Stage) => {
     for (const item of stage.items) {
         item.sprite.x = item.position.x - item.offset.x;
         item.sprite.y = item.position.y - item.offset.y;
+
+        if (item.shadow) {
+            item.shadow.x = item.position.x - item.offset.x;
+            item.shadow.y = item.position.y - item.offset.y * item.shadow.scaleY!;
+        }
+
         entities.push(item);
     }
 }

@@ -1,8 +1,8 @@
 import { Item } from "../../engine/item";
 import { drawSprite, drawSprites } from "../../engine/sprite";
 import { Stage } from "../../engine/stage";
-import { barFloor0, barFloor1, barFloor2, barFloor3, barItem0, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../../resources/id";
-import { addImage, images, noise } from "../../resources/images";
+import { barFloor0, barFloor1, barFloor2, barFloor3, barItem0, barItem1, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../../resources/id";
+import { addImage, getColoredImage, images, noise } from "../../resources/images";
 import { createCanvas, drawImage, getContext } from "../../utils/browser"
 import { drawCommands, drawGradientV, generateRandomTileImage, generateTileImage } from "../../utils/image";
 import { mathRandom, randomChancesSelect, randomSelect } from "../../utils/math";
@@ -36,6 +36,10 @@ export const getBarStage = (): Stage => {
     addBarCounter(items, 84, 114);
     addBarCounter(items, 273, 114);
 
+    for (let i = 0; i < 10; i++) {
+        addBarStool(items, 100 + i * 20, 130);
+    }
+
     return {
         bounds: {
             x: borderX,
@@ -56,6 +60,18 @@ const addBarCounter = (items: Array<Item>, x: number, y: number) => {
             position: { x, y },
             offset: { x: 16, y: 32 },
             bounds: { x: -16, y: -10, w: 32, h: 12 }
+        },
+    );
+}
+
+const addBarStool = (items: Array<Item>, x: number, y: number) => {
+    items.push(
+        {
+            sprite: { image: barItem1 },
+            position: { x, y },
+            offset: { x: 16, y: 32 },
+            bounds: { x: -6, y: -7, w: 12, h: 10 },
+            shadow: { image: getColoredImage(barItem1, 0x55000000), scaleY: 0.4 }
         },
     );
 }

@@ -54,6 +54,11 @@ export const draw = () => {
     for (const unit of units) {
         drawSprite(context, unit.shadow);
     }
+    for (const item of stage.items) {
+        if (item.shadow) {
+            drawSprite(context, item.shadow);
+        }
+    }
     context.shadowBlur = 0;
 
     entities.sort((a, b) => a.position.y == b.position.y ? b.position.x - a.position.x : a.position.y - b.position.y);

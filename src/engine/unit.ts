@@ -337,7 +337,7 @@ const updateUnitSpritePosition = (unit: Unit) => {
     unit.sprite.x = unit.position.x - config.offset.x;
     unit.sprite.y = unit.position.y - config.offset.y;
 
-    const image = images[unit.shadow.image];
+    // const image = images[unit.shadow.image];
 
     unit.shadow.scaleY = 0.4;
     unit.shadow.x = unit.position.x - config.offset.x + 0;
