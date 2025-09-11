@@ -127,7 +127,7 @@ const drawDebug = () => {
 
         drawText(
             3, 3 + 32,
-            `EFFECT ${musicVolume}`,
+            `EFFECT ${effectVolume}`,
             0xffff00ff
         );
 
