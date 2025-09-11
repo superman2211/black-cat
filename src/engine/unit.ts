@@ -59,6 +59,7 @@ export interface UnitConfig {
         knockdown: Array<AnimationFrame>,
         dead1: Array<AnimationFrame>,
         dead2: Array<AnimationFrame>,
+        sit: Array<AnimationFrame>,
     },
     damages: { [key: number]: number },
 }
@@ -307,7 +308,7 @@ export const applyUnitsDamage = () => {
 
             addEffect(effect, Vector2.add(opponent.position, { x: randomRange(-3, 3), y: randomRange(-14, -18) }));
 
-            
+
 
             if (opponent.health > 0) {
                 opponent.state = UnitState.Damage;

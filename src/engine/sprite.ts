@@ -12,6 +12,8 @@ export interface Sprite {
 }
 
 export const drawSprite = (context: CanvasRenderingContext2D, sprite: Sprite) => {
+    if (sprite.image == -1) return;
+
     context.save();
 
     const image = images[sprite.image];

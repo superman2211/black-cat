@@ -58,7 +58,8 @@ const config: UnitConfig = {
         ],
         dead2: [
             { image: kate0, time: 1.0 },
-        ]
+        ],
+        sit: []
     },
     damages: {
         [kate8]: 10, // jab

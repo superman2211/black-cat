@@ -5,7 +5,8 @@ import { barBigItems0, barFloor0, barFloor1, barFloor2, barFloor3, barItem0, bar
 import { addImage, addNoiseToImage, getColoredImage, images } from "../resources/images";
 import { createCanvas, drawImage, getContext } from "../utils/browser"
 import { drawCommands, drawGradientV, generateRandomTileImage, generateTileImage, noise } from "../utils/image";
-import { randomChancesSelect, randomSelect } from "../utils/math";
+import { chance, mathRound, randomChancesSelect, randomRange, randomSelect } from "../utils/math";
+import { randomMobConfig } from "./mob";
 
 export const getBarStage = (): Stage => {
     const floorWidth = 400;
@@ -95,6 +96,21 @@ const addTableArmchair = (items: Array<Item>, x: number, y: number) => {
             bounds: { x: -34, y: -22, w: 68, h: 25 },
         },
     );
+
+    if (chance(0.9)) {
+        const config = randomMobConfig();
+        const offset = mathRound(randomRange(0, 2));
+        items.push(
+            {
+                sprite: { image: config.animations.sit[0].image },
+                position: { x: x + offset, y: y + offset },
+                offset: { x: 12, y: 50 },
+                bounds: { x: 0, y: 0, w: 10, h: 10 },
+            },
+        );
+    }
+
+
 }
 
 const generateFloorImage = (width: number, height: number): HTMLCanvasElement => {

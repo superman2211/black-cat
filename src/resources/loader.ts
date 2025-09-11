@@ -1,5 +1,5 @@
-import { createContext, getCanvas, setHeight, setWidth } from "../utils/browser";
-import { images } from "./images";
+import { createCanvas, createContext, getCanvas, setHeight, setWidth } from "../utils/browser";
+import { addImage, images } from "./images";
 import { soundsBuffers } from "./sounds";
 
 export async function loadResources() {

@@ -107,4 +107,5 @@ export const man18 = 105;
 export const man19 = 106;
 export const man20 = 107;
 export const man21 = 108;
+export const man22 = 109;
 export const sound_fail = 0;
