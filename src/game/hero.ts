@@ -1,19 +1,6 @@
 import { isKeyPressed, Key } from "../engine/input";
 import { addUnit, Unit, UnitConfig, UnitState } from "../engine/unit";
 import { kate0, kate1, kate10, kate11, kate12, kate13, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
-import { Vector2 } from "../utils/geom";
-
-export interface HeroSlot {
-    position: Vector2,
-    mob?: Unit
-}
-
-export const heroSlots: Array<HeroSlot> = [
-    { position: { x: -14, y: -2 } },
-    { position: { x: 14, y: -2 } },
-    { position: { x: 18, y: 4 } },
-    { position: { x: -18, y: 4 } },
-];
 
 const config: UnitConfig = {
     mob: false,
@@ -98,18 +85,6 @@ export const updateHero = () => {
 
     if (hero.health <= 0) {
         return;
-    }
-
-    for (const slot of heroSlots) {
-        if (slot.mob) {
-            switch (slot.mob.state) {
-                case UnitState.Dead:
-                case UnitState.Damage:
-                    delete slot.mob;
-                    break;
-            }
-
-        }
     }
 
     hero.controller.move.x = 0;
