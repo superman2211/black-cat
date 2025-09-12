@@ -24,7 +24,7 @@ export interface MobData {
     reaction_: { min_: number, max_: number },
     reactionTimeout_: number,
     reactionTime_: number,
-    brainActive_: boolean,
+    attackActive_: boolean,
 };
 
 export const mobs: Array<Unit> = [];
@@ -272,7 +272,7 @@ export const createMob = (config: UnitConfig): Unit => {
         },
         reactionTimeout_: 0,
         reactionTime_: 0,
-        brainActive_: false,
+        attackActive_: false,
     };
     mob.custom_ = mobData;
     mobs.push(mob);
@@ -301,7 +301,7 @@ export const updateMobs = () => {
     const hero = getHero();
 
     for (const mob of mobs) {
-        if (!units.includes(mob)) {
+        if (mob.health_ <= 0 || !units.includes(mob)) {
             removeMob(mob);
             removeAttacker(mob);
             continue;
@@ -313,17 +313,13 @@ export const updateMobs = () => {
 
         const mobData = mob.custom_ as MobData;
 
-        mobData.brainActive_ = false;
-
-        mobData.reactionTime_ += deltaS;
-        if (mobData.reactionTime_ > mobData.reactionTimeout_) {
-            mobData.reactionTime_ = 0;
-            mobData.reactionTimeout_ = randomRange(mobData.reaction_.min_, mobData.reaction_.max_);
-            mobData.brainActive_ = true;
-        }
-
-        if (mob.state_ != UnitState.Stand && mob.state_ != UnitState.Walk) {
-            mobData.reactionTime_ = 0;
+        if (!mobData.attackActive_) {
+            mobData.reactionTime_ += deltaS;
+            if (mobData.reactionTime_ > mobData.reactionTimeout_) {
+                mobData.reactionTime_ = 0;
+                mobData.reactionTimeout_ = randomRange(mobData.reaction_.min_, mobData.reaction_.max_);
+                mobData.attackActive_ = true;
+            }
         }
     }
 
@@ -345,7 +341,9 @@ export const updateMobs = () => {
         const nearHero = onFightDistance(mob, hero);
         if (nearHero) {
             const mobData = mob.custom_ as MobData;
-            if (mobData.brainActive_) {
+            if (mobData.attackActive_) {
+                mobData.attackActive_ = false;
+
                 const direction = Vector2.subtract_(hero.position_, mob.position_);
                 mob.direction_ = limit(-1, 1, direction.x);
                 mob.controller_.attack_ = true;
@@ -404,8 +402,12 @@ const mobsCollision = () => {
     }
 }
 
+let attackersMax = 1;
+
+export const setAttackers = (count: number) => attackersMax = count;
+
 export const updateAttackersList = (hero: Unit) => {
-    while (attackers.length < 2) {
+    while (attackers.length < attackersMax) {
         let nearDistance = numberMax;
         let nearMob: Unit | undefined;
 
@@ -428,7 +430,7 @@ export const updateAttackersList = (hero: Unit) => {
         }
     }
 
-    while (attackers.length > 4) {
+    while (attackers.length > attackersMax) {
         let furtherUnit: Unit | undefined;
         let furtherDistance = 0;
         for (const attacker of attackers) {
@@ -443,6 +445,8 @@ export const updateAttackersList = (hero: Unit) => {
             removeAttacker(furtherUnit);
         }
     }
+
+    console.log("attackers", attackers.length);
 }
 
 const onFightDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero, fightDistanceX, fightDistanceY);

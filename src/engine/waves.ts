@@ -1,5 +1,5 @@
 import { getHero } from "../game/hero";
-import { createMob, MobData, mobs, mobsConfigs } from "../game/mob";
+import { createMob, MobData, mobs, mobsConfigs, setAttackers } from "../game/mob";
 import { Box2 } from "../utils/geom";
 import { lerp, mathMax, mathMin, mathRound, numberMax, randomRange, randomSelect } from "../utils/math";
 import { gameWidth } from "./graphics";
@@ -16,42 +16,18 @@ export interface WaveMob {
     },
 }
 
-let waves: Array<Array<WaveMob>> = [];
+export interface Wave {
+    mobs_: Array<WaveMob>,
+    attackers_: number,
+}
+
+let waves: Array<Wave> = [];
 
 export const initWaves = () => {
-    // waves = [
-    //     [
-    //         {
-    //             reaction_: { min_: 1, max_: 2 },
-    //             count_: 2,
-    //             config_: -1
-    //         }
-    //     ],
-    //     [
-    //         {
-    //             reaction_: { min_: 0.5, max_: 1 },
-    //             count_: 4,
-    //             config_: -1
-    //         }
-    //     ],
-    //     [
-    //         {
-    //             reaction_: { min_: 0.3, max_: 0.7 },
-    //             count_: 3,
-    //             config_: 1 // bodyguard
-    //         },
-    //         {
-    //             reaction_: { min_: 0.1, max_: 0.3 },
-    //             count_: 1,
-    //             config_: 0 // boss
-    //         }
-    //     ],
-    // ];
-
     waves = [];
 
-    const reactionStart = 1;
-    const reactionEnd = 0.1;
+    const reactionStart = 2;
+    const reactionEnd = 0.5;
 
     const countStart = 3;
     const countEnd = 10;
@@ -62,46 +38,56 @@ export const initWaves = () => {
     const walkSpeedStart = 30;
     const walkSpeedEnd = 40;
 
+    const attackersStart = 1;
+    const attackersEnd = 5;
+
     const wavesCount = 12;
 
     for (let i = 0; i < wavesCount; i++) {
         const value = i / (wavesCount - 1);
 
         const reaction = lerp(reactionStart, reactionEnd, value);
-        const count = mathRound(lerp(countStart, countEnd, value) + randomRange(0, 1));
+        const count = mathRound(lerp(countStart, countEnd, value));
         const health = lerp(healthStart, healthEnd, value);
         const walkSpeed = lerp(walkSpeedStart, walkSpeedEnd, value);
+        const attackers = mathRound(lerp(attackersStart, attackersEnd, value));
 
         waves.push(
-            [
-                {
-                    reaction_: { min_: reaction, max_: reaction * 1.2 },
-                    count_: count,
-                    config_: -1,
-                    health_: health,
-                    walkSpeed_: walkSpeed,
-                }
-            ],
+            {
+                attackers_: attackers,
+                mobs_: [
+                    {
+                        reaction_: { min_: reaction, max_: reaction * 1.2 },
+                        count_: count,
+                        config_: -1,
+                        health_: health,
+                        walkSpeed_: walkSpeed,
+                    }
+                ],
+            }
         )
     }
 
     waves.push(
-        [
-            {
-                reaction_: { min_: 0.1, max_: 0.2 },
-                count_: 3,
-                config_: 1, // bodyguard
-                health_: healthEnd,
-                walkSpeed_: walkSpeedEnd,
-            },
-            {
-                reaction_: { min_: 0.05, max_: 0.1 },
-                count_: 1,
-                config_: 0, // boss
-                health_: 1000,
-                walkSpeed_: walkSpeedEnd,
-            }
-        ],
+        {
+            attackers_: attackersEnd,
+            mobs_: [
+                {
+                    reaction_: { min_: 0.1, max_: 0.2 },
+                    count_: 3,
+                    config_: 1, // bodyguard
+                    health_: healthEnd,
+                    walkSpeed_: walkSpeedEnd,
+                },
+                {
+                    reaction_: { min_: 0.05, max_: 0.1 },
+                    count_: 1,
+                    config_: 0, // boss
+                    health_: 1000,
+                    walkSpeed_: walkSpeedEnd,
+                }
+            ],
+        }
     )
 }
 
@@ -141,8 +127,6 @@ export const getZones = (): Array<Box2> => {
         zones.push(right);
     }
 
-    console.log(zones.length);
-
     return zones;
 };
 
@@ -161,7 +145,9 @@ export const generateMobs = () => {
 
             const wave = waves.shift()!;
 
-            for (const waveMob of wave) {
+            setAttackers(wave.attackers_);
+
+            for (const waveMob of wave.mobs_) {
                 for (let i = 0; i < waveMob.count_; i++) {
                     const config = waveMob.config_ == -1 ? randomSelect(usualMobsConfigs) : mobsConfigs[waveMob.config_];
                     config.health_ = waveMob.health_;
