@@ -20,6 +20,8 @@ const safeDistanceY = 20;
 
 const attackers: Array<Unit> = [];
 
+let resetAttackersTimer = 0;
+
 export interface MobData {
     reaction_: { min_: number, max_: number },
     reactionTimeout_: number,
@@ -298,6 +300,13 @@ export const removeAttacker = (mob: Unit) => {
 }
 
 export const updateMobs = () => {
+    resetAttackersTimer -= deltaS;
+    if (resetAttackersTimer < 0) {
+        resetAttackersTimer = randomRange(3, 5);
+        attackers.splice(0, attackers.length);
+        console.log("reset attackers");
+    }
+
     const hero = getHero();
 
     for (const mob of mobs) {
