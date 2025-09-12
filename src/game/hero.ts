@@ -1,6 +1,19 @@
 import { isKeyPressed, Key } from "../engine/input";
-import { addUnit, Unit, UnitConfig } from "../engine/unit";
+import { addUnit, Unit, UnitConfig, UnitState } from "../engine/unit";
 import { kate0, kate1, kate10, kate11, kate12, kate13, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
+import { Vector2 } from "../utils/geom";
+
+export interface HeroSlot {
+    position: Vector2,
+    mob?: Unit
+}
+
+export const heroSlots: Array<HeroSlot> = [
+    { position: { x: -14, y: -2 } },
+    { position: { x: 14, y: -2 } },
+    { position: { x: 18, y: 4 } },
+    { position: { x: -18, y: 4 } },
+];
 
 const config: UnitConfig = {
     mob: false,
@@ -45,13 +58,13 @@ const config: UnitConfig = {
             { image: kate6, time: 0.1 },
         ],
         damage1: [
-            { image: kate0, time: 1.0 },
+            { image: kate0, time: 0.3 },
         ],
         damage2: [
-            { image: kate0, time: 1.0 },
+            { image: kate0, time: 0.3 },
         ],
         knockdown: [
-            { image: kate0, time: 1.0 },
+            { image: kate0, time: 0.3 },
         ],
         dead1: [
             { image: kate0, time: 1.0 },
@@ -65,7 +78,7 @@ const config: UnitConfig = {
         [kate8]: 10, // jab
         [kate10]: 20, // cross
         [kate7]: 30, // kick
-    }
+    },
 };
 
 let hero: Unit | undefined;
@@ -87,10 +100,21 @@ export const updateHero = () => {
         return;
     }
 
+    for (const slot of heroSlots) {
+        if (slot.mob) {
+            switch (slot.mob.state) {
+                case UnitState.Dead:
+                case UnitState.Damage:
+                    delete slot.mob;
+                    break;
+            }
+
+        }
+    }
+
     hero.controller.move.x = 0;
     hero.controller.move.y = 0;
-    hero.controller.leg = false;
-    hero.controller.hand = false;
+    hero.controller.attack = false;
 
     if (isKeyPressed(Key.Left) || isKeyPressed(Key.A)) {
         hero.controller.move.x = -1;
@@ -108,11 +132,7 @@ export const updateHero = () => {
         hero.controller.move.y = 1;
     }
 
-    if (isKeyPressed(Key.Z)) {
-        hero.controller.leg = true;
-    }
-
-    if (isKeyPressed(Key.X)) {
-        hero.controller.hand = true;
+    if (isKeyPressed(Key.Space) || isKeyPressed(Key.X) || isKeyPressed(Key.Z)) {
+        hero.controller.attack = true;
     }
 }

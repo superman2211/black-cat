@@ -14,9 +14,7 @@ export const units: Array<Unit> = [];
 export const enum UnitState {
     Stand,
     Walk,
-    Jab,
-    Cross,
-    Kick,
+    Attack,
     Damage,
     Dead,
 }
@@ -26,9 +24,7 @@ export interface Unit {
     state: UnitState,
     controller: {
         move: Vector2,
-        hand: boolean,
-        cross: boolean,
-        leg: boolean,
+        attack: boolean,
     },
     health: number,
     direction: number,
@@ -40,6 +36,7 @@ export interface Unit {
     shadow: Sprite,
     frame: number,
     damage: number,
+    custom: any,
 }
 
 export interface UnitConfig {
@@ -73,9 +70,7 @@ export const addUnit = (config: UnitConfig): Unit => {
                 x: 0,
                 y: 0
             },
-            hand: false,
-            leg: false,
-            cross: false
+            attack: false,
         },
         health: config.health,
         direction: 1,
@@ -96,6 +91,7 @@ export const addUnit = (config: UnitConfig): Unit => {
         },
         damage: 0,
         frame: 0,
+        custom: null,
     };
 
     units.push(unit);
@@ -168,36 +164,14 @@ const updateUnit = (unit: Unit) => {
             checkAttack(unit);
             break;
 
-        case UnitState.Jab:
-            currentAnimation = animations.jab;
+        case UnitState.Attack:
+            currentAnimation = unit.animation || animations.jab;
 
             if (isAnimationFinished(currentAnimation, unit.animationTime)) {
-                if (unit.controller.hand) {
-                    unit.state = UnitState.Cross;
-                } else {
-                    unit.state = UnitState.Stand;
-                }
-                unit.animationTime = 0;
-            }
-            break;
-
-        case UnitState.Cross:
-            currentAnimation = animations.cross;
-
-            if (isAnimationFinished(currentAnimation, unit.animationTime)) {
-                if (!unit.controller.hand) {
+                if (!unit.controller.attack) {
                     unit.state = UnitState.Stand;
                     unit.animationTime = 0;
                 }
-            }
-            break;
-
-        case UnitState.Kick:
-            currentAnimation = animations.kick;
-
-            if (isAnimationFinished(currentAnimation, unit.animationTime)) {
-                unit.state = UnitState.Stand;
-                unit.animationTime = 0;
             }
             break;
 
@@ -308,23 +282,23 @@ export const applyUnitsDamage = () => {
 
             addEffect(effect, Vector2.add(opponent.position, { x: randomRange(-3, 3), y: randomRange(-14, -18) }));
 
-
+            const animations = opponent.config.animations;
 
             if (opponent.health > 0) {
                 opponent.state = UnitState.Damage;
 
-                if (opponent.animation != opponent.config.animations.knockdown) {
+                if (opponent.animation != animations.knockdown) {
                     opponent.animationTime = 0;
                 }
 
                 opponent.animation = randomSelect([
-                    opponent.config.animations.damage1,
-                    opponent.config.animations.damage2,
-                    opponent.config.animations.knockdown,
+                    animations.damage1,
+                    animations.damage2,
+                    animations.knockdown,
                 ]);
             } else {
                 opponent.state = UnitState.Dead;
-                opponent.animation = randomSelect([opponent.config.animations.dead1, opponent.config.animations.dead2]);
+                opponent.animation = randomSelect([animations.dead1, animations.dead2]);
                 opponent.animationTime = 0;
             }
         }
@@ -343,26 +317,16 @@ const updateUnitSpritePosition = (unit: Unit) => {
     unit.sprite.x = unit.position.x - config.offset.x;
     unit.sprite.y = unit.position.y - config.offset.y;
 
-    // const image = images[unit.shadow.image];
-
     unit.shadow.scaleY = 0.4;
     unit.shadow.x = unit.position.x - config.offset.x + 0;
     unit.shadow.y = unit.position.y - config.offset.y * unit.shadow.scaleY;
 }
 
 const checkAttack = (unit: Unit) => {
-    if (unit.controller.leg) {
-        unit.state = UnitState.Kick;
-        unit.animationTime = 0;
-    }
-
-    if (unit.controller.hand) {
-        unit.state = UnitState.Jab;
-        unit.animationTime = 0;
-    }
-
-    if (unit.controller.cross) {
-        unit.state = UnitState.Cross;
+    if (unit.controller.attack) {
+        const animations = unit.config.animations;
+        unit.state = UnitState.Attack;
+        unit.animation = randomSelect([animations.jab, animations.cross, animations.kick]);
         unit.animationTime = 0;
     }
 }

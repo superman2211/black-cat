@@ -6,8 +6,16 @@ import { addImage, images } from "../resources/images";
 import { cloneObject } from "../utils/browser";
 import { Vector2 } from "../utils/geom";
 import { applyPallette, cloneCanvas } from "../utils/image";
-import { chance, mathRandom, randomRange, randomSelect } from "../utils/math";
-import { getHero } from "./hero";
+import { chance, limit, mathAbs, mathCos, mathPI, mathPI2, mathRandom, mathSin, numberMax, randomRange, randomSelect } from "../utils/math";
+import { deltaS } from "../utils/time";
+import { getHero, HeroSlot, heroSlots } from "./hero";
+
+interface MobData {
+    reaction: { min: number, max: number },
+    reactionTimeout: number,
+    reactionTime: number,
+    target: Vector2,
+};
 
 export const mobs: Array<Unit> = [];
 
@@ -111,7 +119,7 @@ const config: UnitConfig = {
         [man6]: 5, // jab
         [man8]: 10, // cross
         [man12]: 20, // kick
-    }
+    },
 };
 
 const configs: Array<UnitConfig> = [];
@@ -156,12 +164,12 @@ export const generateMobsConfigs = () => {
     const pants = [0xff000033, 0xff797B8B, 0xff005493, 0xff003F24];
     const shoes = [0xff000000, 0xffEBEBEB, 0xff270C01];
 
-    for (let i = 0; i < 5; i++) {
-        const hair = randomSelect(hairs);
+    for (let i = 0; i < 10; i++) {
+        let hair = randomSelect(hairs);
         const face = randomSelect(skins);
         const shirt = randomSelect(shirts);
         const pant = randomSelect(pants);
-        const legs2 = randomSelect(shoes);
+        const shoe = randomSelect(shoes);
 
         let body = shirt;
         let hand0 = shirt;
@@ -171,14 +179,19 @@ export const generateMobsConfigs = () => {
         let legs0 = pant;
         let legs1 = pant;
 
+        // blind
+        if (chance(0.1)) {
+            hair = face;
+        }
+
         // short shirt
         if (chance(0.5)) {
             hand1 = face;
         }
 
         // gloves
-        if (chance(0.5)) {
-            hand2 = 0xff000000;
+        if (chance(0.2)) {
+            hand2 = 0xff111111;
         }
 
         // short pants
@@ -195,7 +208,7 @@ export const generateMobsConfigs = () => {
             hand2, // hand2
             legs0, // legs0
             legs1, // legs1
-            legs2, // legs2
+            shoe, // legs2
         ]);
     }
 }
@@ -211,6 +224,11 @@ const generateConfig = (targetPallette: number[]) => {
     for (const name in animations) {
         const animation = animations[name] as Array<AnimationFrame>;
         replaceImagesPallette(animation, pallette, targetPallette, id);
+    }
+
+    for (const image in newConfig.damages) {
+        const newImage = getPalletteImage(Number(image), pallette, targetPallette, id);
+        newConfig.damages[newImage] = newConfig.damages[image];
     }
 
     configs.push(newConfig);
@@ -237,6 +255,16 @@ const getPalletteImage = (id: number, sourcePallette: Array<number>, targetPalle
 
 export const createMob = (config: UnitConfig): Unit => {
     const mob = addUnit(config);
+    const mobData: MobData = {
+        reaction: {
+            min: 1,
+            max: 2,
+        },
+        reactionTimeout: 0,
+        reactionTime: 0,
+        target: { x: 0, y: 0 },
+    };
+    mob.custom = mobData;
     mobs.push(mob);
     return mob;
 }
@@ -260,12 +288,14 @@ export const updateMobs = () => {
     }
 }
 
+const fightDistanceX = 18;
+const fightDistanceY = 5;
+const safeDistance = 30;
+
 const updateMob = (mob: Unit, hero: Unit) => {
     if (units.indexOf(mob) == -1) {
         removeMob(mob);
     }
-
-    return;
 
     if (mob.health <= 0) {
         return;
@@ -273,38 +303,106 @@ const updateMob = (mob: Unit, hero: Unit) => {
 
     mob.controller.move.x = 0;
     mob.controller.move.y = 0;
-    mob.controller.leg = false;
-    mob.controller.hand = false;
-    mob.controller.cross = false;
+    mob.controller.attack = false;
 
-    const fightDistance = 15;
+    const mobData = mob.custom as MobData;
 
-    if (mob.state == UnitState.Stand || mob.state == UnitState.Walk) {
-        const direction = Vector2.subtract(hero.position, mob.position);
-        const distance = Vector2.length(direction);
+    let brainActive = false;
 
-        if (distance > fightDistance) {
-            Vector2.normalize(direction);
-            mob.controller.move.x = direction.x;
-            mob.controller.move.y = direction.y;
-        } else {
-            mob.controller.move.x = 0;
-            mob.controller.move.y = 0;
-
-            const rnd = mathRandom();
-            if (rnd < 0.5) {
-                mob.controller.hand = true;
-            } else if (rnd < 0.8) {
-                mob.controller.cross = true;
-            } else {
-                mob.controller.leg = true;
-            }
-        }
+    mobData.reactionTime += deltaS;
+    if (mobData.reactionTime > mobData.reactionTimeout) {
+        mobData.reactionTime = 0;
+        mobData.reactionTimeout = randomRange(mobData.reaction.min, mobData.reaction.max);
+        brainActive = true;
     }
+
+    // switch (mob.state) {
+    //     case UnitState.Walk:
+    //     case UnitState.Stand:
+    //         const slot = heroSlots.find((s) => s.mob == mob);
+    //         if (slot) {
+    //             const slotPosition = Vector2.add(slot.position, hero.position);
+    //             const direction = Vector2.subtract(slotPosition, mob.position);
+    //             const distance = Vector2.length(direction);
+
+    //             if (brainActive) {
+    //                 if (mathAbs(direction.x) < fightDistanceX && mathAbs(direction.y) < fightDistanceY) {
+    //                     mob.controller.attack = true;
+    //                 }
+    //             }
+
+    //             if (distance > mob.config.walkSpeed * deltaS) {
+    //                 Vector2.normalize(direction);
+    //                 mob.controller.move.x = direction.x;
+    //                 mob.controller.move.y = direction.y;
+    //             }
+
+    //             // if (brainActive) {
+    //             //     delete slot.mob;
+    //             // }
+    //         } else {
+    //             if (brainActive) {
+    //                 console.log("active");
+    //                 let nearestSlot: HeroSlot | undefined;
+    //                 let nearestSlotDistance = numberMax;
+
+    //                 for (const slot of heroSlots) {
+    //                     if (!slot.mob) {
+    //                         const slotDistance = Vector2.distance(mob.position, slot.position);
+
+    //                         if (nearestSlotDistance > slotDistance) {
+    //                             nearestSlotDistance = slotDistance;
+    //                             nearestSlot = slot;
+    //                         }
+    //                     }
+    //                 }
+
+    //                 if (nearestSlot) {
+    //                     nearestSlot.mob = mob;
+    //                 }
+    //             }
+    //         }
+    //         break;
+    // }
+
+    // if (mob.state == UnitState.Stand || mob.state == UnitState.Walk) {
+    //     if (onFightDistance(mob, hero)) {
+    //         if (brainActive) {
+    //             mob.direction = limit(-1, 1, hero.position.x - mob.position.x);
+    //             mob.controller.attack = true;
+    //         }
+    //     } else {
+    //         const mobsAround = mobs.filter((m) => onFightDistance(m, hero));
+
+    //         if (mobsAround.length < 4) {
+    //             if (brainActive) {
+    //                 for (const slot of heroSlots) {
+    //                     const slotPosition = Vector2.add(hero.position, slot.position);
+    //                     if (!mobsAround.filter((m) => Vector2.distance(slotPosition, m.position) < 5).length) {
+    //                         mobData.target.x = slotPosition.x;
+    //                         mobData.target.y = slotPosition.y;
+    //                     }
+    //                 }
+
+    //             }
+    //         }
+
+    //         const direction = Vector2.subtract(mobData.target, mob.position);
+    //         Vector2.normalize(direction);
+    //         mob.controller.move.x = direction.x;
+    //         mob.controller.move.y = direction.y;
+    //     }
+    // }
+}
+
+const onFightDistance = (mob: Unit, hero: Unit): boolean => {
+    const direction = Vector2.subtract(hero.position, mob.position);
+    return mathAbs(direction.x) < fightDistanceX && mathAbs(direction.y) < fightDistanceY;
+
 }
 
 export const generateMobs = () => {
-    if (mobs.length < 2) {
+    if (mobs.length < 4) {
         const hero = getHero();
 
         const config = randomSelect(configs);
