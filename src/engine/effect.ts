@@ -56,7 +56,7 @@ export const addEffect = (config: EffectConfig, position: Vector2) => {
         animation_: config.animation_,
         animationTime_: 0,
         sprite_: {
-            image_: 0,
+            image_: -1,
             x: position.x - config.offset_.x,
             y: position.y - config.offset_.y
         }

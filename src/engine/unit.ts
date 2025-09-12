@@ -84,10 +84,10 @@ export const addUnit = (config: UnitConfig): Unit => {
         },
         animationTime_: 0,
         sprite_: {
-            image_: 0,
+            image_: -1,
         },
         shadow_: {
-            image_: 0,
+            image_: -1,
         },
         damage_: 0,
         frame_: 0,

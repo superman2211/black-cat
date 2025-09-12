@@ -304,7 +304,6 @@ export const updateMobs = () => {
     if (resetAttackersTimer < 0) {
         resetAttackersTimer = randomRange(3, 5);
         attackers.splice(0, attackers.length);
-        console.log("reset attackers");
     }
 
     const hero = getHero();

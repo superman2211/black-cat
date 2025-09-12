@@ -51,4 +51,13 @@ export namespace Vector2 {
     }
 }
 
-export const vector2 = (x: number, y: number): Vector2 => ({ x, y });
+export const vector2 = (x: number = 0, y: number = 0): Vector2 => ({ x, y });
+
+export const box2 = (x: number = 0, y: number = 0, w: number = 0, h: number = 0): Box2 => ({ x, y, w, h });
+
+export namespace Box2 {
+    export const contains_ = (b: Box2, v: Vector2): boolean => {
+        return b.x < v.x && v.x < b.x + b.w &&
+            b.y < v.y && v.y < b.y + b.h;
+    }
+}

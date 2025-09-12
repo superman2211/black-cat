@@ -15,6 +15,8 @@ export const touches: { [key: string]: TouchData } = {};
 const keys: { [key: string]: boolean } = {};
 export let anyKey = false;
 
+export const setAnyKey = (value: boolean) => anyKey = value;
+
 export const initInput = () => {
     domDocument.onkeydown = (e) => {
         // console.log(e.keyCode);
@@ -31,7 +33,17 @@ export const initInput = () => {
     }
 
     screenCanvas.onmousedown = (e) => {
+        anyKey = true;
         unlockAudio();
+        e.preventDefault();
+    }
+
+    screenCanvas.onmousemove = (e) => {
+        e.preventDefault();
+    }
+
+    screenCanvas.onmouseup = (e) => {
+        anyKey = false;
         e.preventDefault();
     }
 
@@ -52,6 +64,7 @@ export const initInput = () => {
     };
 
     screenCanvas.ontouchstart = (e) => {
+        anyKey = true;
         setHeroInputType(HeroInputType.TouchJoystick);
         forTouch(e, (id, t) => { touches[id] = t; t.started_ = true; });
     };
@@ -61,6 +74,7 @@ export const initInput = () => {
     };
 
     screenCanvas.ontouchend = (e) => {
+        anyKey = false;
         forTouch(e, (id, t) => { delete touches[id]; });
     };
 

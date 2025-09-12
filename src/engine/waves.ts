@@ -1,9 +1,12 @@
+import { DEBUG } from "../debug";
 import { getHero } from "../game/hero";
 import { createMob, MobData, mobs, mobsConfigs, setAttackers } from "../game/mob";
 import { Box2 } from "../utils/geom";
 import { lerp, mathMax, mathMin, mathRound, numberMax, randomRange, randomSelect } from "../utils/math";
+import { game, GameState } from "./game";
 import { gameWidth } from "./graphics";
 import { getStage } from "./stage";
+import { units } from "./unit";
 
 export interface WaveMob {
     config_: number,
@@ -22,6 +25,16 @@ export interface Wave {
 }
 
 let waves: Array<Wave> = [];
+
+export const getLevel = (): number => 13 - waves.length;
+
+export const lastLevel = () => {
+    if (DEBUG) {
+        // while (waves.length > 1) {
+        waves.shift();
+        // }
+    }
+}
 
 export const initWaves = () => {
     waves = [];
@@ -164,7 +177,9 @@ export const generateMobs = () => {
                 }
             }
         } else {
-            // win!
+            if (units.length == 1) {
+                game.state = GameState.GameWin;
+            }
         }
     }
 }

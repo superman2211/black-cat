@@ -3,7 +3,7 @@ import { units } from "./unit";
 import { getIdByCharCode } from "../resources/font";
 import { getColoredImage, images } from "../resources/images";
 import { drawImage, getContext, hasTouch, now } from "../utils/browser";
-import { mathFloor, mathMax, mathMin, mathPI2, mathRound } from "../utils/math";
+import { limit, mathFloor, mathMax, mathMin, mathPI2, mathRound } from "../utils/math";
 import { deltaS, nowMS } from "../utils/time";
 import { getStage } from "./stage";
 import { drawSprite, Sprite } from "./sprite";
@@ -14,7 +14,9 @@ import { formatColor } from "../utils/pattern";
 import { effectGainNode, musicGainNode } from "../resources/sound/audio";
 import { touches } from "./input";
 import { joystick } from "./joystick";
-import { HeroInputType, heroInputType } from "../game/hero";
+import { getHero, HeroInputType, heroInputType } from "../game/hero";
+import { game, GameState } from "./game";
+import { getLevel } from "./waves";
 
 export const screenCanvas = document.getElementById('c') as HTMLCanvasElement;
 screenCanvas.style.imageRendering = 'pixelated';
@@ -40,7 +42,7 @@ export const updateSize = () => {
     screenCanvas.style.height = `${screenHeight}px`;
 
     screenOffset.x = mathFloor((screenCanvas.width - gameWidth) / 2);
-    screenOffset.y = mathFloor((screenCanvas.height - gameHeight) / 2);
+    screenOffset.y = 0;//mathFloor((screenCanvas.height - gameHeight) / 2);
 }
 
 export const draw = () => {
@@ -98,6 +100,8 @@ export const draw = () => {
         context.fillRect(gameWidth, 0, gameWidth, gameHeight);
     }
 
+    drawUI();
+
     context.restore();
 
     drawDebug();
@@ -108,11 +112,11 @@ export const draw = () => {
     //     0xffffff
     // );
 
-    for (const touchId in touches) {
-        const touch = touches[touchId];
-        context.fillStyle = "red";
-        context.fillRect(touch.x, touch.y, 10, 10);
-    }
+    // for (const touchId in touches) {
+    //     const touch = touches[touchId];
+    //     context.fillStyle = "red";
+    //     context.fillRect(touch.x, touch.y, 10, 10);
+    // }
 
     if (heroInputType == HeroInputType.TouchJoystick) {
         context.strokeStyle = formatColor(0x99ffffff);
@@ -142,6 +146,8 @@ export const draw = () => {
             context.fill();
         }
     }
+
+
 }
 
 const drawDebug = () => {
@@ -153,27 +159,27 @@ const drawDebug = () => {
         const fps = (1 / deltaS).toFixed();
 
         drawText(
-            3, 3,
+            3, screenCanvas.height - 8 - 3,
             `FPS ${fps} TIME ${frameTime}`,
             0xffffffff
         );
 
-        const musicVolume = mathRound(musicGainNode.gain.value * 100);
-        const effectVolume = mathRound(effectGainNode.gain.value * 100);
-
-        drawText(
-            3, 3 + 16,
-            `MUSIC ${musicVolume}`,
-            0xff00ffff
-        );
-
-        drawText(
-            3, 3 + 32,
-            `EFFECT ${effectVolume}`,
-            0xffff00ff
-        );
-
         context.shadowBlur = 0;
+
+        // const musicVolume = mathRound(musicGainNode.gain.value * 100);
+        // const effectVolume = mathRound(effectGainNode.gain.value * 100);
+
+        // drawText(
+        //     3, 3 + 16,
+        //     `MUSIC ${musicVolume}`,
+        //     0xff00ffff
+        // );
+
+        // drawText(
+        //     3, 3 + 32,
+        //     `EFFECT ${effectVolume}`,
+        //     0xffff00ff
+        // );
     }
 }
 
@@ -189,4 +195,77 @@ const drawText = (x: number, y: number, text: string, color: number) => {
             }
         }
     }
+}
+
+const drawUIText = (x: number, y: number, text: string, color: number) => {
+    drawText(x - 1, y - 1, text, 0xff000000);
+    drawText(x + 1, y - 1, text, 0xff000000);
+    drawText(x + 1, y + 1, text, 0xff000000);
+    drawText(x + 1, y - 1, text, 0xff000000);
+    drawText(x, y, text, color);
+}
+
+const drawUI = () => {
+    switch (game.state) {
+        case GameState.Game:
+            const hero = getHero();
+            const health = limit(0, 100, mathRound(hero.health_ / hero.config_.health_ * 100));
+            const healthText = `HEALTH ${health}`;
+            drawUIText(5, 5, healthText, 0xffff9999);
+
+            const level = getLevel();
+            const levelText = `LEVEL ${level}`;
+            const levelWidth = levelText.length * 8;
+            drawUIText(gameWidth - levelWidth - 5, 5, levelText, 0xffffffff);
+            break;
+
+        case GameState.GameOver:
+            drawBack(0x99660000);
+            const gameOverText = 'GAME OVER';
+            drawUIText(
+                (gameWidth - gameOverText.length * 8) / 2,
+                (gameHeight - 8) / 2,
+                gameOverText,
+                0xffffffff
+            );
+
+            drawPressAny();
+            break;
+
+        case GameState.GameWin:
+            drawBack(0x99006600);
+
+            const gameWinText = 'CONGRATULATIONS!';
+            drawUIText(
+                (gameWidth - gameWinText.length * 8) / 2,
+                (gameHeight - 8) / 2,
+                gameWinText,
+                0xffffffff
+            );
+
+            drawPressAny();
+            break;
+    }
+}
+
+const drawPressAny = () => {
+    const pressAny1 = hasTouch ? 'TAP TO START AGAIN' : 'PRESS ANY KEY';
+    const pressAny2 = hasTouch ? '' : 'TO START AGAIN';
+    drawUIText(
+        (gameWidth - pressAny1.length * 8) / 2,
+        (gameHeight - 8) / 2 + 64,
+        pressAny1,
+        0xffffffff
+    );
+    drawUIText(
+        (gameWidth - pressAny2.length * 8) / 2,
+        (gameHeight - 8) / 2 + 76,
+        pressAny2,
+        0xffffffff
+    );
+}
+
+const drawBack = (color: number) => {
+    context.fillStyle = formatColor(color);
+    context.fillRect(0, 0, screenCanvas.width, screenCanvas.height);
 }

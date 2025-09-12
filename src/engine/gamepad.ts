@@ -1,5 +1,6 @@
 import { Vector2 } from "../utils/geom";
 import { mathAbs } from "../utils/math";
+import { setAnyKey } from "./input";
 
 export const gamepadData = {
     axe_: { x: 0, y: 0 },
@@ -17,6 +18,8 @@ const enum GamepadKey {
     Action3 = 3,
 }
 
+let pressed = false;
+
 export const updateGamepad = () => {
     if ('getGamepads' in navigator) {
         gamepadData.axe_.x = 0;
@@ -24,6 +27,8 @@ export const updateGamepad = () => {
         gamepadData.button_ = false;
 
         const gamepads = navigator.getGamepads();
+
+        let pressedNow = false;
 
         for (const gamepad of gamepads) {
             if (gamepad && gamepad.connected) {
@@ -41,6 +46,7 @@ export const updateGamepad = () => {
                     const button = gamepad.buttons[i];
 
                     if (button.pressed) {
+                        pressedNow = true;
                         switch (i) {
                             case GamepadKey.Up:
                                 gamepadData.axe_.y -= 1;
@@ -79,5 +85,10 @@ export const updateGamepad = () => {
         }
 
         Vector2.normalize_(gamepadData.axe_);
+
+        if (pressed != pressedNow) {
+            pressed = pressedNow;
+            setAnyKey(pressed);
+        }
     }
 }

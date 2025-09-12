@@ -1,7 +1,10 @@
+import { DEBUG } from "../debug";
+import { game, GameState } from "../engine/game";
 import { gamepadData } from "../engine/gamepad";
 import { isKeyPressed, Key } from "../engine/input";
 import { joystick } from "../engine/joystick";
-import { addUnit, Unit, UnitConfig, UnitState } from "../engine/unit";
+import { addUnit, Unit, UnitConfig, units, UnitState } from "../engine/unit";
+import { lastLevel } from "../engine/waves";
 import { kate0, kate1, kate10, kate11, kate12, kate13, kate14, kate15, kate16, kate17, kate18, kate19, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
 import { hasTouch } from "../utils/browser";
 import { Vector2 } from "../utils/geom";
@@ -18,7 +21,7 @@ export const setHeroInputType = (value: HeroInputType) => heroInputType = value;
 
 const config: UnitConfig = {
     mob_: false,
-    health_: 1000,
+    health_: 10,
     walkSpeed_: 40,
     offset_: { x: 16, y: 29 },
     animations_: {
@@ -111,6 +114,10 @@ export const updateHero = () => {
         return;
     }
 
+    if (!units.includes(hero)) {
+        game.state = GameState.GameOver;
+    }
+
     if (hero.health_ <= 0) {
         return;
     }
@@ -139,9 +146,15 @@ export const updateHero = () => {
         heroInputType = HeroInputType.Keyboard;
     }
 
-    if (isKeyPressed(Key.Space) || isKeyPressed(Key.X) || isKeyPressed(Key.Z)) {
+    if (isKeyPressed(Key.Space) || isKeyPressed(Key.X)) {
         hero.controller_.attack_ = true;
         heroInputType = HeroInputType.Keyboard;
+    }
+
+    if (DEBUG) {
+        if (isKeyPressed(Key.Z)) {
+            lastLevel();
+        }
     }
 
     if (joystick.moveId_ != -1) {

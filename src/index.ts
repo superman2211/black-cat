@@ -6,7 +6,7 @@ import { draw, updateSize } from "./engine/graphics";
 import { loadResources } from "./resources/loader";
 import { playMusic } from "./resources/sound/audio";
 import { calculateTime } from "./utils/time";
-import { start } from "./game/start";
+import { start, startAgain } from "./game/start";
 import { updateCameraPosition } from "./game/game";
 import { limitCamera } from "./engine/stage";
 import { generateMobsConfigs, updateMobs } from "./game/mob";
@@ -16,6 +16,7 @@ import { controlAudio } from "./resources/sound/control";
 import { generateMobs } from "./engine/waves";
 import { updateJoystick } from "./engine/joystick";
 import { updateGamepad } from "./engine/gamepad";
+import { game, GameState } from "./engine/game";
 
 if (DEBUG) {
     console.warn("debug mode");
@@ -25,17 +26,25 @@ if (DEBUG) {
 const update = () => {
     calculateTime();
     updateSize();
-
-    updateJoystick();
     updateGamepad();
-    generateMobs();
-    updateHero();
-    updateMobs();
-    updateUnits();
-    collisionItems();
-    applyUnitsDamage();
-    limitUnitsPositions();
-    updateEffects();
+
+    switch (game.state) {
+        case GameState.Game:
+            updateJoystick();
+            generateMobs();
+            updateHero();
+            updateMobs();
+            updateUnits();
+            collisionItems();
+            applyUnitsDamage();
+            limitUnitsPositions();
+            updateEffects();
+            break;
+
+        default:
+            startAgain();
+            break;
+    }
 
     updateCameraPosition();
     limitCamera();
