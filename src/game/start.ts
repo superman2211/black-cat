@@ -2,12 +2,13 @@ import { clearEntities } from "../engine/entity";
 import { getStage, setStage } from "../engine/stage"
 import { clearUnits } from "../engine/unit";
 import { createHero, getHero } from "./hero";
-import { createMob } from "./mob";
 import { getBarStage } from "./bar"
+import { initWaves } from "../engine/waves";
 
 export const start = () => {
     clearUnits();
     clearEntities();
+    initWaves();
 
     setStage(getBarStage());
 
@@ -16,6 +17,6 @@ export const start = () => {
     const stage = getStage();
 
     const hero = getHero();
-    hero.position.x = stage.bounds.x + 250;
+    hero.position.x = stage.bounds.x + 50;
     hero.position.y = stage.bounds.y + stage.bounds.h / 2;
 }

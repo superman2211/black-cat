@@ -4,7 +4,7 @@ import { kate0, kate1, kate10, kate11, kate12, kate13, kate14, kate15, kate16, k
 
 const config: UnitConfig = {
     mob: false,
-    health: 100,
+    health: 1000,
     walkSpeed: 30,
     offset: { x: 16, y: 29 },
     animations: {

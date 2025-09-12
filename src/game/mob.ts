@@ -1,9 +1,10 @@
 import { AnimationFrame } from "../engine/animation";
+import { getStage } from "../engine/stage";
 import { addUnit, Unit, UnitConfig, units, UnitState } from "../engine/unit";
 import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9, man13, man14, man15, man16, man17, man18, man19, man20, man21, man22 } from "../resources/id";
 import { addImage, images } from "../resources/images";
 import { cloneObject } from "../utils/browser";
-import { Vector2 } from "../utils/geom";
+import { Box2, Vector2 } from "../utils/geom";
 import { applyPallette, cloneCanvas } from "../utils/image";
 import { chance, limit, mathAbs, mathCos, mathPI, mathPI2, mathRandom, mathSin, numberMax, randomRange, randomSelect } from "../utils/math";
 import { deltaS } from "../utils/time";
@@ -14,17 +15,16 @@ const minDistance = 10;
 const fightDistanceX = 18;
 const fightDistanceY = 5;
 
-const nearDistanceX = 250;
-const nearDistanceY = 10;
-
 const safeDistanceX = 50;
 const safeDistanceY = 20;
 
+const attackers: Array<Unit> = [];
 
 interface MobData {
     reaction: { min: number, max: number },
     reactionTimeout: number,
     reactionTime: number,
+    brainActive: boolean,
 };
 
 export const mobs: Array<Unit> = [];
@@ -41,7 +41,7 @@ const pallette = [
     0xff01187d, // legs2
 ];
 
-const config: UnitConfig = {
+const baseConfig: UnitConfig = {
     mob: true,
     health: 100,
     walkSpeed: 20,
@@ -132,9 +132,9 @@ const config: UnitConfig = {
     },
 };
 
-const configs: Array<UnitConfig> = [];
+export const mobsConfigs: Array<UnitConfig> = [];
 
-export const randomMobConfig = (): UnitConfig => randomSelect(configs);
+export const randomMobConfig = (): UnitConfig => randomSelect(mobsConfigs);
 
 export const generateMobsConfigs = () => {
     // const pallette = getPallette(images[man0]);
@@ -224,11 +224,11 @@ export const generateMobsConfigs = () => {
 }
 
 const generateConfig = (targetPallette: number[]) => {
-    const newConfig: UnitConfig = cloneObject(config);
+    const newConfig: UnitConfig = cloneObject(baseConfig);
 
     newConfig.walkSpeed = randomRange(10, 20);
 
-    const id = configs.length;
+    const id = mobsConfigs.length;
 
     const animations = newConfig.animations as any;
     for (const name in animations) {
@@ -241,7 +241,7 @@ const generateConfig = (targetPallette: number[]) => {
         newConfig.damages[newImage] = newConfig.damages[image];
     }
 
-    configs.push(newConfig);
+    mobsConfigs.push(newConfig);
 }
 
 const replaceImagesPallette = (animation: Array<AnimationFrame>, sourcePallette: Array<number>, targetPallette: Array<number>, palletteId: number) => {
@@ -267,11 +267,12 @@ export const createMob = (config: UnitConfig): Unit => {
     const mob = addUnit(config);
     const mobData: MobData = {
         reaction: {
-            min: 0.5,
-            max: 1,
+            min: 1,
+            max: 2,
         },
         reactionTimeout: 0,
         reactionTime: 0,
+        brainActive: false,
     };
     mob.custom = mobData;
     mobs.push(mob);
@@ -289,16 +290,94 @@ export const removeMob = (mob: Unit) => {
     }
 }
 
+export const removeAttacker = (mob: Unit) => {
+    const index = attackers.indexOf(mob);
+    if (index != -1) {
+        attackers.splice(index, 1);
+    }
+}
+
 export const updateMobs = () => {
     const hero = getHero();
-    const nearMobs = mobs.filter((m) => onFightDistance(m, hero));
 
     for (const mob of mobs) {
-        updateMob(mob, hero, nearMobs);
+        if (!units.includes(mob)) {
+            removeMob(mob);
+            removeAttacker(mob);
+            continue;
+        }
+
+        mob.controller.move.x = 0;
+        mob.controller.move.y = 0;
+        mob.controller.attack = false;
+
+        const mobData = mob.custom as MobData;
+
+        mobData.brainActive = false;
+
+        mobData.reactionTime += deltaS;
+        if (mobData.reactionTime > mobData.reactionTimeout) {
+            mobData.reactionTime = 0;
+            mobData.reactionTimeout = randomRange(mobData.reaction.min, mobData.reaction.max);
+            mobData.brainActive = true;
+        }
+
+        if (mob.state != UnitState.Stand && mob.state != UnitState.Walk) {
+            mobData.reactionTime = 0;
+        }
     }
 
+    updateAttackersList(hero);
 
+    for (const mob of mobs) {
+        if (mob.health <= 0 || mob.animation == mob.config.animations.knockdown) {
+            return;
+        }
 
+        if (mob.state != UnitState.Walk && mob.state != UnitState.Stand) {
+            return;
+        }
+
+        if (hero.health <= 0 || hero.animation == hero.config.animations.knockdown) {
+            return;
+        }
+
+        const nearHero = onFightDistance(mob, hero);
+        if (nearHero) {
+            const mobData = mob.custom as MobData;
+            if (mobData.brainActive) {
+                const direction = Vector2.subtract(hero.position, mob.position);
+                mob.direction = limit(-1, 1, direction.x);
+                mob.controller.attack = true;
+
+                if (!attackers.includes(mob)) {
+                    attackers.push(mob);
+                }
+            }
+        } else {
+            let walkToHero = false;
+
+            if (attackers.includes(mob)) {
+                walkToHero = true;
+            } else {
+                if (!onSafeDistance(mob, hero)) {
+                    walkToHero = true;
+                }
+            }
+
+            if (walkToHero) {
+                const direction = Vector2.subtract(hero.position, mob.position);
+                Vector2.normalize(direction);
+                mob.controller.move.x = direction.x;
+                mob.controller.move.y = direction.y;
+            }
+        }
+    }
+
+    mobsCollision();
+}
+
+const mobsCollision = () => {
     for (let i = 0; i < mobs.length; i++) {
         const mob0 = mobs[i];
         if (mob0.state == UnitState.Walk || mob0.state == UnitState.Stand) {
@@ -325,84 +404,51 @@ export const updateMobs = () => {
     }
 }
 
+export const updateAttackersList = (hero: Unit) => {
+    while (attackers.length < 2) {
+        let nearDistance = numberMax;
+        let nearMob: Unit | undefined;
 
-const updateMob = (mob: Unit, hero: Unit, nearMobs: Array<Unit>) => {
-    if (units.indexOf(mob) == -1) {
-        removeMob(mob);
-    }
-
-    if (mob.health <= 0) {
-        return;
-    }
-
-    if (hero.health <= 0) {
-        return;
-    }
-
-    mob.controller.move.x = 0;
-    mob.controller.move.y = 0;
-    mob.controller.attack = false;
-
-    const mobData = mob.custom as MobData;
-
-    let brainActive = false;
-
-    mobData.reactionTime += deltaS;
-    if (mobData.reactionTime > mobData.reactionTimeout) {
-        mobData.reactionTime = 0;
-        mobData.reactionTimeout = randomRange(mobData.reaction.min, mobData.reaction.max);
-        brainActive = true;
-    }
-
-    if (mob.state == UnitState.Stand || mob.state == UnitState.Walk) {
-        const nearHero = onFightDistance(mob, hero);
-
-        if (nearHero) {
-            if (brainActive) {
-                const direction = Vector2.subtract(hero.position, mob.position);
-                mob.direction = limit(-1, 1, direction.x);
-                mob.controller.attack = true;
-            }
-        } else {
-            let walkToHero = false;
-
-            if (onSafeDistance(mob, hero)) {
-                if (nearMobs.length < 1) {
-                    walkToHero = true;
+        for (const mob of mobs) {
+            if ((mob.state == UnitState.Stand || mob.state == UnitState.Walk) && mob.health > 0) {
+                if (!attackers.includes(mob)) {
+                    const distance = Vector2.distance(hero.position, mob.position);
+                    if (nearDistance > distance) {
+                        nearDistance = distance;
+                        nearMob = mob;
+                    }
                 }
-            } else {
-                walkToHero = true;
-            }
-
-            if (walkToHero) {
-                const direction = Vector2.subtract(hero.position, mob.position);
-                Vector2.normalize(direction);
-                mob.controller.move.x = direction.x;
-                mob.controller.move.y = direction.y;
             }
         }
-    } else {
-        mobData.reactionTime = 0;
+
+        if (nearMob) {
+            attackers.push(nearMob);
+        } else {
+            break;
+        }
+    }
+
+    while (attackers.length > 4) {
+        let furtherUnit: Unit | undefined;
+        let furtherDistance = 0;
+        for (const attacker of attackers) {
+            const distance = Vector2.distance(attacker.position, hero.position);
+            if (furtherDistance < distance) {
+                furtherDistance = distance;
+                furtherUnit = attacker;
+            }
+        }
+
+        if (furtherUnit) {
+            removeAttacker(furtherUnit);
+        }
     }
 }
 
 const onFightDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero, fightDistanceX, fightDistanceY);
 const onSafeDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero, safeDistanceX, safeDistanceY);
-const onNearDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero, nearDistanceX, nearDistanceY);
 
 const onDistance = (mob: Unit, hero: Unit, dx: number, dy: number): boolean => {
     const direction = Vector2.subtract(hero.position, mob.position);
     return mathAbs(direction.x) < dx && mathAbs(direction.y) < dy;
-}
-
-export const generateMobs = () => {
-    if (mobs.length < 4) {
-        const hero = getHero();
-
-        const config = randomSelect(configs);
-
-        const mob = createMob(config);
-        mob.position.x = hero.position.x + randomRange(-50, 50);
-        mob.position.y = hero.position.y + randomRange(-50, 50);
-    }
 }

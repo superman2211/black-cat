@@ -168,11 +168,9 @@ const updateUnit = (unit: Unit) => {
             currentAnimation = unit.animation || animations.jab;
 
             if (isAnimationFinished(currentAnimation, unit.animationTime)) {
-                if (!unit.controller.attack) {
-                    unit.state = UnitState.Stand;
-                    unit.animationTime = 0;
-                    unit.animation = undefined;
-                }
+                unit.state = UnitState.Stand;
+                unit.animationTime = 0;
+                unit.animation = undefined;
             }
             break;
 
