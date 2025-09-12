@@ -1,6 +1,15 @@
-import { canvas } from "./graphics";
+import { screenCanvas, screenOffset, screenScale } from "./graphics";
 import { unlockAudio } from "../resources/sound/audio";
-import { domDocument } from "../utils/browser";
+import { domDocument, dpr } from "../utils/browser";
+import { vector2, Vector2 } from "../utils/geom";
+
+export interface TouchData {
+    x: number,
+    y: number,
+    started_: boolean
+}
+
+export const touches: { [key: string]: TouchData } = {};
 
 const keys: { [key: string]: boolean } = {};
 export let anyKey = false;
@@ -20,13 +29,42 @@ export const initInput = () => {
         e.preventDefault();
     }
 
-    canvas.onmousedown = () => {
+    screenCanvas.onmousedown = (e) => {
         unlockAudio();
+        e.preventDefault();
     }
 
-    canvas.ontouchstart = () => {
-        unlockAudio();
-    }
+    const forTouch = (e: TouchEvent, handler: (id: number, t: TouchData) => void) => {
+        const changedTouches = e.changedTouches;
+        for (let i = 0; i < changedTouches.length; i++) {
+            const { clientX, clientY, identifier } = changedTouches[i];
+            handler(
+                identifier,
+                {
+                    x: clientX / screenScale,
+                    y: clientY / screenScale,
+                    started_: false,
+                }
+            );
+        }
+        e.preventDefault();
+    };
+
+    screenCanvas.ontouchstart = (e) => {
+        forTouch(e, (id, t) => { touches[id] = t; t.started_ = true; });
+    };
+
+    screenCanvas.ontouchmove = (e) => {
+        forTouch(e, (id, t) => { touches[id] = t; });
+    };
+
+    screenCanvas.ontouchend = (e) => {
+        forTouch(e, (id, t) => { delete touches[id]; });
+    };
+
+    screenCanvas.ontouchcancel = (e) => {
+        forTouch(e, (id, t) => { delete touches[id]; });
+    };
 }
 
 export const enum Key {

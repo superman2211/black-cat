@@ -50,3 +50,5 @@ export namespace Vector2 {
         return { x: a.x * s, y: a.y * s };
     }
 }
+
+export const vector2 = (x: number, y: number): Vector2 => ({ x, y });

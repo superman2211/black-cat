@@ -3,7 +3,7 @@ import { units } from "./unit";
 import { getIdByCharCode } from "../resources/font";
 import { getColoredImage, images } from "../resources/images";
 import { drawImage, getContext, now } from "../utils/browser";
-import { mathFloor, mathMax, mathMin, mathRound } from "../utils/math";
+import { mathFloor, mathMax, mathMin, mathPI2, mathRound } from "../utils/math";
 import { deltaS, nowMS } from "../utils/time";
 import { getStage } from "./stage";
 import { drawSprite, Sprite } from "./sprite";
@@ -12,38 +12,42 @@ import { effects } from "./effect";
 import { entities, Entity } from "./entity";
 import { formatColor } from "../utils/pattern";
 import { effectGainNode, musicGainNode } from "../resources/sound/audio";
+import { touches } from "./input";
+import { joystick } from "./joystick";
 
-export const canvas = document.getElementById('c') as HTMLCanvasElement;
-canvas.style.imageRendering = 'pixelated';
+export const screenCanvas = document.getElementById('c') as HTMLCanvasElement;
+screenCanvas.style.imageRendering = 'pixelated';
 
-const context = getContext(canvas);
+const context = getContext(screenCanvas);
 
 export const gameWidth = 200;
 export const gameHeight = 200;
 
-const offset = { x: 0, y: 0 };
+export const screenOffset = { x: 0, y: 0 };
+export let screenScale = 1;
 
 export const updateSize = () => {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
 
-    const scale = mathMin(screenWidth / gameWidth, screenHeight / gameHeight);
+    screenScale = mathMin(screenWidth / gameWidth, screenHeight / gameHeight);
 
-    canvas.width = mathMax(gameWidth, screenWidth / scale);
-    canvas.height = mathMax(gameHeight, screenHeight / scale);
+    screenCanvas.width = mathMax(gameWidth, screenWidth / screenScale);
+    screenCanvas.height = mathMax(gameHeight, screenHeight / screenScale);
 
-    canvas.style.width = `${screenWidth}px`;
-    canvas.style.height = `${screenHeight}px`;
+    screenCanvas.style.width = `${screenWidth}px`;
+    screenCanvas.style.height = `${screenHeight}px`;
 
-    offset.x = mathFloor((canvas.width - gameWidth) / 2);
-    offset.y = mathFloor((canvas.height - gameHeight) / 2);
+    screenOffset.x = mathFloor((screenCanvas.width - gameWidth) / 2);
+    screenOffset.y = mathFloor((screenCanvas.height - gameHeight) / 2);
 }
 
 export const draw = () => {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.setTransform(1, 0, 0, 1, offset.x, offset.y);
-
+    context.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
     const stage = getStage();
+
+    context.save();
+    context.setTransform(1, 0, 0, 1, screenOffset.x, screenOffset.y);
 
     context.save();
     context.translate(mathRound(-stage.camera_.x), mathRound(-stage.camera_.y));
@@ -85,13 +89,15 @@ export const draw = () => {
     context.restore();
 
     context.fillStyle = "black";
-    if (canvas.width < canvas.height) {
-        context.fillRect(0, - offset.y, gameWidth, offset.y);
+    if (screenCanvas.width < screenCanvas.height) {
+        context.fillRect(0, - screenOffset.y, gameWidth, screenOffset.y);
         context.fillRect(0, gameHeight, gameWidth, gameHeight);
     } else {
-        context.fillRect(- offset.x, 0, offset.x, gameWidth);
+        context.fillRect(- screenOffset.x, 0, screenOffset.x, gameWidth);
         context.fillRect(gameWidth, 0, gameWidth, gameHeight);
     }
+
+    context.restore();
 
     drawDebug();
 
@@ -100,6 +106,39 @@ export const draw = () => {
     //     'BLACK KATE',
     //     0xffffff
     // );
+
+    for (const touchId in touches) {
+        const touch = touches[touchId];
+        context.fillStyle = "red";
+        context.fillRect(touch.x, touch.y, 10, 10);
+    }
+
+    context.strokeStyle = formatColor(0x99ffffff);
+    context.lineWidth = 2;
+
+    context.beginPath();
+    context.arc(mathRound(joystick.move_.x), mathRound(joystick.move_.y), joystick.moveRadius_, 0, mathPI2);
+    context.closePath();
+    context.stroke();
+
+    if (joystick.moveId_ != -1) {
+        context.beginPath();
+        context.arc(mathRound(joystick.moveStick_.x), mathRound(joystick.moveStick_.y), joystick.moveStickRadius_, 0, mathPI2);
+        context.closePath();
+        context.stroke();
+    }
+
+    context.strokeStyle = formatColor(0x99ff0000);
+    context.lineWidth = 2;
+
+    context.beginPath();
+    context.arc(mathRound(joystick.attack_.x), mathRound(joystick.attack_.y), joystick.attackRadius_, 0, mathPI2);
+    context.closePath();
+    context.stroke();
+    if (joystick.attackId_ != -1) {
+        context.fillStyle = formatColor(0x33ff0000);
+        context.fill();
+    }
 }
 
 const drawDebug = () => {

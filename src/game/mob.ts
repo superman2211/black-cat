@@ -445,8 +445,6 @@ export const updateAttackersList = (hero: Unit) => {
             removeAttacker(furtherUnit);
         }
     }
-
-    console.log("attackers", attackers.length);
 }
 
 const onFightDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero, fightDistanceX, fightDistanceY);

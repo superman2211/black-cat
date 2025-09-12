@@ -1,6 +1,8 @@
 import { isKeyPressed, Key } from "../engine/input";
+import { joystick } from "../engine/joystick";
 import { addUnit, Unit, UnitConfig, UnitState } from "../engine/unit";
 import { kate0, kate1, kate10, kate11, kate12, kate13, kate14, kate15, kate16, kate17, kate18, kate19, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
+import { Vector2 } from "../utils/geom";
 
 const config: UnitConfig = {
     mob_: false,
@@ -122,6 +124,16 @@ export const updateHero = () => {
     }
 
     if (isKeyPressed(Key.Space) || isKeyPressed(Key.X) || isKeyPressed(Key.Z)) {
+        hero.controller_.attack_ = true;
+    }
+
+    if (joystick.moveId_ != -1) {
+        const direction = Vector2.subtract_(joystick.moveStick_, joystick.move_);
+        hero.controller_.move_.x = direction.x;
+        hero.controller_.move_.y = direction.y;
+    }
+
+    if (joystick.attackId_ != -1) {
         hero.controller_.attack_ = true;
     }
 }
