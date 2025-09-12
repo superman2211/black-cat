@@ -9,11 +9,22 @@ import { chance, limit, mathAbs, mathCos, mathPI, mathPI2, mathRandom, mathSin, 
 import { deltaS } from "../utils/time";
 import { getHero } from "./hero";
 
+const minDistance = 10;
+
+const fightDistanceX = 18;
+const fightDistanceY = 5;
+
+const nearDistanceX = 250;
+const nearDistanceY = 10;
+
+const safeDistanceX = 50;
+const safeDistanceY = 20;
+
+
 interface MobData {
     reaction: { min: number, max: number },
     reactionTimeout: number,
     reactionTime: number,
-    target: Vector2,
 };
 
 export const mobs: Array<Unit> = [];
@@ -261,7 +272,6 @@ export const createMob = (config: UnitConfig): Unit => {
         },
         reactionTimeout: 0,
         reactionTime: 0,
-        target: { x: 0, y: 0 },
     };
     mob.custom = mobData;
     mobs.push(mob);
@@ -287,7 +297,7 @@ export const updateMobs = () => {
         updateMob(mob, hero, nearMobs);
     }
 
-    const minDistance = 10;
+
 
     for (let i = 0; i < mobs.length; i++) {
         const mob0 = mobs[i];
@@ -315,14 +325,6 @@ export const updateMobs = () => {
     }
 }
 
-const fightDistanceX = 18;
-const fightDistanceY = 5;
-
-const nearDistanceX = 22;
-const nearDistanceY = 7;
-
-const safeDistanceX = 50;
-const safeDistanceY = 20;
 
 const updateMob = (mob: Unit, hero: Unit, nearMobs: Array<Unit>) => {
     if (units.indexOf(mob) == -1) {
@@ -330,6 +332,10 @@ const updateMob = (mob: Unit, hero: Unit, nearMobs: Array<Unit>) => {
     }
 
     if (mob.health <= 0) {
+        return;
+    }
+
+    if (hero.health <= 0) {
         return;
     }
 
@@ -361,7 +367,7 @@ const updateMob = (mob: Unit, hero: Unit, nearMobs: Array<Unit>) => {
             let walkToHero = false;
 
             if (onSafeDistance(mob, hero)) {
-                if (nearMobs.length < 2) {
+                if (nearMobs.length < 1) {
                     walkToHero = true;
                 }
             } else {
@@ -380,19 +386,13 @@ const updateMob = (mob: Unit, hero: Unit, nearMobs: Array<Unit>) => {
     }
 }
 
-const onFightDistance = (mob: Unit, hero: Unit): boolean => {
-    const direction = Vector2.subtract(hero.position, mob.position);
-    return mathAbs(direction.x) < fightDistanceX && mathAbs(direction.y) < fightDistanceY;
-}
+const onFightDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero, fightDistanceX, fightDistanceY);
+const onSafeDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero, safeDistanceX, safeDistanceY);
+const onNearDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero, nearDistanceX, nearDistanceY);
 
-const onSafeDistance = (mob: Unit, hero: Unit): boolean => {
+const onDistance = (mob: Unit, hero: Unit, dx: number, dy: number): boolean => {
     const direction = Vector2.subtract(hero.position, mob.position);
-    return mathAbs(direction.x) < safeDistanceX && mathAbs(direction.y) < safeDistanceY;
-}
-
-const onNearDistance = (mob: Unit, hero: Unit): boolean => {
-    const direction = Vector2.subtract(hero.position, mob.position);
-    return mathAbs(direction.x) < nearDistanceX && mathAbs(direction.y) < nearDistanceY;
+    return mathAbs(direction.x) < dx && mathAbs(direction.y) < dy;
 }
 
 export const generateMobs = () => {

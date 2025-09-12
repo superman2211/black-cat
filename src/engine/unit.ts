@@ -171,6 +171,7 @@ const updateUnit = (unit: Unit) => {
                 if (!unit.controller.attack) {
                     unit.state = UnitState.Stand;
                     unit.animationTime = 0;
+                    unit.animation = undefined;
                 }
             }
             break;
@@ -240,7 +241,7 @@ export const applyUnitsDamage = () => {
         let opponentDistanceY = numberMax;
 
         for (const unit of units) {
-            if (unit.health <= 0) {
+            if (unit.health <= 0 || unit.animation == unit.config.animations.knockdown) {
                 continue;
             }
 
@@ -287,15 +288,13 @@ export const applyUnitsDamage = () => {
             if (opponent.health > 0) {
                 opponent.state = UnitState.Damage;
 
-                if (opponent.animation != animations.knockdown) {
-                    opponent.animationTime = 0;
-                }
+                opponent.animationTime = 0;
 
-                opponent.animation = randomSelect([
+                opponent.animation = randomChancesSelect([
                     animations.damage1,
                     animations.damage2,
                     animations.knockdown,
-                ]);
+                ], [10, 10, 1]);
             } else {
                 opponent.state = UnitState.Dead;
                 opponent.animation = randomSelect([animations.dead1, animations.dead2]);

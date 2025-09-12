@@ -1,10 +1,10 @@
 import { isKeyPressed, Key } from "../engine/input";
 import { addUnit, Unit, UnitConfig, UnitState } from "../engine/unit";
-import { kate0, kate1, kate10, kate11, kate12, kate13, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
+import { kate0, kate1, kate10, kate11, kate12, kate13, kate14, kate15, kate16, kate17, kate18, kate19, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
 
 const config: UnitConfig = {
     mob: false,
-    health: 1000,
+    health: 100,
     walkSpeed: 30,
     offset: { x: 16, y: 29 },
     animations: {
@@ -45,16 +45,30 @@ const config: UnitConfig = {
             { image: kate6, time: 0.1 },
         ],
         damage1: [
-            { image: kate0, time: 0.3 },
+            { image: kate14, time: 0.5 },
         ],
         damage2: [
-            { image: kate0, time: 0.3 },
+            { image: kate15, time: 0.5 },
         ],
         knockdown: [
+            { image: kate15, time: 0.3 },
+            { image: kate16, time: 0.3 },
+            { image: kate17, time: 1.0 },
+            { image: kate18, time: 0.3 },
+            { image: kate19, time: 0.3 },
             { image: kate0, time: 0.3 },
         ],
         dead1: [
-            { image: kate0, time: 1.0 },
+            { image: kate0, time: 0.1 },
+            { image: kate15, time: 0.3 },
+            { image: kate16, time: 0.3 },
+            { image: kate17, time: 1.0 },
+            { image: -1, time: 0.2 },
+            { image: kate17, time: 0.2 },
+            { image: -1, time: 0.2 },
+            { image: kate17, time: 0.2 },
+            { image: -1, time: 0.2 },
+            { image: kate17, time: 0.2 },
         ],
         dead2: [
             { image: kate0, time: 1.0 },
