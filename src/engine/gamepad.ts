@@ -6,14 +6,16 @@ export const gamepadData = {
     button_: false,
 }
 
-const XBoxUp = 12;
-const XBoxDown = 13;
-const XBoxLeft = 14;
-const XBoxRight = 15;
-const XBoxAction0 = 0;
-const XBoxAction1 = 1;
-const XBoxAction2 = 2;
-const XBoxAction3 = 3;
+const enum GamepadKey {
+    Up = 12,
+    Down = 13,
+    Left = 14,
+    Right = 15,
+    Action0 = 0,
+    Action1 = 1,
+    Action2 = 2,
+    Action3 = 3,
+}
 
 export const updateGamepad = () => {
     if ('getGamepads' in navigator) {
@@ -40,26 +42,26 @@ export const updateGamepad = () => {
 
                     if (button.pressed) {
                         switch (i) {
-                            case XBoxUp:
+                            case GamepadKey.Up:
                                 gamepadData.axe_.y -= 1;
                                 break;
 
-                            case XBoxDown:
+                            case GamepadKey.Down:
                                 gamepadData.axe_.y += 1;
                                 break;
 
-                            case XBoxLeft:
+                            case GamepadKey.Left:
                                 gamepadData.axe_.x -= 1;
                                 break;
 
-                            case XBoxRight:
+                            case GamepadKey.Right:
                                 gamepadData.axe_.x += 1;
                                 break;
 
-                            case XBoxAction0:
-                            case XBoxAction1:
-                            case XBoxAction2:
-                            case XBoxAction3:
+                            case GamepadKey.Action0:
+                            case GamepadKey.Action1:
+                            case GamepadKey.Action2:
+                            case GamepadKey.Action3:
                                 gamepadData.button_ = true;
                                 break;
                         }
