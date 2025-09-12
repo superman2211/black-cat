@@ -1,8 +1,20 @@
+import { gamepadData } from "../engine/gamepad";
 import { isKeyPressed, Key } from "../engine/input";
 import { joystick } from "../engine/joystick";
 import { addUnit, Unit, UnitConfig, UnitState } from "../engine/unit";
 import { kate0, kate1, kate10, kate11, kate12, kate13, kate14, kate15, kate16, kate17, kate18, kate19, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
+import { hasTouch } from "../utils/browser";
 import { Vector2 } from "../utils/geom";
+
+export const enum HeroInputType {
+    Keyboard,
+    TouchJoystick,
+    Gamepad,
+}
+
+export let heroInputType: HeroInputType = HeroInputType.Keyboard;
+
+export const setHeroInputType = (value: HeroInputType) => heroInputType = value;
 
 const config: UnitConfig = {
     mob_: false,
@@ -109,31 +121,50 @@ export const updateHero = () => {
 
     if (isKeyPressed(Key.Left) || isKeyPressed(Key.A)) {
         hero.controller_.move_.x = -1;
+        heroInputType = HeroInputType.Keyboard;
     }
 
     if (isKeyPressed(Key.Right) || isKeyPressed(Key.D)) {
         hero.controller_.move_.x = 1;
+        heroInputType = HeroInputType.Keyboard;
     }
 
     if (isKeyPressed(Key.Up) || isKeyPressed(Key.W)) {
         hero.controller_.move_.y = -1;
+        heroInputType = HeroInputType.Keyboard;
     }
 
     if (isKeyPressed(Key.Down) || isKeyPressed(Key.S)) {
         hero.controller_.move_.y = 1;
+        heroInputType = HeroInputType.Keyboard;
     }
 
     if (isKeyPressed(Key.Space) || isKeyPressed(Key.X) || isKeyPressed(Key.Z)) {
         hero.controller_.attack_ = true;
+        heroInputType = HeroInputType.Keyboard;
     }
 
     if (joystick.moveId_ != -1) {
         const direction = Vector2.subtract_(joystick.moveStick_, joystick.move_);
         hero.controller_.move_.x = direction.x;
         hero.controller_.move_.y = direction.y;
+
+        heroInputType = HeroInputType.TouchJoystick;
     }
 
     if (joystick.attackId_ != -1) {
         hero.controller_.attack_ = true;
+        heroInputType = HeroInputType.TouchJoystick;
+    }
+
+    if (gamepadData.axe_.x != 0 || gamepadData.axe_.y != 0) {
+        hero.controller_.move_.x = gamepadData.axe_.x;
+        hero.controller_.move_.y = gamepadData.axe_.y;
+        heroInputType = HeroInputType.Gamepad;
+    }
+
+    if (gamepadData.button_) {
+        hero.controller_.attack_ = true;
+        heroInputType = HeroInputType.Gamepad;
     }
 }

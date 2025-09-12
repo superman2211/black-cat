@@ -2,7 +2,7 @@ import { DEBUG } from "../debug";
 import { units } from "./unit";
 import { getIdByCharCode } from "../resources/font";
 import { getColoredImage, images } from "../resources/images";
-import { drawImage, getContext, now } from "../utils/browser";
+import { drawImage, getContext, hasTouch, now } from "../utils/browser";
 import { mathFloor, mathMax, mathMin, mathPI2, mathRound } from "../utils/math";
 import { deltaS, nowMS } from "../utils/time";
 import { getStage } from "./stage";
@@ -14,6 +14,7 @@ import { formatColor } from "../utils/pattern";
 import { effectGainNode, musicGainNode } from "../resources/sound/audio";
 import { touches } from "./input";
 import { joystick } from "./joystick";
+import { HeroInputType, heroInputType } from "../game/hero";
 
 export const screenCanvas = document.getElementById('c') as HTMLCanvasElement;
 screenCanvas.style.imageRendering = 'pixelated';
@@ -113,31 +114,33 @@ export const draw = () => {
         context.fillRect(touch.x, touch.y, 10, 10);
     }
 
-    context.strokeStyle = formatColor(0x99ffffff);
-    context.lineWidth = 2;
+    if (heroInputType == HeroInputType.TouchJoystick) {
+        context.strokeStyle = formatColor(0x99ffffff);
+        context.lineWidth = 2;
 
-    context.beginPath();
-    context.arc(mathRound(joystick.move_.x), mathRound(joystick.move_.y), joystick.moveRadius_, 0, mathPI2);
-    context.closePath();
-    context.stroke();
-
-    if (joystick.moveId_ != -1) {
         context.beginPath();
-        context.arc(mathRound(joystick.moveStick_.x), mathRound(joystick.moveStick_.y), joystick.moveStickRadius_, 0, mathPI2);
+        context.arc(mathRound(joystick.move_.x), mathRound(joystick.move_.y), joystick.moveRadius_, 0, mathPI2);
         context.closePath();
         context.stroke();
-    }
 
-    context.strokeStyle = formatColor(0x99ff0000);
-    context.lineWidth = 2;
+        if (joystick.moveId_ != -1) {
+            context.beginPath();
+            context.arc(mathRound(joystick.moveStick_.x), mathRound(joystick.moveStick_.y), joystick.moveStickRadius_, 0, mathPI2);
+            context.closePath();
+            context.stroke();
+        }
 
-    context.beginPath();
-    context.arc(mathRound(joystick.attack_.x), mathRound(joystick.attack_.y), joystick.attackRadius_, 0, mathPI2);
-    context.closePath();
-    context.stroke();
-    if (joystick.attackId_ != -1) {
-        context.fillStyle = formatColor(0x33ff0000);
-        context.fill();
+        context.strokeStyle = formatColor(0x99ff0000);
+        context.lineWidth = 2;
+
+        context.beginPath();
+        context.arc(mathRound(joystick.attack_.x), mathRound(joystick.attack_.y), joystick.attackRadius_, 0, mathPI2);
+        context.closePath();
+        context.stroke();
+        if (joystick.attackId_ != -1) {
+            context.fillStyle = formatColor(0x33ff0000);
+            context.fill();
+        }
     }
 }
 

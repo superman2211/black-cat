@@ -15,6 +15,7 @@ import { collisionItems } from "./engine/item";
 import { controlAudio } from "./resources/sound/control";
 import { generateMobs } from "./engine/waves";
 import { updateJoystick } from "./engine/joystick";
+import { updateGamepad } from "./engine/gamepad";
 
 if (DEBUG) {
     console.warn("debug mode");
@@ -26,6 +27,7 @@ const update = () => {
     updateSize();
 
     updateJoystick();
+    updateGamepad();
     generateMobs();
     updateHero();
     updateMobs();

@@ -2,6 +2,7 @@ import { screenCanvas, screenOffset, screenScale } from "./graphics";
 import { unlockAudio } from "../resources/sound/audio";
 import { domDocument, dpr } from "../utils/browser";
 import { vector2, Vector2 } from "../utils/geom";
+import { HeroInputType, heroInputType, setHeroInputType } from "../game/hero";
 
 export interface TouchData {
     x: number,
@@ -51,6 +52,7 @@ export const initInput = () => {
     };
 
     screenCanvas.ontouchstart = (e) => {
+        setHeroInputType(HeroInputType.TouchJoystick);
         forTouch(e, (id, t) => { touches[id] = t; t.started_ = true; });
     };
 
