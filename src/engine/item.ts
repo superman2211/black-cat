@@ -16,6 +16,10 @@ export const collisionItems = () => {
 
     for (const unit of units) {
         for (const item of stage.items_) {
+            if (item.bounds_.w == 0 && item.bounds_.h == 0) {
+                continue;
+            }
+
             let minX = item.position_.x + item.bounds_.x;
             let minY = item.position_.y + item.bounds_.y;
 

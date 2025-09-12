@@ -1,7 +1,7 @@
 import { Item } from "../engine/item";
 import { drawSprite, drawSprites } from "../engine/sprite";
 import { Stage } from "../engine/stage";
-import { barBigItems0, barFloor0, barFloor1, barFloor2, barFloor3, barItem0, barItem1, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4 } from "../resources/id";
+import { barBigItems0, barFloor0, barFloor1, barFloor2, barFloor3, barItem0, barItem1, barWall0, barWall1, barWall10, barWall2, barWall3, barWall4, barWall5, barWall6, barWall7, barWall8, barWall9, bottle0, bottle1, bottle2, bottle3, bottle4, bottle5, trash0, trash1, trash2, trash3, trash4 } from "../resources/id";
 import { addImage, addNoiseToImage, getColoredImage, images } from "../resources/images";
 import { createCanvas, drawImage, getContext } from "../utils/browser"
 import { drawCommands, drawGradientV, generateRandomTileImage, generateTileImage, noise } from "../utils/image";
@@ -12,6 +12,13 @@ export const getBarStage = (): Stage => {
     const floorWidth = 400;
     const floorHeight = 150;
     const wallHeight = 95;
+
+    addNoiseToImage(bottle0, 20);
+    addNoiseToImage(bottle1, 20);
+    addNoiseToImage(bottle2, 20);
+    addNoiseToImage(bottle3, 20);
+    addNoiseToImage(bottle4, 20);
+    addNoiseToImage(bottle5, 20);
 
     const floorCanvas = generateFloorImage(floorWidth, floorHeight);
     const wallCanvas = generateWallImage(floorWidth, wallHeight);
@@ -73,6 +80,28 @@ const addBarCounter = (items: Array<Item>, x: number, y: number) => {
             bounds_: { x: -16, y: -10, w: 32, h: 12 }
         },
     );
+
+    if (chance(0.5)) {
+        items.push(
+            {
+                sprite_: { image_: randomSelect([bottle0, bottle1, bottle2, bottle3, bottle4, bottle5]) },
+                position_: { x: x, y: y },
+                offset_: { x: 4 + randomRange(-1, 1), y: 16 + 25 + randomRange(-1, 1) },
+                bounds_: { x: 0, y: 0, w: 0, h: 0 },
+            },
+        )
+    }
+
+    if (chance(0.5)) {
+        items.push(
+            {
+                sprite_: { image_: randomSelect([bottle0, bottle1, bottle2, bottle3, bottle4, bottle5]) },
+                position_: { x: x, y: y },
+                offset_: { x: 0 + randomRange(-1, 1), y: 16 + 27 + randomRange(-1, 1) },
+                bounds_: { x: 0, y: 0, w: 0, h: 0 },
+            },
+        )
+    }
 }
 
 const addBarStool = (items: Array<Item>, x: number, y: number) => {
@@ -108,6 +137,15 @@ const addTableArmchair = (items: Array<Item>, x: number, y: number) => {
                 bounds_: { x: 0, y: 0, w: 10, h: 10 },
             },
         );
+
+        items.push(
+            {
+                sprite_: { image_: randomSelect([bottle0, bottle1, bottle2, bottle3, bottle4, bottle5]) },
+                position_: { x: x, y: y },
+                offset_: { x: 8 + randomRange(-1, 1), y: 16 + 20 + randomRange(-1, 1) },
+                bounds_: { x: 0, y: 0, w: 0, h: 0 },
+            },
+        );
     }
 
 
@@ -124,6 +162,14 @@ const generateFloorImage = (width: number, height: number): HTMLCanvasElement =>
 
     drawGradientV(context, 0, 0, image.width, border, 0x77000000, 0);
     drawGradientV(context, 0, image.height - border, image.width, border, 0, 0x77000000);
+
+    let trashCount = 150;
+
+    while (trashCount-- > 0) {
+        context.globalAlpha = randomRange(0.1, 0.3);
+        const trash = images[randomSelect([trash0, trash1, trash2, trash3, trash4])];
+        drawImage(context, trash, randomRange(0, width), randomRange(0, height));
+    }
 
     noise(10, image);
 

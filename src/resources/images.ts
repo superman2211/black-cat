@@ -15,7 +15,7 @@ export const addImage = (image: HTMLCanvasElement): number => {
 
 export const getColoredImage = (id: number, color: number): number => {
     if (id == -1) return -1;
-    
+
     const key = `${id}_${color}`;
     if (!coloredImages[key]) {
         const a = (color >> 24) & 0xff;
@@ -40,9 +40,9 @@ export const getColoredImage = (id: number, color: number): number => {
     return coloredImages[key];
 }
 
-export const addNoiseToImage = (image: number) => {
+export const addNoiseToImage = (image: number, value: number = 10) => {
     if (!noisedImages[image]) {
         const source = images[image];
-        noise(10, source);
+        noise(value, source);
     }
 }
