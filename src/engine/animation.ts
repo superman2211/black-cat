@@ -1,13 +1,13 @@
 export interface AnimationFrame {
-    image: number,
-    time: number,
+    image_: number,
+    time_: number,
 }
 
 export const animationDuration = (animation: Array<AnimationFrame>): number => {
     let time = 0;
 
     for (const frame of animation) {
-        time += frame.time;
+        time += frame.time_;
     }
 
     return time;
@@ -21,10 +21,10 @@ export const getFrameImage = (animation: Array<AnimationFrame>, animationTime: n
 
     for (let i = 0; i < animation.length; i++) {
         const frame = animation[i];
-        time += frame.time;
+        time += frame.time_;
 
         if (animationTime <= time) {
-            return frame.image;
+            return frame.image_;
         }
     }
 

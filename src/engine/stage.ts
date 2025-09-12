@@ -6,10 +6,10 @@ import { Item } from "./item";
 import { Sprite } from "./sprite";
 
 export interface Stage {
-    bounds: Box2,
-    back: Sprite,
-    camera: Vector2,
-    items: Array<Item>,
+    bounds_: Box2,
+    back_: Sprite,
+    camera_: Vector2,
+    items_: Array<Item>,
 }
 
 let stage: Stage | undefined;
@@ -19,13 +19,13 @@ export const getStage = () => stage!;
 export const setStage = (value: Stage) => {
     stage = value;
 
-    for (const item of stage.items) {
-        item.sprite.x = item.position.x - item.offset.x;
-        item.sprite.y = item.position.y - item.offset.y;
+    for (const item of stage.items_) {
+        item.sprite_.x = item.position_.x - item.offset_.x;
+        item.sprite_.y = item.position_.y - item.offset_.y;
 
-        if (item.shadow) {
-            item.shadow.x = item.position.x - item.offset.x;
-            item.shadow.y = item.position.y - item.offset.y * item.shadow.scaleY!;
+        if (item.shadow_) {
+            item.shadow_.x = item.position_.x - item.offset_.x;
+            item.shadow_.y = item.position_.y - item.offset_.y * item.shadow_.scaleY_!;
         }
 
         entities.push(item);
@@ -34,21 +34,21 @@ export const setStage = (value: Stage) => {
 
 export const limitCamera = () => {
     const stage = getStage();
-    const back = images[stage.back.image];
+    const back = images[stage.back_.image_];
 
-    if (- stage.camera.x > 0) {
-        stage.camera.x = 0;
+    if (- stage.camera_.x > 0) {
+        stage.camera_.x = 0;
     }
 
-    if (-stage.camera.x + back.width < gameWidth) {
-        stage.camera.x = back.width - gameWidth;
+    if (-stage.camera_.x + back.width < gameWidth) {
+        stage.camera_.x = back.width - gameWidth;
     }
 
-    if (- stage.camera.y > 0) {
-        stage.camera.y = 0;
+    if (- stage.camera_.y > 0) {
+        stage.camera_.y = 0;
     }
 
-    if (-stage.camera.y + back.height < gameHeight) {
-        stage.camera.y = back.height - gameHeight;
+    if (-stage.camera_.y + back.height < gameHeight) {
+        stage.camera_.y = back.height - gameHeight;
     }
 }

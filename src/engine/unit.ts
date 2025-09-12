@@ -20,78 +20,78 @@ export const enum UnitState {
 }
 
 export interface Unit {
-    config: UnitConfig,
-    state: UnitState,
-    controller: {
-        move: Vector2,
-        attack: boolean,
+    config_: UnitConfig,
+    state_: UnitState,
+    controller_: {
+        move_: Vector2,
+        attack_: boolean,
     },
-    health: number,
-    direction: number,
-    position: Vector2,
-    speed: Vector2,
-    animationTime: number,
-    animation?: Array<AnimationFrame>,
-    sprite: Sprite,
-    shadow: Sprite,
-    frame: number,
-    damage: number,
-    custom: any,
+    health_: number,
+    direction_: number,
+    position_: Vector2,
+    speed_: Vector2,
+    animationTime_: number,
+    animation_?: Array<AnimationFrame>,
+    sprite_: Sprite,
+    shadow_: Sprite,
+    frame_: number,
+    damage_: number,
+    custom_: any,
 }
 
 export interface UnitConfig {
-    mob: boolean,
-    health: number,
-    walkSpeed: number,
-    offset: Vector2,
-    animations: {
-        stand: Array<AnimationFrame>,
-        walkH: Array<AnimationFrame>,
-        walkV: Array<AnimationFrame>,
-        jab: Array<AnimationFrame>,
-        cross: Array<AnimationFrame>,
-        kick: Array<AnimationFrame>,
-        damage1: Array<AnimationFrame>,
-        damage2: Array<AnimationFrame>,
-        knockdown: Array<AnimationFrame>,
-        dead1: Array<AnimationFrame>,
-        dead2: Array<AnimationFrame>,
-        sit: Array<AnimationFrame>,
+    mob_: boolean,
+    health_: number,
+    walkSpeed_: number,
+    offset_: Vector2,
+    animations_: {
+        stand_: Array<AnimationFrame>,
+        walkH_: Array<AnimationFrame>,
+        walkV_: Array<AnimationFrame>,
+        jab_: Array<AnimationFrame>,
+        cross_: Array<AnimationFrame>,
+        kick_: Array<AnimationFrame>,
+        damage1_: Array<AnimationFrame>,
+        damage2_: Array<AnimationFrame>,
+        knockdown_: Array<AnimationFrame>,
+        dead1_: Array<AnimationFrame>,
+        dead2_: Array<AnimationFrame>,
+        sit_: Array<AnimationFrame>,
     },
-    damages: { [key: number]: number },
+    damages_: { [key: number]: number },
 }
 
 export const addUnit = (config: UnitConfig): Unit => {
     let unit: Unit = {
-        config,
-        state: UnitState.Stand,
-        controller: {
-            move: {
+        config_: config,
+        state_: UnitState.Stand,
+        controller_: {
+            move_: {
                 x: 0,
                 y: 0
             },
-            attack: false,
+            attack_: false,
         },
-        health: config.health,
-        direction: 1,
-        position: {
+        health_: config.health_,
+        direction_: 1,
+        position_: {
             x: 0,
             y: 0
         },
-        speed: {
+        speed_: {
             x: 0,
             y: 0
         },
-        animationTime: 0,
-        sprite: {
-            image: 0,
+        animationTime_: 0,
+        sprite_: {
+            image_: 0,
         },
-        shadow: {
-            image: 0,
+        shadow_: {
+            image_: 0,
         },
-        damage: 0,
-        frame: 0,
-        custom: null,
+        damage_: 0,
+        frame_: 0,
+        custom_: null,
     };
 
     units.push(unit);
@@ -116,8 +116,8 @@ export const limitUnitsPositions = () => {
     const stage = getStage();
 
     for (const unit of units.values()) {
-        unit.position.x = limit(stage.bounds.x, stage.bounds.x + stage.bounds.w, unit.position.x);
-        unit.position.y = limit(stage.bounds.y, stage.bounds.y + stage.bounds.h, unit.position.y);
+        unit.position_.x = limit(stage.bounds_.x, stage.bounds_.x + stage.bounds_.w, unit.position_.x);
+        unit.position_.y = limit(stage.bounds_.y, stage.bounds_.y + stage.bounds_.h, unit.position_.y);
     }
 }
 
@@ -130,107 +130,107 @@ export const updateUnits = () => {
 const updateUnit = (unit: Unit) => {
     let currentAnimation = null;
 
-    const config = unit.config;
-    const animations = config.animations;
+    const config = unit.config_;
+    const animations = config.animations_;
 
-    switch (unit.state) {
+    switch (unit.state_) {
         case UnitState.Stand:
-            currentAnimation = animations.stand;
+            currentAnimation = animations.stand_;
 
-            if (unit.controller.move.x != 0 || unit.controller.move.y != 0) {
-                unit.state = UnitState.Walk;
-                unit.animationTime = 0;
+            if (unit.controller_.move_.x != 0 || unit.controller_.move_.y != 0) {
+                unit.state_ = UnitState.Walk;
+                unit.animationTime_ = 0;
             }
 
             checkAttack(unit);
             break;
 
         case UnitState.Walk:
-            if (unit.controller.move.x == 0 && unit.controller.move.y == 0) {
-                unit.state = UnitState.Stand;
-                unit.animationTime = 0;
+            if (unit.controller_.move_.x == 0 && unit.controller_.move_.y == 0) {
+                unit.state_ = UnitState.Stand;
+                unit.animationTime_ = 0;
             }
-            else if (mathAbs(unit.controller.move.x) > mathAbs(unit.controller.move.y)) {
-                currentAnimation = animations.walkH;
+            else if (mathAbs(unit.controller_.move_.x) > mathAbs(unit.controller_.move_.y)) {
+                currentAnimation = animations.walkH_;
             } else {
-                currentAnimation = animations.walkV;
+                currentAnimation = animations.walkV_;
             }
 
-            Vector2.normalize(unit.controller.move);
+            Vector2.normalize_(unit.controller_.move_);
 
-            unit.position.x += unit.controller.move.x * config.walkSpeed * deltaS;
-            unit.position.y += unit.controller.move.y * config.walkSpeed * deltaS;
+            unit.position_.x += unit.controller_.move_.x * config.walkSpeed_ * deltaS;
+            unit.position_.y += unit.controller_.move_.y * config.walkSpeed_ * deltaS;
 
             checkAttack(unit);
             break;
 
         case UnitState.Attack:
-            currentAnimation = unit.animation || animations.jab;
+            currentAnimation = unit.animation_ || animations.jab_;
 
-            if (isAnimationFinished(currentAnimation, unit.animationTime)) {
-                unit.state = UnitState.Stand;
-                unit.animationTime = 0;
-                unit.animation = undefined;
+            if (isAnimationFinished(currentAnimation, unit.animationTime_)) {
+                unit.state_ = UnitState.Stand;
+                unit.animationTime_ = 0;
+                unit.animation_ = undefined;
             }
             break;
 
         case UnitState.Damage:
-            currentAnimation = unit.animation || animations.damage1;
+            currentAnimation = unit.animation_ || animations.damage1_;
 
-            if (isAnimationFinished(currentAnimation, unit.animationTime)) {
-                unit.state = UnitState.Stand;
-                unit.animationTime = 0;
-                unit.animation = undefined;
+            if (isAnimationFinished(currentAnimation, unit.animationTime_)) {
+                unit.state_ = UnitState.Stand;
+                unit.animationTime_ = 0;
+                unit.animation_ = undefined;
             }
             break;
 
         case UnitState.Dead:
-            currentAnimation = unit.animation || animations.dead1;
+            currentAnimation = unit.animation_ || animations.dead1_;
 
             const duration = animationDuration(currentAnimation);
-            if (duration <= unit.animationTime + deltaS) {
+            if (duration <= unit.animationTime_ + deltaS) {
                 removeUnit(unit);
                 currentAnimation = null;
             }
             break;
     }
 
-    unit.position.x += unit.speed.x * deltaS;
-    unit.position.y += unit.speed.y * deltaS;
+    unit.position_.x += unit.speed_.x * deltaS;
+    unit.position_.y += unit.speed_.y * deltaS;
 
-    unit.speed.x *= 0.9;
-    unit.speed.y *= 0.9;
+    unit.speed_.x *= 0.9;
+    unit.speed_.y *= 0.9;
 
-    if (unit.controller.move.x > 0) {
-        unit.direction = 1;
-    } else if (unit.controller.move.x < 0) {
-        unit.direction = -1;
+    if (unit.controller_.move_.x > 0) {
+        unit.direction_ = 1;
+    } else if (unit.controller_.move_.x < 0) {
+        unit.direction_ = -1;
     }
 
     if (currentAnimation) {
-        unit.animationTime += deltaS;
+        unit.animationTime_ += deltaS;
 
-        unit.sprite.image = getFrameImage(currentAnimation, unit.animationTime);
-        unit.sprite.flipX = unit.direction < 0;
+        unit.sprite_.image_ = getFrameImage(currentAnimation, unit.animationTime_);
+        unit.sprite_.flipX_ = unit.direction_ < 0;
 
-        unit.shadow.image = getColoredImage(unit.sprite.image, 0x55000000);
-        unit.shadow.flipX = unit.sprite.flipX;
+        unit.shadow_.image_ = getColoredImage(unit.sprite_.image_, 0x55000000);
+        unit.shadow_.flipX_ = unit.sprite_.flipX_;
     }
 
-    unit.damage = 0;
-    if (unit.frame != unit.sprite.image) {
-        unit.frame = unit.sprite.image;
-        unit.damage = config.damages[unit.frame] || 0;
+    unit.damage_ = 0;
+    if (unit.frame_ != unit.sprite_.image_) {
+        unit.frame_ = unit.sprite_.image_;
+        unit.damage_ = config.damages_[unit.frame_] || 0;
     }
 }
 
 export const applyUnitsDamage = () => {
     for (const current of units) {
-        if (current.health <= 0) {
+        if (current.health_ <= 0) {
             continue;
         }
 
-        if (!current.damage) {
+        if (!current.damage_) {
             continue;
         }
 
@@ -239,15 +239,15 @@ export const applyUnitsDamage = () => {
         let opponentDistanceY = numberMax;
 
         for (const unit of units) {
-            if (unit.health <= 0 || unit.animation == unit.config.animations.knockdown) {
+            if (unit.health_ <= 0 || unit.animation_ == unit.config_.animations_.knockdown_) {
                 continue;
             }
 
-            if (current.config.mob != unit.config.mob) {
-                const directionX = unit.position.x - current.position.x;
-                if (directionX * current.direction > 0) {
+            if (current.config_.mob_ != unit.config_.mob_) {
+                const directionX = unit.position_.x - current.position_.x;
+                if (directionX * current.direction_ > 0) {
                     const distanceX = mathAbs(directionX);
-                    const distanceY = mathAbs(current.position.y - unit.position.y);
+                    const distanceY = mathAbs(current.position_.y - unit.position_.y);
                     if (distanceX < 25 && distanceY < 10) {
                         if (!opponent || opponentDistanceX > distanceX || opponentDistanceY > distanceY) {
                             opponent = unit;
@@ -260,13 +260,13 @@ export const applyUnitsDamage = () => {
         }
 
         if (opponent) {
-            opponent.health -= current.damage;
+            opponent.health_ -= current.damage_;
 
-            opponent.speed.x += current.direction * current.damage / 100 * 300;
-            current.speed.x += current.direction * 10;
+            opponent.speed_.x += current.direction_ * current.damage_ / 100 * 300;
+            current.speed_.x += current.direction_ * 10;
 
             const effect = (() => {
-                if (current.damage >= 20) {
+                if (current.damage_ >= 20) {
                     playKick();
                     return hitEffect;
                 } else {
@@ -279,24 +279,24 @@ export const applyUnitsDamage = () => {
                 }
             })();
 
-            addEffect(effect, Vector2.add(opponent.position, { x: randomRange(-3, 3), y: randomRange(-14, -18) }));
+            addEffect(effect, Vector2.add_(opponent.position_, { x: randomRange(-3, 3), y: randomRange(-14, -18) }));
 
-            const animations = opponent.config.animations;
+            const animations = opponent.config_.animations_;
 
-            if (opponent.health > 0) {
-                opponent.state = UnitState.Damage;
+            if (opponent.health_ > 0) {
+                opponent.state_ = UnitState.Damage;
 
-                opponent.animationTime = 0;
+                opponent.animationTime_ = 0;
 
-                opponent.animation = randomChancesSelect([
-                    animations.damage1,
-                    animations.damage2,
-                    animations.knockdown,
+                opponent.animation_ = randomChancesSelect([
+                    animations.damage1_,
+                    animations.damage2_,
+                    animations.knockdown_,
                 ], [10, 10, 1]);
             } else {
-                opponent.state = UnitState.Dead;
-                opponent.animation = randomSelect([animations.dead1, animations.dead2]);
-                opponent.animationTime = 0;
+                opponent.state_ = UnitState.Dead;
+                opponent.animation_ = randomSelect([animations.dead1_, animations.dead2_]);
+                opponent.animationTime_ = 0;
             }
         }
     }
@@ -309,21 +309,21 @@ export const updateUnitsSpritePositions = () => {
 }
 
 const updateUnitSpritePosition = (unit: Unit) => {
-    const config = unit.config;
+    const config = unit.config_;
 
-    unit.sprite.x = unit.position.x - config.offset.x;
-    unit.sprite.y = unit.position.y - config.offset.y;
+    unit.sprite_.x = unit.position_.x - config.offset_.x;
+    unit.sprite_.y = unit.position_.y - config.offset_.y;
 
-    unit.shadow.scaleY = 0.4;
-    unit.shadow.x = unit.position.x - config.offset.x + 0;
-    unit.shadow.y = unit.position.y - config.offset.y * unit.shadow.scaleY;
+    unit.shadow_.scaleY_ = 0.4;
+    unit.shadow_.x = unit.position_.x - config.offset_.x + 0;
+    unit.shadow_.y = unit.position_.y - config.offset_.y * unit.shadow_.scaleY_;
 }
 
 const checkAttack = (unit: Unit) => {
-    if (unit.controller.attack) {
-        const animations = unit.config.animations;
-        unit.state = UnitState.Attack;
-        unit.animation = randomSelect([animations.jab, animations.cross, animations.kick]);
-        unit.animationTime = 0;
+    if (unit.controller_.attack_) {
+        const animations = unit.config_.animations_;
+        unit.state_ = UnitState.Attack;
+        unit.animation_ = randomSelect([animations.jab_, animations.cross_, animations.kick_]);
+        unit.animationTime_ = 0;
     }
 }

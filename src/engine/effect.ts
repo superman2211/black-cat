@@ -7,41 +7,41 @@ import { Sprite } from "./sprite";
 export const effects: Array<Effect> = [];
 
 export interface Effect {
-    sprite: Sprite,
-    animation: Array<AnimationFrame>,
-    animationTime: number,
+    sprite_: Sprite,
+    animation_: Array<AnimationFrame>,
+    animationTime_: number,
 }
 
 export interface EffectConfig {
-    animation: Array<AnimationFrame>,
-    offset: Vector2,
+    animation_: Array<AnimationFrame>,
+    offset_: Vector2,
 }
 
 export const hitEffect: EffectConfig = {
-    animation: [
-        { image: hit0, time: 0.1 },
-        { image: hit1, time: 0.1 },
-        { image: hit2, time: 0.1 },
+    animation_: [
+        { image_: hit0, time_: 0.1 },
+        { image_: hit1, time_: 0.1 },
+        { image_: hit2, time_: 0.1 },
     ],
-    offset: { x: 16, y: 16 }
+    offset_: { x: 16, y: 16 }
 }
 
 export const hitMiniEffect: EffectConfig = {
-    animation: [
-        { image: hitMini0, time: 0.1 },
-        { image: hitMini1, time: 0.2 },
-        { image: hitMini2, time: 0.2 },
+    animation_: [
+        { image_: hitMini0, time_: 0.1 },
+        { image_: hitMini1, time_: 0.2 },
+        { image_: hitMini2, time_: 0.2 },
     ],
-    offset: { x: 8, y: 8 }
+    offset_: { x: 8, y: 8 }
 }
 
 export const hitRedEffect: EffectConfig = {
-    animation: [
-        { image: hitRed0, time: 0.1 },
-        { image: hitRed1, time: 0.2 },
-        { image: hitRed2, time: 0.2 },
+    animation_: [
+        { image_: hitRed0, time_: 0.1 },
+        { image_: hitRed1, time_: 0.2 },
+        { image_: hitRed2, time_: 0.2 },
     ],
-    offset: { x: 8, y: 8 }
+    offset_: { x: 8, y: 8 }
 }
 
 export const removeEffect = (effect: Effect) => {
@@ -53,24 +53,24 @@ export const removeEffect = (effect: Effect) => {
 
 export const addEffect = (config: EffectConfig, position: Vector2) => {
     effects.push({
-        animation: config.animation,
-        animationTime: 0,
-        sprite: {
-            image: 0,
-            x: position.x - config.offset.x,
-            y: position.y - config.offset.y
+        animation_: config.animation_,
+        animationTime_: 0,
+        sprite_: {
+            image_: 0,
+            x: position.x - config.offset_.x,
+            y: position.y - config.offset_.y
         }
     });
 }
 
 export const updateEffects = () => {
     for (const effect of effects) {
-        const duration = animationDuration(effect.animation);
-        effect.animationTime += deltaS;
-        if (effect.animationTime > duration) {
+        const duration = animationDuration(effect.animation_);
+        effect.animationTime_ += deltaS;
+        if (effect.animationTime_ > duration) {
             removeEffect(effect);
         } else {
-            effect.sprite.image = getFrameImage(effect.animation, effect.animationTime);
+            effect.sprite_.image_ = getFrameImage(effect.animation_, effect.animationTime_);
         }
     }
 }

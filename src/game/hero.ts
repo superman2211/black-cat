@@ -3,79 +3,79 @@ import { addUnit, Unit, UnitConfig, UnitState } from "../engine/unit";
 import { kate0, kate1, kate10, kate11, kate12, kate13, kate14, kate15, kate16, kate17, kate18, kate19, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
 
 const config: UnitConfig = {
-    mob: false,
-    health: 1000,
-    walkSpeed: 30,
-    offset: { x: 16, y: 29 },
-    animations: {
-        stand: [
-            { image: kate0, time: 0.2 },
-            { image: kate1, time: 0.2 },
-            { image: kate2, time: 0.2 },
-            { image: kate1, time: 0.2 },
-            { image: kate0, time: 0.2 },
-            { image: kate3, time: 0.2 },
+    mob_: false,
+    health_: 1000,
+    walkSpeed_: 40,
+    offset_: { x: 16, y: 29 },
+    animations_: {
+        stand_: [
+            { image_: kate0, time_: 0.2 },
+            { image_: kate1, time_: 0.2 },
+            { image_: kate2, time_: 0.2 },
+            { image_: kate1, time_: 0.2 },
+            { image_: kate0, time_: 0.2 },
+            { image_: kate3, time_: 0.2 },
         ],
-        walkH: [
-            { image: kate0, time: 0.1 },
-            { image: kate4, time: 0.1 },
-            { image: kate5, time: 0.1 },
-            { image: kate4, time: 0.1 },
+        walkH_: [
+            { image_: kate0, time_: 0.1 },
+            { image_: kate4, time_: 0.1 },
+            { image_: kate5, time_: 0.1 },
+            { image_: kate4, time_: 0.1 },
         ],
-        walkV: [
-            { image: kate11, time: 0.1 },
-            { image: kate12, time: 0.1 },
-            { image: kate11, time: 0.1 },
-            { image: kate13, time: 0.1 },
+        walkV_: [
+            { image_: kate11, time_: 0.1 },
+            { image_: kate12, time_: 0.1 },
+            { image_: kate11, time_: 0.1 },
+            { image_: kate13, time_: 0.1 },
         ],
-        jab: [
-            { image: kate0, time: 0.05 },
-            { image: kate8, time: 0.1 },
+        jab_: [
+            { image_: kate0, time_: 0.05 },
+            { image_: kate8, time_: 0.1 },
         ],
-        cross: [
-            { image: kate8, time: 0.1 },
-            { image: kate9, time: 0.1 },
-            { image: kate10, time: 0.1 },
-            { image: kate9, time: 0.1 },
+        cross_: [
+            { image_: kate8, time_: 0.1 },
+            { image_: kate9, time_: 0.1 },
+            { image_: kate10, time_: 0.1 },
+            { image_: kate9, time_: 0.1 },
         ],
-        kick: [
-            { image: kate0, time: 0.05 },
-            { image: kate6, time: 0.05 },
-            { image: kate7, time: 0.1 },
-            { image: kate6, time: 0.1 },
+        kick_: [
+            { image_: kate0, time_: 0.05 },
+            { image_: kate6, time_: 0.05 },
+            { image_: kate7, time_: 0.1 },
+            { image_: kate6, time_: 0.1 },
         ],
-        damage1: [
-            { image: kate14, time: 0.5 },
+        damage1_: [
+            { image_: kate14, time_: 0.5 },
         ],
-        damage2: [
-            { image: kate15, time: 0.5 },
+        damage2_: [
+            { image_: kate15, time_: 0.5 },
         ],
-        knockdown: [
-            { image: kate15, time: 0.3 },
-            { image: kate16, time: 0.3 },
-            { image: kate17, time: 1.0 },
-            { image: kate18, time: 0.3 },
-            { image: kate19, time: 0.3 },
-            { image: kate0, time: 0.3 },
+        knockdown_: [
+            { image_: kate15, time_: 0.3 },
+            { image_: kate16, time_: 0.3 },
+            { image_: kate17, time_: 1.0 },
+            { image_: kate18, time_: 0.3 },
+            { image_: kate19, time_: 0.3 },
+            { image_: kate0, time_: 0.3 },
         ],
-        dead1: [
-            { image: kate0, time: 0.1 },
-            { image: kate15, time: 0.3 },
-            { image: kate16, time: 0.3 },
-            { image: kate17, time: 1.0 },
-            { image: -1, time: 0.2 },
-            { image: kate17, time: 0.2 },
-            { image: -1, time: 0.2 },
-            { image: kate17, time: 0.2 },
-            { image: -1, time: 0.2 },
-            { image: kate17, time: 0.2 },
+        dead1_: [
+            { image_: kate0, time_: 0.1 },
+            { image_: kate15, time_: 0.3 },
+            { image_: kate16, time_: 0.3 },
+            { image_: kate17, time_: 1.0 },
+            { image_: -1, time_: 0.2 },
+            { image_: kate17, time_: 0.2 },
+            { image_: -1, time_: 0.2 },
+            { image_: kate17, time_: 0.2 },
+            { image_: -1, time_: 0.2 },
+            { image_: kate17, time_: 0.2 },
         ],
-        dead2: [
-            { image: kate0, time: 1.0 },
+        dead2_: [
+            { image_: kate0, time_: 1.0 },
         ],
-        sit: []
+        sit_: []
     },
-    damages: {
+    damages_: {
         [kate8]: 10, // jab
         [kate10]: 20, // cross
         [kate7]: 30, // kick
@@ -97,31 +97,31 @@ export const updateHero = () => {
         return;
     }
 
-    if (hero.health <= 0) {
+    if (hero.health_ <= 0) {
         return;
     }
 
-    hero.controller.move.x = 0;
-    hero.controller.move.y = 0;
-    hero.controller.attack = false;
+    hero.controller_.move_.x = 0;
+    hero.controller_.move_.y = 0;
+    hero.controller_.attack_ = false;
 
     if (isKeyPressed(Key.Left) || isKeyPressed(Key.A)) {
-        hero.controller.move.x = -1;
+        hero.controller_.move_.x = -1;
     }
 
     if (isKeyPressed(Key.Right) || isKeyPressed(Key.D)) {
-        hero.controller.move.x = 1;
+        hero.controller_.move_.x = 1;
     }
 
     if (isKeyPressed(Key.Up) || isKeyPressed(Key.W)) {
-        hero.controller.move.y = -1;
+        hero.controller_.move_.y = -1;
     }
 
     if (isKeyPressed(Key.Down) || isKeyPressed(Key.S)) {
-        hero.controller.move.y = 1;
+        hero.controller_.move_.y = 1;
     }
 
     if (isKeyPressed(Key.Space) || isKeyPressed(Key.X) || isKeyPressed(Key.Z)) {
-        hero.controller.attack = true;
+        hero.controller_.attack_ = true;
     }
 }

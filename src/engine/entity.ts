@@ -2,8 +2,8 @@ import { Vector2 } from "../utils/geom";
 import { Sprite } from "./sprite";
 
 export interface Entity {
-    sprite: Sprite,
-    position: Vector2
+    sprite_: Sprite,
+    position_: Vector2
 }
 
 export const entities: Array<Entity> = [];

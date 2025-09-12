@@ -52,25 +52,25 @@ export const getBarStage = (): Stage => {
     }
 
     return {
-        bounds: {
+        bounds_: {
             x: borderX,
             y: wallHeight + borderY,
             w: floorWidth - borderX * 2,
             h: floorHeight - borderY * 2,
         },
-        back: { image: back },
-        camera: { x: 0, y: 0 },
-        items
+        back_: { image_: back },
+        camera_: { x: 0, y: 0 },
+        items_: items
     }
 }
 
 const addBarCounter = (items: Array<Item>, x: number, y: number) => {
     items.push(
         {
-            sprite: { image: barItem0 },
-            position: { x, y },
-            offset: { x: 16, y: 32 },
-            bounds: { x: -16, y: -10, w: 32, h: 12 }
+            sprite_: { image_: barItem0 },
+            position_: { x, y },
+            offset_: { x: 16, y: 32 },
+            bounds_: { x: -16, y: -10, w: 32, h: 12 }
         },
     );
 }
@@ -78,11 +78,11 @@ const addBarCounter = (items: Array<Item>, x: number, y: number) => {
 const addBarStool = (items: Array<Item>, x: number, y: number) => {
     items.push(
         {
-            sprite: { image: barItem1 },
-            position: { x, y },
-            offset: { x: 16, y: 32 },
-            bounds: { x: -6, y: -7, w: 12, h: 10 },
-            shadow: { image: getColoredImage(barItem1, 0x55000000), scaleY: 0.4 }
+            sprite_: { image_: barItem1 },
+            position_: { x, y },
+            offset_: { x: 16, y: 32 },
+            bounds_: { x: -6, y: -7, w: 12, h: 10 },
+            shadow_: { image_: getColoredImage(barItem1, 0x55000000), scaleY_: 0.4 }
         },
     );
 }
@@ -90,10 +90,10 @@ const addBarStool = (items: Array<Item>, x: number, y: number) => {
 const addTableArmchair = (items: Array<Item>, x: number, y: number) => {
     items.push(
         {
-            sprite: { image: barBigItems0 },
-            position: { x, y },
-            offset: { x: 32, y: 64 },
-            bounds: { x: -34, y: -22, w: 68, h: 25 },
+            sprite_: { image_: barBigItems0 },
+            position_: { x, y },
+            offset_: { x: 32, y: 64 },
+            bounds_: { x: -34, y: -22, w: 68, h: 25 },
         },
     );
 
@@ -102,10 +102,10 @@ const addTableArmchair = (items: Array<Item>, x: number, y: number) => {
         const offset = mathRound(randomRange(0, 2));
         items.push(
             {
-                sprite: { image: config.animations.sit[0].image },
-                position: { x: x + offset, y: y + offset },
-                offset: { x: 12, y: 50 },
-                bounds: { x: 0, y: 0, w: 10, h: 10 },
+                sprite_: { image_: config.animations_.sit_[0].image_ },
+                position_: { x: x + offset, y: y + offset },
+                offset_: { x: 12, y: 50 },
+                bounds_: { x: 0, y: 0, w: 10, h: 10 },
             },
         );
     }
@@ -173,7 +173,7 @@ const generateWallImage = (width: number, height: number): HTMLCanvasElement => 
 const drawBottles = (context: CanvasRenderingContext2D, bottles: Array<number>, x: number, y: number) => {
     for (let i = 0; i < 6; i++) {
         const image = randomSelect(bottles);
-        drawSprite(context, { image, x: i * 7 + x, y });
+        drawSprite(context, { image_: image, x: i * 7 + x, y });
     }
 }
 
@@ -181,21 +181,21 @@ function drawShelf(context: CanvasRenderingContext2D, x: number, y: number) {
     context.setTransform(1, 0, 0, 1, x, y);
 
     drawSprites(context, [
-        { image: barWall6 },
-        { image: barWall7, y: 16 },
-        { image: barWall6, y: 32, flipY: true },
-        { image: barWall8, x: 16 },
-        { image: barWall6, x: 32, flipX: true },
-        { image: barWall7, x: 32, y: 16, flipX: true },
-        { image: barWall6, x: 32, y: 32, flipY: true, flipX: true },
-        { image: barWall9, x: 16, y: 16 },
-        { image: barWall8, x: 16, y: 32, flipY: true },
-        { image: barWall10, x: 3, y: 15 },
-        { image: barWall10, x: 16, y: 15 },
-        { image: barWall10, x: 29, y: 15 },
-        { image: barWall10, x: 3, y: 30 },
-        { image: barWall10, x: 16, y: 30 },
-        { image: barWall10, x: 29, y: 30 },
+        { image_: barWall6 },
+        { image_: barWall7, y: 16 },
+        { image_: barWall6, y: 32, flipY_: true },
+        { image_: barWall8, x: 16 },
+        { image_: barWall6, x: 32, flipX_: true },
+        { image_: barWall7, x: 32, y: 16, flipX_: true },
+        { image_: barWall6, x: 32, y: 32, flipY_: true, flipX_: true },
+        { image_: barWall9, x: 16, y: 16 },
+        { image_: barWall8, x: 16, y: 32, flipY_: true },
+        { image_: barWall10, x: 3, y: 15 },
+        { image_: barWall10, x: 16, y: 15 },
+        { image_: barWall10, x: 29, y: 15 },
+        { image_: barWall10, x: 3, y: 30 },
+        { image_: barWall10, x: 16, y: 30 },
+        { image_: barWall10, x: 29, y: 30 },
     ]);
 
     drawBottles(context, [bottle0, bottle1, bottle2], -1, -1);

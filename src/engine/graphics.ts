@@ -46,26 +46,26 @@ export const draw = () => {
     const stage = getStage();
 
     context.save();
-    context.translate(mathRound(-stage.camera.x), mathRound(-stage.camera.y));
+    context.translate(mathRound(-stage.camera_.x), mathRound(-stage.camera_.y));
 
-    drawSprite(context, stage.back);
+    drawSprite(context, stage.back_);
 
     context.shadowBlur = 2;
     context.shadowColor = "black";
     for (const unit of units) {
-        drawSprite(context, unit.shadow);
+        drawSprite(context, unit.shadow_);
     }
-    for (const item of stage.items) {
-        if (item.shadow) {
-            drawSprite(context, item.shadow);
+    for (const item of stage.items_) {
+        if (item.shadow_) {
+            drawSprite(context, item.shadow_);
         }
     }
     context.shadowBlur = 0;
 
-    entities.sort((a, b) => a.position.y == b.position.y ? b.position.x - a.position.x : a.position.y - b.position.y);
+    entities.sort((a, b) => a.position_.y == b.position_.y ? b.position_.x - a.position_.x : a.position_.y - b.position_.y);
 
     for (const entity of entities) {
-        drawSprite(context, entity.sprite);
+        drawSprite(context, entity.sprite_);
     }
 
     // for (const item of stage.items) {
@@ -79,7 +79,7 @@ export const draw = () => {
     // }
 
     for (const effect of effects) {
-        drawSprite(context, effect.sprite);
+        drawSprite(context, effect.sprite_);
     }
 
     context.restore();

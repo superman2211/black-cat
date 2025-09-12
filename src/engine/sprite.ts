@@ -3,35 +3,35 @@ import { drawImage } from "../utils/browser";
 import { mathRound } from "../utils/math";
 
 export interface Sprite {
-    image: number,
+    image_: number,
     x?: number,
     y?: number,
-    flipX?: boolean,
-    flipY?: boolean,
-    scaleY?: number,
+    flipX_?: boolean,
+    flipY_?: boolean,
+    scaleY_?: number,
 }
 
 export const drawSprite = (context: CanvasRenderingContext2D, sprite: Sprite) => {
-    if (sprite.image == -1) return;
+    if (sprite.image_ == -1) return;
 
     context.save();
 
-    const image = images[sprite.image];
+    const image = images[sprite.image_];
 
     let a = 1;
     let b = 0;
     let c = 0;
-    let d = sprite.scaleY || 1;
+    let d = sprite.scaleY_ || 1;
 
     let tx = mathRound(sprite.x || 0);
     let ty = mathRound(sprite.y || 0);
 
-    if (sprite.flipX) {
+    if (sprite.flipX_) {
         a = -1;
         tx += image.width;
     }
 
-    if (sprite.flipY) {
+    if (sprite.flipY_) {
         d = -1;
         ty += image.height;
     }
