@@ -1,6 +1,5 @@
 import { createCanvas, createContext, getCanvas, setHeight, setWidth } from "../utils/browser";
 import { addImage, images } from "./images";
-import { soundsBuffers } from "./sounds";
 
 export async function loadResources() {
     const response = await fetch('r');
@@ -40,13 +39,5 @@ export async function loadResources() {
         context.putImageData(imageData, 0, 0);
 
         images.push(getCanvas(context));
-    }
-
-    let soundsLength = stream[p++];
-
-    while (soundsLength--) {
-        const soundSize = stream[p++];
-        soundsBuffers.push(buffer.slice(p, p + soundSize));
-        p += soundSize;
     }
 }

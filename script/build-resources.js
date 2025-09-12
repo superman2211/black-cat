@@ -7,7 +7,6 @@ const { convertSound } = require('./base64sfxr');
 function init(data) {
     data.pallette = [0];
     data.images = [];
-    data.sounds = [];
 }
 
 async function readAnimations(data) {
@@ -82,21 +81,6 @@ function readPngData(arrayBuffer) {
     });
 }
 
-function readSoundsFiles(data) {
-    const soundFiles = fs.readdirSync(path.resolve('resources/sounds'));
-    for (const fileName of soundFiles) {
-        if (path.extname(fileName) === '.sfxr') {
-            const filePath = path.resolve('resources/sounds', fileName);
-            const text = fs.readFileSync(filePath).toString();
-            const soundData = convertSound(text);
-            const view = new Uint8Array(soundData.buffer);
-            const name = fileName.replace('.sfxr', '');
-            data.sounds.push({ name, view });
-            console.log(`sound ${filePath}`);
-        }
-    }
-}
-
 function writeResources(data) {
     let ids = '';
 
@@ -123,16 +107,6 @@ function writeResources(data) {
         ids += `export const ${image.name} = ${i};\n`;
     }
 
-    stream.push(data.sounds.length);
-
-    for (let i in data.sounds) {
-        const sound = data.sounds[i];
-        stream.push(sound.view.length);
-        stream.push(...sound.view);
-
-        ids += `export const sound_${sound.name} = ${i};\n`;
-    }
-
     console.log('resources size ' + stream.length + ' bytes');
 
     let buffer = Buffer.from(new Uint8Array(stream));
@@ -156,7 +130,6 @@ async function main() {
     init(data);
     createDirectories();
     await readAnimations(data);
-    readSoundsFiles(data);
     writeResources(data);
 }
 

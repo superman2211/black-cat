@@ -118,4 +118,3 @@ export const trash1 = 116;
 export const trash2 = 117;
 export const trash3 = 118;
 export const trash4 = 119;
-export const sound_fail = 0;
