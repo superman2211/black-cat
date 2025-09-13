@@ -125,6 +125,39 @@ export const applyPallette = (canvas: HTMLCanvasElement, sourcePallette: Array<n
     });
 }
 
+export const applyShadow = (canvas: HTMLCanvasElement) => {
+    const context = getContext(canvas);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    for (let x = 1; x < canvas.width - 1; x++) {
+        for (let y = 1; y < canvas.height - 1; y++) {
+            const i = (y * canvas.width + x) * 4;
+            const pixel = data.slice(i, i + 4);
+
+            const l = (y * canvas.width + x - 1) * 4;
+            const left = data.slice(l, l + 4);
+
+            const r = (y * canvas.width + x + 1) * 4;
+            const right = data.slice(r, r + 4);
+
+            if (pixel[3] != 0 && left[3] == 0) {
+                pixel[0] *= 0.5;
+                pixel[1] *= 0.5;
+                pixel[2] *= 0.5;
+                data.set(pixel, i);
+            } else if (pixel[3] != 0 && right[3] == 0) {
+                pixel[0] *= 0.9;
+                pixel[1] *= 0.9;
+                pixel[2] *= 0.9;
+                data.set(pixel, i);
+            }
+        }
+    }
+
+    context.putImageData(imageData, 0, 0);
+}
+
 const u32 = new Uint32Array(1);
 
 export const pixelToColor = (pixel: Uint8ClampedArray): number => {

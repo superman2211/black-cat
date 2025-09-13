@@ -5,7 +5,7 @@ import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, ma
 import { addImage, images } from "../resources/images";
 import { cloneObject } from "../utils/browser";
 import { Box2, Vector2 } from "../utils/geom";
-import { applyPallette, cloneCanvas } from "../utils/image";
+import { applyPallette, applyShadow, cloneCanvas, noise } from "../utils/image";
 import { chance, limit, mathAbs, mathCos, mathPI, mathPI2, mathRandom, mathSin, numberMax, randomRange, randomSelect } from "../utils/math";
 import { deltaS } from "../utils/time";
 import { getHero } from "./hero";
@@ -261,6 +261,8 @@ const getPalletteImage = (id: number, sourcePallette: Array<number>, targetPalle
     if (!imagesPallete[key]) {
         const target = cloneCanvas(images[id]);
         applyPallette(target, sourcePallette, targetPallette);
+        applyShadow(target);
+        noise(10, target);
         imagesPallete[key] = addImage(target);
     }
     return imagesPallete[key];

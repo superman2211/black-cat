@@ -300,7 +300,7 @@ export const applyUnitsDamage = () => {
                 opponent.animationTime_ = 0;
 
                 if (opponent.config_.mob_) {
-                    playEnemyKilled();
+                    // playEnemyKilled();
                 }
             }
         } else {
