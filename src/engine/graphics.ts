@@ -14,7 +14,7 @@ import { joystick } from "./joystick";
 import { getHero, HeroInputType, heroInputType } from "../game/hero";
 import { game, GameState } from "./game";
 import { getLevel } from "./waves";
-import { attackers } from "../game/mob";
+import { attackers, mobs } from "../game/mob";
 
 export const screenCanvas = document.getElementById('c') as HTMLCanvasElement;
 screenCanvas.style.imageRendering = 'pixelated';
@@ -216,17 +216,18 @@ const drawUI = () => {
             const levelWidth = levelText.length * 8;
             drawUIText(gameWidth - levelWidth - 5, 5, levelText, 0xffffff99);
 
-            attackers.sort((a, b) => a.health_ - b.health_);
+            const eneies = [...mobs];
+            eneies.sort((a, b) => a.health_ - b.health_);
 
-            if (attackers.length >= 1) {
-                const attacker = attackers[0];
+            if (eneies.length >= 1) {
+                const attacker = eneies[0];
                 const health = limit(0, mathRound(attacker.config_.health_), mathRound(attacker.health_));
                 const healthText = `${attacker.config_.name_} ${health}`;
                 drawUIText(5, gameHeight - 5 - 8, healthText, 0xffff9999);
             }
 
-            if (attackers.length >= 2) {
-                const attacker = attackers[1];
+            if (eneies.length >= 2) {
+                const attacker = eneies[1];
                 const health = limit(0, mathRound(attacker.config_.health_), mathRound(attacker.health_));
                 const healthText = `${attacker.config_.name_} ${health}`;
                 drawUIText(gameWidth - 5 - healthText.length * 8, gameHeight - 5 - 8, healthText, 0xffff9999);

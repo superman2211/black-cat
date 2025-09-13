@@ -336,15 +336,15 @@ export const updateMobs = () => {
 
     for (const mob of mobs) {
         if (mob.health_ <= 0 || mob.animation_ == mob.config_.animations_.knockdown_) {
-            return;
+            continue;
         }
 
         if (mob.state_ != UnitState.Walk && mob.state_ != UnitState.Stand) {
-            return;
+            continue;
         }
 
         if (hero.health_ <= 0 || hero.animation_ == hero.config_.animations_.knockdown_) {
-            return;
+            continue;
         }
 
         const nearHero = onFightDistance(mob, hero);
