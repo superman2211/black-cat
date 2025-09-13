@@ -42,13 +42,13 @@ export const initWaves = () => {
     waves = [];
 
     const reactionStart = 3;
-    const reactionEnd = 1.5;
+    const reactionEnd = 2;
 
     const countStart = 2;
     const countEnd = 5;
 
     const healthStart = 100;
-    const healthEnd = 200;
+    const healthEnd = 150;
 
     const walkSpeedStart = 30;
     const walkSpeedEnd = 35;
