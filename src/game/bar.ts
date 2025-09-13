@@ -111,7 +111,6 @@ const addBarStool = (items: Array<Item>, x: number, y: number) => {
             position_: { x, y },
             offset_: { x: 16, y: 32 },
             bounds_: { x: -6, y: -7, w: 12, h: 10 },
-            shadow_: { image_: getColoredImage(barItem1, 0x55000000), scaleY_: 0.4 }
         },
     );
 }
