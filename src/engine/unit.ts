@@ -1,5 +1,5 @@
 import { getColoredImage, images } from "../resources/images";
-import { playHit, playKick } from "../resources/sound/audio";
+import { playEnemyKilled, playHit, playKick, playWhoosh } from "../resources/sound/audio";
 import { Vector2 } from "../utils/geom";
 import { chance, limit, mathAbs, mathHypot, mathRound, numberMax, randomChancesSelect, randomRange, randomSelect } from "../utils/math";
 import { deltaS } from "../utils/time";
@@ -297,7 +297,13 @@ export const applyUnitsDamage = () => {
                 opponent.state_ = UnitState.Dead;
                 opponent.animation_ = randomSelect([animations.dead1_, animations.dead2_]);
                 opponent.animationTime_ = 0;
+
+                if (opponent.config_.mob_) {
+                    playEnemyKilled();
+                }
             }
+        } else {
+            playWhoosh();
         }
     }
 }

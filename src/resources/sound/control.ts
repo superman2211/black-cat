@@ -1,6 +1,6 @@
 import { isKeyPressed, Key } from "../../engine/input"
 import { limit } from "../../utils/math";
-import { effectGainNode, musicGainNode } from "./audio"
+import { effectsGain, musicGainNode } from "./audio"
 
 export const controlAudio = () => {
     const step = 0.01;
@@ -16,12 +16,12 @@ export const controlAudio = () => {
     musicGainNode.gain.value = limit(0, 1, musicGainNode.gain.value);
 
     if (isKeyPressed(Key.J)) {
-        effectGainNode.gain.value -= step;
+        effectsGain.value -= step;
     }
 
     if (isKeyPressed(Key.K)) {
-        effectGainNode.gain.value += step;
+        effectsGain.value += step;
     }
 
-    effectGainNode.gain.value = limit(0, 1, effectGainNode.gain.value);
+    effectsGain.value = limit(0, 1, effectsGain.value);
 }

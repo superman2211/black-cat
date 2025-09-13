@@ -6,6 +6,7 @@ import { joystick } from "../engine/joystick";
 import { addUnit, Unit, UnitConfig, units, UnitState } from "../engine/unit";
 import { lastLevel } from "../engine/waves";
 import { kate0, kate1, kate10, kate11, kate12, kate13, kate14, kate15, kate16, kate17, kate18, kate19, kate2, kate3, kate4, kate5, kate6, kate7, kate8, kate9 } from "../resources/id";
+import { playLoose } from "../resources/sound/audio";
 import { hasTouch } from "../utils/browser";
 import { Vector2 } from "../utils/geom";
 
@@ -21,7 +22,7 @@ export const setHeroInputType = (value: HeroInputType) => heroInputType = value;
 
 const config: UnitConfig = {
     mob_: false,
-    health_: 10,
+    health_: 1000,
     walkSpeed_: 40,
     offset_: { x: 16, y: 29 },
     animations_: {
@@ -116,6 +117,7 @@ export const updateHero = () => {
 
     if (!units.includes(hero)) {
         game.state = GameState.GameOver;
+        playLoose();
     }
 
     if (hero.health_ <= 0) {

@@ -1,6 +1,7 @@
 import { DEBUG } from "../debug";
 import { getHero } from "../game/hero";
 import { createMob, MobData, mobs, mobsConfigs, setAttackers } from "../game/mob";
+import { playWin } from "../resources/sound/audio";
 import { Box2 } from "../utils/geom";
 import { lerp, mathMax, mathMin, mathRound, numberMax, randomRange, randomSelect } from "../utils/math";
 import { game, GameState } from "./game";
@@ -96,7 +97,7 @@ export const initWaves = () => {
                     reaction_: { min_: 0.05, max_: 0.1 },
                     count_: 1,
                     config_: 0, // boss
-                    health_: 1000,
+                    health_: 500,
                     walkSpeed_: walkSpeedEnd,
                 }
             ],
@@ -179,6 +180,7 @@ export const generateMobs = () => {
         } else {
             if (units.length == 1) {
                 game.state = GameState.GameWin;
+                playWin();
             }
         }
     }

@@ -11,7 +11,7 @@ import { drawGradientH, drawGradientV } from "../utils/image";
 import { effects } from "./effect";
 import { entities, Entity } from "./entity";
 import { formatColor } from "../utils/pattern";
-import { effectGainNode, musicGainNode } from "../resources/sound/audio";
+import { effectsGainNode, musicGainNode } from "../resources/sound/audio";
 import { touches } from "./input";
 import { joystick } from "./joystick";
 import { getHero, HeroInputType, heroInputType } from "../game/hero";
