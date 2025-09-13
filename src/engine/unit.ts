@@ -41,6 +41,7 @@ export interface Unit {
 
 export interface UnitConfig {
     mob_: boolean,
+    name_: string,
     health_: number,
     walkSpeed_: number,
     offset_: Vector2,
@@ -303,7 +304,9 @@ export const applyUnitsDamage = () => {
                 }
             }
         } else {
-            playWhoosh();
+            if (!current.config_.mob_) {
+                playWhoosh();
+            }
         }
     }
 }

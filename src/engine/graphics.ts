@@ -6,17 +6,15 @@ import { drawImage, getContext, hasTouch, now } from "../utils/browser";
 import { limit, mathFloor, mathMax, mathMin, mathPI2, mathRound } from "../utils/math";
 import { deltaS, nowMS } from "../utils/time";
 import { getStage } from "./stage";
-import { drawSprite, Sprite } from "./sprite";
-import { drawGradientH, drawGradientV } from "../utils/image";
+import { drawSprite } from "./sprite";
 import { effects } from "./effect";
-import { entities, Entity } from "./entity";
+import { entities } from "./entity";
 import { formatColor } from "../utils/pattern";
-import { effectsGainNode, musicGainNode } from "../resources/sound/audio";
-import { touches } from "./input";
 import { joystick } from "./joystick";
 import { getHero, HeroInputType, heroInputType } from "../game/hero";
 import { game, GameState } from "./game";
 import { getLevel } from "./waves";
+import { attackers } from "../game/mob";
 
 export const screenCanvas = document.getElementById('c') as HTMLCanvasElement;
 screenCanvas.style.imageRendering = 'pixelated';
@@ -209,14 +207,30 @@ const drawUI = () => {
     switch (game.state) {
         case GameState.Game:
             const hero = getHero();
-            const health = limit(0, 100, mathRound(hero.health_ / hero.config_.health_ * 100));
-            const healthText = `HEALTH ${health}`;
-            drawUIText(5, 5, healthText, 0xffff9999);
+            const health = limit(0, mathRound(hero.config_.health_), mathRound(hero.health_));
+            const healthText = `${hero.config_.name_} ${health}`;
+            drawUIText(5, 5, healthText, 0xff99ff99);
 
             const level = getLevel();
             const levelText = `LEVEL ${level}`;
             const levelWidth = levelText.length * 8;
-            drawUIText(gameWidth - levelWidth - 5, 5, levelText, 0xffffffff);
+            drawUIText(gameWidth - levelWidth - 5, 5, levelText, 0xffffff99);
+
+            attackers.sort((a, b) => a.health_ - b.health_);
+
+            if (attackers.length >= 1) {
+                const attacker = attackers[0];
+                const health = limit(0, mathRound(attacker.config_.health_), mathRound(attacker.health_));
+                const healthText = `${attacker.config_.name_} ${health}`;
+                drawUIText(5, gameHeight - 5 - 8, healthText, 0xffff9999);
+            }
+
+            if (attackers.length >= 2) {
+                const attacker = attackers[1];
+                const health = limit(0, mathRound(attacker.config_.health_), mathRound(attacker.health_));
+                const healthText = `${attacker.config_.name_} ${health}`;
+                drawUIText(gameWidth - 5 - healthText.length * 8, gameHeight - 5 - 8, healthText, 0xffff9999);
+            }
             break;
 
         case GameState.GameOver:

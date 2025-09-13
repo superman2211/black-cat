@@ -6,6 +6,7 @@ import { getBarStage } from "./bar"
 import { initWaves } from "../engine/waves";
 import { anyKey } from "../engine/input";
 import { game, GameState } from "../engine/game";
+import { deltaS } from "../utils/time";
 
 export const start = () => {
     clearUnits();
@@ -24,8 +25,11 @@ export const start = () => {
 }
 
 export const startAgain = () => {
-    if (anyKey) {
-        game.state = GameState.Game;
-        start();
+    game.timout += deltaS;
+    if (game.timout > 3) {
+        if (anyKey) {
+            game.state = GameState.Game;
+            start();
+        }
     }
 }

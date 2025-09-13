@@ -2,6 +2,7 @@ import { DEBUG } from "../debug";
 import { getHero } from "../game/hero";
 import { createMob, MobData, mobs, mobsConfigs, setAttackers } from "../game/mob";
 import { playWin } from "../resources/sound/audio";
+import { cloneObject } from "../utils/browser";
 import { Box2 } from "../utils/geom";
 import { lerp, mathMax, mathMin, mathRound, numberMax, randomRange, randomSelect } from "../utils/math";
 import { game, GameState } from "./game";
@@ -40,20 +41,20 @@ export const lastLevel = () => {
 export const initWaves = () => {
     waves = [];
 
-    const reactionStart = 2;
-    const reactionEnd = 0.5;
+    const reactionStart = 3;
+    const reactionEnd = 1.5;
 
-    const countStart = 3;
-    const countEnd = 10;
+    const countStart = 2;
+    const countEnd = 5;
 
     const healthStart = 100;
-    const healthEnd = 300;
+    const healthEnd = 200;
 
     const walkSpeedStart = 30;
-    const walkSpeedEnd = 40;
+    const walkSpeedEnd = 35;
 
     const attackersStart = 1;
-    const attackersEnd = 5;
+    const attackersEnd = 3;
 
     const wavesCount = 12;
 
@@ -62,7 +63,7 @@ export const initWaves = () => {
 
         const reaction = lerp(reactionStart, reactionEnd, value);
         const count = mathRound(lerp(countStart, countEnd, value));
-        const health = lerp(healthStart, healthEnd, value);
+        const health = mathRound(lerp(healthStart, healthEnd, value));
         const walkSpeed = lerp(walkSpeedStart, walkSpeedEnd, value);
         const attackers = mathRound(lerp(attackersStart, attackersEnd, value));
 
@@ -87,14 +88,14 @@ export const initWaves = () => {
             attackers_: attackersEnd,
             mobs_: [
                 {
-                    reaction_: { min_: 0.1, max_: 0.2 },
+                    reaction_: { min_: reactionEnd, max_: reactionEnd * 1.2 },
                     count_: 3,
                     config_: 1, // bodyguard
                     health_: healthEnd,
                     walkSpeed_: walkSpeedEnd,
                 },
                 {
-                    reaction_: { min_: 0.05, max_: 0.1 },
+                    reaction_: { min_: reactionEnd, max_: reactionEnd * 1.2 },
                     count_: 1,
                     config_: 0, // boss
                     health_: 500,
@@ -104,6 +105,8 @@ export const initWaves = () => {
         }
     )
 }
+
+const names = ["bob", "jay", "jack", "serg", "alex", "john", "mike", "buba", "val", "noah", "levi", "leo", "alan", "ben", "kyle", "ivan"];
 
 export const getZones = (): Array<Box2> => {
     const top = 32;
@@ -163,9 +166,14 @@ export const generateMobs = () => {
 
             for (const waveMob of wave.mobs_) {
                 for (let i = 0; i < waveMob.count_; i++) {
-                    const config = waveMob.config_ == -1 ? randomSelect(usualMobsConfigs) : mobsConfigs[waveMob.config_];
+                    const config = cloneObject(waveMob.config_ == -1 ? randomSelect(usualMobsConfigs) : mobsConfigs[waveMob.config_]);
                     config.health_ = waveMob.health_;
                     config.walkSpeed_ = waveMob.walkSpeed_;
+                    if (waveMob.config_ == 0) {
+                        config.name_ = "boss";
+                    } else {
+                        config.name_ = randomSelect(names);
+                    }
 
                     const mob = createMob(config);
                     const mobData = mob.custom_ as MobData;

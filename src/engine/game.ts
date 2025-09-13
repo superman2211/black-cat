@@ -5,5 +5,6 @@ export const enum GameState {
 }
 
 export const game = {
-    state: GameState.Game
+    state: GameState.Game,
+    timout: 0,
 }

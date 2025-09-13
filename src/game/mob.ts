@@ -18,7 +18,7 @@ const fightDistanceY = 5;
 const safeDistanceX = 50;
 const safeDistanceY = 20;
 
-const attackers: Array<Unit> = [];
+export const attackers: Array<Unit> = [];
 
 let resetAttackersTimer = 0;
 
@@ -45,6 +45,7 @@ const pallette = [
 
 const baseConfig: UnitConfig = {
     mob_: true,
+    name_: "enemy",
     health_: 100,
     walkSpeed_: 20,
     offset_: { x: 16, y: 31 },
