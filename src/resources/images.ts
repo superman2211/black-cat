@@ -1,6 +1,4 @@
-import { createCanvas, getContext } from "../utils/browser";
 import { cloneCanvas, filterImage, noise } from "../utils/image";
-import { mathRandom, mathRound } from "../utils/math";
 
 export const images: HTMLCanvasElement[] = [];
 

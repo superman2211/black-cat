@@ -1,29 +1,28 @@
 import { DEBUG } from "../debug";
-import { getHero } from "../game/hero";
 import { createMob, MobData, mobs, mobsConfigs, setAttackers } from "../game/mob";
 import { playWin } from "../resources/sound/audio";
 import { cloneObject } from "../utils/browser";
 import { Box2 } from "../utils/geom";
-import { lerp, mathMax, mathMin, mathRound, numberMax, randomRange, randomSelect } from "../utils/math";
+import { lerp, mathMax, mathMin, mathRound, randomRange, randomSelect } from "../utils/math";
 import { game, GameState } from "./game";
 import { gameWidth } from "./graphics";
 import { getStage } from "./stage";
-import { units } from "./unit";
+import { UnitConfig, units } from "./unit";
 
 export interface WaveMob {
-    config_: number,
-    count_: number,
-    health_: number,
-    walkSpeed_: number,
-    reaction_: {
-        min_: number,
-        max_: number
+    config: number,
+    count: number,
+    health: number,
+    walkSpeed: number,
+    reaction: {
+        min: number,
+        max: number
     },
 }
 
 export interface Wave {
-    mobs_: Array<WaveMob>,
-    attackers_: number,
+    mobs: Array<WaveMob>,
+    attackers: number,
 }
 
 let waves: Array<Wave> = [];
@@ -69,14 +68,14 @@ export const initWaves = () => {
 
         waves.push(
             {
-                attackers_: attackers,
-                mobs_: [
+                attackers: attackers,
+                mobs: [
                     {
-                        reaction_: { min_: reaction, max_: reaction * 1.2 },
-                        count_: count,
-                        config_: -1,
-                        health_: health,
-                        walkSpeed_: walkSpeed,
+                        reaction: { min: reaction, max: reaction * 1.2 },
+                        count: count,
+                        config: -1,
+                        health: health,
+                        walkSpeed: walkSpeed,
                     }
                 ],
             }
@@ -85,21 +84,21 @@ export const initWaves = () => {
 
     waves.push(
         {
-            attackers_: attackersEnd,
-            mobs_: [
+            attackers: attackersEnd,
+            mobs: [
                 {
-                    reaction_: { min_: reactionEnd, max_: reactionEnd * 1.2 },
-                    count_: 3,
-                    config_: 1, // bodyguard
-                    health_: healthEnd,
-                    walkSpeed_: walkSpeedEnd,
+                    reaction: { min: reactionEnd, max: reactionEnd * 1.2 },
+                    count: 3,
+                    config: 1, // bodyguard
+                    health: healthEnd,
+                    walkSpeed: walkSpeedEnd,
                 },
                 {
-                    reaction_: { min_: reactionEnd, max_: reactionEnd * 1.2 },
-                    count_: 1,
-                    config_: 0, // boss
-                    health_: 500,
-                    walkSpeed_: walkSpeedEnd,
+                    reaction: { min: reactionEnd, max: reactionEnd * 1.2 },
+                    count: 1,
+                    config: 0, // boss
+                    health: 500,
+                    walkSpeed: walkSpeedEnd,
                 }
             ],
         }
@@ -116,28 +115,28 @@ export const getZones = (): Array<Box2> => {
 
     const stage = getStage();
 
-    const leftMin = mathMax(stage.bounds_.x, stage.camera_.x - 30);
-    const leftMax = stage.camera_.x;
+    const leftMin = mathMax(stage.bounds.x, stage.camera.x - 30);
+    const leftMax = stage.camera.x;
 
     const left: Box2 = {
         x: leftMin,
-        y: stage.bounds_.y + top,
+        y: stage.bounds.y + top,
         w: leftMax - leftMin,
-        h: stage.bounds_.h - top - bottom,
+        h: stage.bounds.h - top - bottom,
     }
 
     if (left.w > 0) {
         zones.push(left);
     }
 
-    const rightMin = stage.camera_.x + gameWidth;
-    const rightMax = mathMin(stage.bounds_.x + stage.bounds_.w, stage.camera_.x + gameWidth + 30);
+    const rightMin = stage.camera.x + gameWidth;
+    const rightMax = mathMin(stage.bounds.x + stage.bounds.w, stage.camera.x + gameWidth + 30);
 
     const right: Box2 = {
         x: rightMin,
-        y: stage.bounds_.y + top,
+        y: stage.bounds.y + top,
         w: rightMax - rightMin,
-        h: stage.bounds_.h - top - bottom,
+        h: stage.bounds.h - top - bottom,
     }
 
     if (right.w > 0) {
@@ -162,27 +161,27 @@ export const generateMobs = () => {
 
             const wave = waves.shift()!;
 
-            setAttackers(wave.attackers_);
+            setAttackers(wave.attackers);
 
-            for (const waveMob of wave.mobs_) {
-                for (let i = 0; i < waveMob.count_; i++) {
-                    const config = cloneObject(waveMob.config_ == -1 ? randomSelect(usualMobsConfigs) : mobsConfigs[waveMob.config_]);
-                    config.health_ = waveMob.health_;
-                    config.walkSpeed_ = waveMob.walkSpeed_;
-                    if (waveMob.config_ == 0) {
-                        config.name_ = "boss";
+            for (const waveMob of wave.mobs) {
+                for (let i = 0; i < waveMob.count; i++) {
+                    const config: UnitConfig = cloneObject(waveMob.config == -1 ? randomSelect(usualMobsConfigs) : mobsConfigs[waveMob.config]);
+                    config.health = waveMob.health;
+                    config.walkSpeed = waveMob.walkSpeed;
+                    if (waveMob.config == 0) {
+                        config.name = "boss";
                     } else {
-                        config.name_ = randomSelect(names);
+                        config.name = randomSelect(names);
                     }
 
                     const mob = createMob(config);
-                    const mobData = mob.custom_ as MobData;
-                    mobData.reaction_ = waveMob.reaction_;
+                    const mobData = mob.custom as MobData;
+                    mobData.reaction = waveMob.reaction;
 
                     const zone = randomSelect(zones);
 
-                    mob.position_.x = zone.x + randomRange(0, zone.w);
-                    mob.position_.y = zone.y + randomRange(0, zone.h);
+                    mob.position.x = zone.x + randomRange(0, zone.w);
+                    mob.position.y = zone.y + randomRange(0, zone.h);
                 }
             }
         } else {

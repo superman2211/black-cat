@@ -6,6 +6,6 @@ export const updateCameraPosition = () => {
     const stage = getStage();
     const hero = getHero();
 
-    stage.camera_.x = hero.position_.x - gameWidth / 2;
-    stage.camera_.y = hero.position_.y - gameHeight / 2;
+    stage.camera.x = hero.position.x - gameWidth / 2;
+    stage.camera.y = hero.position.y - gameHeight / 2;
 }

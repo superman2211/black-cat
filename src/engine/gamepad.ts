@@ -3,8 +3,8 @@ import { mathAbs } from "../utils/math";
 import { setAnyKey } from "./input";
 
 export const gamepadData = {
-    axe_: { x: 0, y: 0 },
-    button_: false,
+    axe: { x: 0, y: 0 },
+    button: false,
 }
 
 const enum GamepadKey {
@@ -22,9 +22,9 @@ let pressed = false;
 
 export const updateGamepad = () => {
     if ('getGamepads' in navigator) {
-        gamepadData.axe_.x = 0;
-        gamepadData.axe_.y = 0;
-        gamepadData.button_ = false;
+        gamepadData.axe.x = 0;
+        gamepadData.axe.y = 0;
+        gamepadData.button = false;
 
         const gamepads = navigator.getGamepads();
 
@@ -33,13 +33,13 @@ export const updateGamepad = () => {
         for (const gamepad of gamepads) {
             if (gamepad && gamepad.connected) {
                 if (gamepad.axes.length >= 2) {
-                    gamepadData.axe_.x += gamepad.axes[0];
-                    gamepadData.axe_.y += gamepad.axes[1];
+                    gamepadData.axe.x += gamepad.axes[0];
+                    gamepadData.axe.y += gamepad.axes[1];
                 }
 
                 if (gamepad.axes.length >= 4) {
-                    gamepadData.axe_.x += gamepad.axes[2];
-                    gamepadData.axe_.y += gamepad.axes[3];
+                    gamepadData.axe.x += gamepad.axes[2];
+                    gamepadData.axe.y += gamepad.axes[3];
                 }
 
                 for (let i = 0; i < gamepad.buttons.length; i++) {
@@ -49,26 +49,26 @@ export const updateGamepad = () => {
                         pressedNow = true;
                         switch (i) {
                             case GamepadKey.Up:
-                                gamepadData.axe_.y -= 1;
+                                gamepadData.axe.y -= 1;
                                 break;
 
                             case GamepadKey.Down:
-                                gamepadData.axe_.y += 1;
+                                gamepadData.axe.y += 1;
                                 break;
 
                             case GamepadKey.Left:
-                                gamepadData.axe_.x -= 1;
+                                gamepadData.axe.x -= 1;
                                 break;
 
                             case GamepadKey.Right:
-                                gamepadData.axe_.x += 1;
+                                gamepadData.axe.x += 1;
                                 break;
 
                             case GamepadKey.Action0:
                             case GamepadKey.Action1:
                             case GamepadKey.Action2:
                             case GamepadKey.Action3:
-                                gamepadData.button_ = true;
+                                gamepadData.button = true;
                                 break;
                         }
                     }
@@ -76,15 +76,15 @@ export const updateGamepad = () => {
             }
         }
 
-        if (mathAbs(gamepadData.axe_.x) < 0.2) {
-            gamepadData.axe_.x = 0;
+        if (mathAbs(gamepadData.axe.x) < 0.2) {
+            gamepadData.axe.x = 0;
         }
 
-        if (mathAbs(gamepadData.axe_.y) < 0.2) {
-            gamepadData.axe_.y = 0;
+        if (mathAbs(gamepadData.axe.y) < 0.2) {
+            gamepadData.axe.y = 0;
         }
 
-        Vector2.normalize_(gamepadData.axe_);
+        Vector2.normalize(gamepadData.axe);
 
         if (pressed != pressedNow) {
             pressed = pressedNow;

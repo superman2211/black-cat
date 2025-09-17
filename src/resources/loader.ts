@@ -1,5 +1,5 @@
-import { createCanvas, createContext, getCanvas, setHeight, setWidth } from "../utils/browser";
-import { addImage, images } from "./images";
+import { createContext, getCanvas, setHeight, setWidth } from "../utils/browser";
+import { images } from "./images";
 
 export async function loadResources() {
     const response = await fetch('r');

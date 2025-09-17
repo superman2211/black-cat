@@ -1,12 +1,11 @@
 import { AnimationFrame } from "../engine/animation";
-import { getStage } from "../engine/stage";
 import { addUnit, Unit, UnitConfig, units, UnitState } from "../engine/unit";
 import { man0, man1, man10, man11, man12, man2, man3, man4, man5, man6, man7, man8, man9, man13, man14, man15, man16, man17, man18, man19, man20, man21, man22 } from "../resources/id";
 import { addImage, images } from "../resources/images";
 import { cloneObject } from "../utils/browser";
-import { Box2, Vector2 } from "../utils/geom";
+import { Vector2 } from "../utils/geom";
 import { applyPallette, applyShadow, cloneCanvas, noise } from "../utils/image";
-import { chance, limit, mathAbs, mathCos, mathPI, mathPI2, mathRandom, mathSin, numberMax, randomRange, randomSelect } from "../utils/math";
+import { chance, limit, mathAbs, numberMax, randomRange, randomSelect } from "../utils/math";
 import { deltaS } from "../utils/time";
 import { getHero } from "./hero";
 
@@ -23,10 +22,10 @@ export const attackers: Array<Unit> = [];
 let resetAttackersTimer = 0;
 
 export interface MobData {
-    reaction_: { min_: number, max_: number },
-    reactionTimeout_: number,
-    reactionTime_: number,
-    attackActive_: boolean,
+    reaction: { min: number, max: number },
+    reactionTimeout: number,
+    reactionTime: number,
+    attackActive: boolean,
 };
 
 export const mobs: Array<Unit> = [];
@@ -44,91 +43,91 @@ const pallette = [
 ];
 
 const baseConfig: UnitConfig = {
-    mob_: true,
-    name_: "enemy",
-    health_: 100,
-    walkSpeed_: 20,
-    offset_: { x: 16, y: 31 },
-    animations_: {
-        stand_: [
-            { image_: man0, time_: 0.3 },
-            { image_: man1, time_: 0.3 },
-            { image_: man0, time_: 0.3 },
-            { image_: man2, time_: 0.3 },
-            { image_: man3, time_: 0.3 },
-            { image_: man2, time_: 0.3 },
+    mob: true,
+    name: "enemy",
+    health: 100,
+    walkSpeed: 20,
+    offset: { x: 16, y: 31 },
+    animations: {
+        stand: [
+            { image: man0, time: 0.3 },
+            { image: man1, time: 0.3 },
+            { image: man0, time: 0.3 },
+            { image: man2, time: 0.3 },
+            { image: man3, time: 0.3 },
+            { image: man2, time: 0.3 },
         ],
-        walkH_: [
-            { image_: man0, time_: 0.2 },
-            { image_: man4, time_: 0.2 },
-            { image_: man0, time_: 0.2 },
-            { image_: man5, time_: 0.2 },
+        walkH: [
+            { image: man0, time: 0.2 },
+            { image: man4, time: 0.2 },
+            { image: man0, time: 0.2 },
+            { image: man5, time: 0.2 },
         ],
-        walkV_: [
-            { image_: man0, time_: 0.2 },
-            { image_: man9, time_: 0.2 },
-            { image_: man0, time_: 0.2 },
-            { image_: man10, time_: 0.2 },
+        walkV: [
+            { image: man0, time: 0.2 },
+            { image: man9, time: 0.2 },
+            { image: man0, time: 0.2 },
+            { image: man10, time: 0.2 },
         ],
-        jab_: [
-            { image_: man0, time_: 0.2 },
-            { image_: man6, time_: 0.2 },
+        jab: [
+            { image: man0, time: 0.2 },
+            { image: man6, time: 0.2 },
         ],
-        cross_: [
-            { image_: man6, time_: 0.2 },
-            { image_: man7, time_: 0.2 },
-            { image_: man8, time_: 0.2 },
-            { image_: man7, time_: 0.2 },
+        cross: [
+            { image: man6, time: 0.2 },
+            { image: man7, time: 0.2 },
+            { image: man8, time: 0.2 },
+            { image: man7, time: 0.2 },
         ],
-        kick_: [
-            { image_: man0, time_: 0.2 },
-            { image_: man11, time_: 0.2 },
-            { image_: man12, time_: 0.2 },
-            { image_: man11, time_: 0.2 },
+        kick: [
+            { image: man0, time: 0.2 },
+            { image: man11, time: 0.2 },
+            { image: man12, time: 0.2 },
+            { image: man11, time: 0.2 },
         ],
-        damage1_: [
-            { image_: man14, time_: 0.5 },
-            { image_: man13, time_: 0.3 },
+        damage1: [
+            { image: man14, time: 0.5 },
+            { image: man13, time: 0.3 },
         ],
-        damage2_: [
-            { image_: man18, time_: 0.5 },
-            { image_: man17, time_: 0.3 },
+        damage2: [
+            { image: man18, time: 0.5 },
+            { image: man17, time: 0.3 },
         ],
-        knockdown_: [
-            { image_: man13, time_: 0.2 },
-            { image_: man14, time_: 0.5 },
-            { image_: man15, time_: 1.0 },
-            { image_: man16, time_: 0.3 },
-            { image_: man17, time_: 0.2 },
+        knockdown: [
+            { image: man13, time: 0.2 },
+            { image: man14, time: 0.5 },
+            { image: man15, time: 1.0 },
+            { image: man16, time: 0.3 },
+            { image: man17, time: 0.2 },
         ],
-        dead1_: [
-            { image_: man18, time_: 0.2 },
-            { image_: man19, time_: 0.2 },
-            { image_: man20, time_: 0.2 },
-            { image_: man21, time_: 1.0 },
-            { image_: -1, time_: 0.2 },
-            { image_: man21, time_: 0.2 },
-            { image_: -1, time_: 0.2 },
-            { image_: man21, time_: 0.2 },
-            { image_: -1, time_: 0.2 },
-            { image_: man21, time_: 0.2 },
+        dead1: [
+            { image: man18, time: 0.2 },
+            { image: man19, time: 0.2 },
+            { image: man20, time: 0.2 },
+            { image: man21, time: 1.0 },
+            { image: -1, time: 0.2 },
+            { image: man21, time: 0.2 },
+            { image: -1, time: 0.2 },
+            { image: man21, time: 0.2 },
+            { image: -1, time: 0.2 },
+            { image: man21, time: 0.2 },
         ],
-        dead2_: [
-            { image_: man13, time_: 0.2 },
-            { image_: man14, time_: 0.5 },
-            { image_: man15, time_: 1.0 },
-            { image_: -1, time_: 0.2 },
-            { image_: man15, time_: 0.2 },
-            { image_: -1, time_: 0.2 },
-            { image_: man15, time_: 0.2 },
-            { image_: -1, time_: 0.2 },
-            { image_: man15, time_: 0.2 },
+        dead2: [
+            { image: man13, time: 0.2 },
+            { image: man14, time: 0.5 },
+            { image: man15, time: 1.0 },
+            { image: -1, time: 0.2 },
+            { image: man15, time: 0.2 },
+            { image: -1, time: 0.2 },
+            { image: man15, time: 0.2 },
+            { image: -1, time: 0.2 },
+            { image: man15, time: 0.2 },
         ],
-        sit_: [
-            { image_: man22, time_: 0.0 },
+        sit: [
+            { image: man22, time: 0.0 },
         ]
     },
-    damages_: {
+    damages: {
         [man6]: 5, // jab
         [man8]: 10, // cross
         [man12]: 20, // kick
@@ -229,19 +228,19 @@ export const generateMobsConfigs = () => {
 const generateConfig = (targetPallette: number[]) => {
     const newConfig: UnitConfig = cloneObject(baseConfig);
 
-    newConfig.walkSpeed_ = randomRange(10, 20);
+    newConfig.walkSpeed = randomRange(10, 20);
 
     const id = mobsConfigs.length;
 
-    const animations = newConfig.animations_ as any;
+    const animations = newConfig.animations as any;
     for (const name in animations) {
         const animation = animations[name] as Array<AnimationFrame>;
         replaceImagesPallette(animation, pallette, targetPallette, id);
     }
 
-    for (const image in newConfig.damages_) {
+    for (const image in newConfig.damages) {
         const newImage = getPalletteImage(Number(image), pallette, targetPallette, id);
-        newConfig.damages_[newImage] = newConfig.damages_[image];
+        newConfig.damages[newImage] = newConfig.damages[image];
     }
 
     mobsConfigs.push(newConfig);
@@ -249,7 +248,7 @@ const generateConfig = (targetPallette: number[]) => {
 
 const replaceImagesPallette = (animation: Array<AnimationFrame>, sourcePallette: Array<number>, targetPallette: Array<number>, palletteId: number) => {
     for (const frame of animation) {
-        frame.image_ = getPalletteImage(frame.image_, sourcePallette, targetPallette, palletteId);
+        frame.image = getPalletteImage(frame.image, sourcePallette, targetPallette, palletteId);
     }
 }
 
@@ -271,15 +270,15 @@ const getPalletteImage = (id: number, sourcePallette: Array<number>, targetPalle
 export const createMob = (config: UnitConfig): Unit => {
     const mob = addUnit(config);
     const mobData: MobData = {
-        reaction_: {
-            min_: 1,
-            max_: 2,
+        reaction: {
+            min: 1,
+            max: 2,
         },
-        reactionTimeout_: 0,
-        reactionTime_: 0,
-        attackActive_: false,
+        reactionTimeout: 0,
+        reactionTime: 0,
+        attackActive: false,
     };
-    mob.custom_ = mobData;
+    mob.custom = mobData;
     mobs.push(mob);
     return mob;
 }
@@ -312,24 +311,24 @@ export const updateMobs = () => {
     const hero = getHero();
 
     for (const mob of mobs) {
-        if (mob.health_ <= 0 || !units.includes(mob)) {
+        if (mob.health <= 0 || !units.includes(mob)) {
             removeMob(mob);
             removeAttacker(mob);
             continue;
         }
 
-        mob.controller_.move_.x = 0;
-        mob.controller_.move_.y = 0;
-        mob.controller_.attack_ = false;
+        mob.controller.move.x = 0;
+        mob.controller.move.y = 0;
+        mob.controller.attack = false;
 
-        const mobData = mob.custom_ as MobData;
+        const mobData = mob.custom as MobData;
 
-        if (!mobData.attackActive_) {
-            mobData.reactionTime_ += deltaS;
-            if (mobData.reactionTime_ > mobData.reactionTimeout_) {
-                mobData.reactionTime_ = 0;
-                mobData.reactionTimeout_ = randomRange(mobData.reaction_.min_, mobData.reaction_.max_);
-                mobData.attackActive_ = true;
+        if (!mobData.attackActive) {
+            mobData.reactionTime += deltaS;
+            if (mobData.reactionTime > mobData.reactionTimeout) {
+                mobData.reactionTime = 0;
+                mobData.reactionTimeout = randomRange(mobData.reaction.min, mobData.reaction.max);
+                mobData.attackActive = true;
             }
         }
     }
@@ -337,27 +336,27 @@ export const updateMobs = () => {
     updateAttackersList(hero);
 
     for (const mob of mobs) {
-        if (mob.health_ <= 0 || mob.animation_ == mob.config_.animations_.knockdown_) {
+        if (mob.health <= 0 || mob.animation == mob.config.animations.knockdown) {
             continue;
         }
 
-        if (mob.state_ != UnitState.Walk && mob.state_ != UnitState.Stand) {
+        if (mob.state != UnitState.Walk && mob.state != UnitState.Stand) {
             continue;
         }
 
-        if (hero.health_ <= 0 || hero.animation_ == hero.config_.animations_.knockdown_) {
+        if (hero.health <= 0 || hero.animation == hero.config.animations.knockdown) {
             continue;
         }
 
         const nearHero = onFightDistance(mob, hero);
         if (nearHero) {
-            const mobData = mob.custom_ as MobData;
-            if (mobData.attackActive_) {
-                mobData.attackActive_ = false;
+            const mobData = mob.custom as MobData;
+            if (mobData.attackActive) {
+                mobData.attackActive = false;
 
-                const direction = Vector2.subtract_(hero.position_, mob.position_);
-                mob.direction_ = limit(-1, 1, direction.x);
-                mob.controller_.attack_ = true;
+                const direction = Vector2.subtract(hero.position, mob.position);
+                mob.direction = limit(-1, 1, direction.x);
+                mob.controller.attack = true;
 
                 if (!attackers.includes(mob)) {
                     attackers.push(mob);
@@ -375,10 +374,10 @@ export const updateMobs = () => {
             }
 
             if (walkToHero) {
-                const direction = Vector2.subtract_(hero.position_, mob.position_);
-                Vector2.normalize_(direction);
-                mob.controller_.move_.x = direction.x;
-                mob.controller_.move_.y = direction.y;
+                const direction = Vector2.subtract(hero.position, mob.position);
+                Vector2.normalize(direction);
+                mob.controller.move.x = direction.x;
+                mob.controller.move.y = direction.y;
             }
         }
     }
@@ -389,23 +388,23 @@ export const updateMobs = () => {
 const mobsCollision = () => {
     for (let i = 0; i < mobs.length; i++) {
         const mob0 = mobs[i];
-        if (mob0.state_ == UnitState.Walk || mob0.state_ == UnitState.Stand) {
+        if (mob0.state == UnitState.Walk || mob0.state == UnitState.Stand) {
             for (let j = i + 1; j < mobs.length; j++) {
                 const mob1 = mobs[j];
-                if (mob1.state_ == UnitState.Walk || mob1.state_ == UnitState.Stand) {
-                    const direction = Vector2.subtract_(mob1.position_, mob0.position_);
+                if (mob1.state == UnitState.Walk || mob1.state == UnitState.Stand) {
+                    const direction = Vector2.subtract(mob1.position, mob0.position);
                     if (direction.x == 0 && direction.y == 0) {
                         direction.x = 1;
                     }
-                    const distance = Vector2.length_(direction);
+                    const distance = Vector2.length(direction);
                     if (distance < minDistance) {
                         const scale = (minDistance - distance) / distance;
 
-                        mob0.position_.x -= direction.x * scale;
-                        mob0.position_.y -= direction.y * scale;
+                        mob0.position.x -= direction.x * scale;
+                        mob0.position.y -= direction.y * scale;
 
-                        mob1.position_.x += direction.x * scale;
-                        mob1.position_.y += direction.y * scale;
+                        mob1.position.x += direction.x * scale;
+                        mob1.position.y += direction.y * scale;
                     }
                 }
             }
@@ -423,9 +422,9 @@ export const updateAttackersList = (hero: Unit) => {
         let nearMob: Unit | undefined;
 
         for (const mob of mobs) {
-            if ((mob.state_ == UnitState.Stand || mob.state_ == UnitState.Walk) && mob.health_ > 0) {
+            if ((mob.state == UnitState.Stand || mob.state == UnitState.Walk) && mob.health > 0) {
                 if (!attackers.includes(mob)) {
-                    const distance = Vector2.distance_(hero.position_, mob.position_);
+                    const distance = Vector2.distance(hero.position, mob.position);
                     if (nearDistance > distance) {
                         nearDistance = distance;
                         nearMob = mob;
@@ -445,7 +444,7 @@ export const updateAttackersList = (hero: Unit) => {
         let furtherUnit: Unit | undefined;
         let furtherDistance = 0;
         for (const attacker of attackers) {
-            const distance = Vector2.distance_(attacker.position_, hero.position_);
+            const distance = Vector2.distance(attacker.position, hero.position);
             if (furtherDistance < distance) {
                 furtherDistance = distance;
                 furtherUnit = attacker;
@@ -462,6 +461,6 @@ const onFightDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero
 const onSafeDistance = (mob: Unit, hero: Unit): boolean => onDistance(mob, hero, safeDistanceX, safeDistanceY);
 
 const onDistance = (mob: Unit, hero: Unit, dx: number, dy: number): boolean => {
-    const direction = Vector2.subtract_(hero.position_, mob.position_);
+    const direction = Vector2.subtract(hero.position, mob.position);
     return mathAbs(direction.x) < dx && mathAbs(direction.y) < dy;
 }

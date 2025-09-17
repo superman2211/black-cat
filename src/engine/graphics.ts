@@ -14,7 +14,7 @@ import { joystick } from "./joystick";
 import { getHero, HeroInputType, heroInputType } from "../game/hero";
 import { game, GameState } from "./game";
 import { getLevel } from "./waves";
-import { attackers, mobs } from "../game/mob";
+import { mobs } from "../game/mob";
 
 export const screenCanvas = document.getElementById('c') as HTMLCanvasElement;
 screenCanvas.style.imageRendering = 'pixelated';
@@ -51,26 +51,26 @@ export const draw = () => {
     context.setTransform(1, 0, 0, 1, screenOffset.x, screenOffset.y);
 
     context.save();
-    context.translate(mathRound(-stage.camera_.x), mathRound(-stage.camera_.y));
+    context.translate(mathRound(-stage.camera.x), mathRound(-stage.camera.y));
 
-    drawSprite(context, stage.back_);
+    drawSprite(context, stage.back);
 
     context.shadowBlur = 2;
     context.shadowColor = "black";
     for (const unit of units) {
-        drawSprite(context, unit.shadow_);
+        drawSprite(context, unit.shadow);
     }
-    for (const item of stage.items_) {
-        if (item.shadow_) {
-            drawSprite(context, item.shadow_);
+    for (const item of stage.items) {
+        if (item.shadow) {
+            drawSprite(context, item.shadow);
         }
     }
     context.shadowBlur = 0;
 
-    entities.sort((a, b) => a.position_.y == b.position_.y ? b.position_.x - a.position_.x : a.position_.y - b.position_.y);
+    entities.sort((a, b) => a.position.y == b.position.y ? b.position.x - a.position.x : a.position.y - b.position.y);
 
     for (const entity of entities) {
-        drawSprite(context, entity.sprite_);
+        drawSprite(context, entity.sprite);
     }
 
     // for (const item of stage.items) {
@@ -84,7 +84,7 @@ export const draw = () => {
     // }
 
     for (const effect of effects) {
-        drawSprite(context, effect.sprite_);
+        drawSprite(context, effect.sprite);
     }
 
     context.restore();
@@ -121,13 +121,13 @@ export const draw = () => {
         context.lineWidth = 2;
 
         context.beginPath();
-        context.arc(mathRound(joystick.move_.x), mathRound(joystick.move_.y), joystick.moveRadius_, 0, mathPI2);
+        context.arc(mathRound(joystick.move.x), mathRound(joystick.move.y), joystick.moveRadius, 0, mathPI2);
         context.closePath();
         context.stroke();
 
-        if (joystick.moveId_ != -1) {
+        if (joystick.moveId != -1) {
             context.beginPath();
-            context.arc(mathRound(joystick.moveStick_.x), mathRound(joystick.moveStick_.y), joystick.moveStickRadius_, 0, mathPI2);
+            context.arc(mathRound(joystick.moveStick.x), mathRound(joystick.moveStick.y), joystick.moveStickRadius, 0, mathPI2);
             context.closePath();
             context.stroke();
         }
@@ -136,10 +136,10 @@ export const draw = () => {
         context.lineWidth = 2;
 
         context.beginPath();
-        context.arc(mathRound(joystick.attack_.x), mathRound(joystick.attack_.y), joystick.attackRadius_, 0, mathPI2);
+        context.arc(mathRound(joystick.attack.x), mathRound(joystick.attack.y), joystick.attackRadius, 0, mathPI2);
         context.closePath();
         context.stroke();
-        if (joystick.attackId_ != -1) {
+        if (joystick.attackId != -1) {
             context.fillStyle = formatColor(0x33ff0000);
             context.fill();
         }
@@ -207,8 +207,8 @@ const drawUI = () => {
     switch (game.state) {
         case GameState.Game:
             const hero = getHero();
-            const health = limit(0, mathRound(hero.config_.health_), mathRound(hero.health_));
-            const healthText = `${hero.config_.name_} ${health}`;
+            const health = limit(0, mathRound(hero.config.health), mathRound(hero.health));
+            const healthText = `${hero.config.name} ${health}`;
             drawUIText(5, 5, healthText, 0xff99ff99);
 
             const level = getLevel();
@@ -217,19 +217,19 @@ const drawUI = () => {
             drawUIText(gameWidth - levelWidth - 5, 5, levelText, 0xffffff99);
 
             const eneies = [...mobs];
-            eneies.sort((a, b) => a.health_ - b.health_);
+            eneies.sort((a, b) => a.health - b.health);
 
             if (eneies.length >= 1) {
                 const attacker = eneies[0];
-                const health = limit(0, mathRound(attacker.config_.health_), mathRound(attacker.health_));
-                const healthText = `${attacker.config_.name_} ${health}`;
+                const health = limit(0, mathRound(attacker.config.health), mathRound(attacker.health));
+                const healthText = `${attacker.config.name} ${health}`;
                 drawUIText(5, gameHeight - 5 - 8, healthText, 0xffff9999);
             }
 
             if (eneies.length >= 2) {
                 const attacker = eneies[1];
-                const health = limit(0, mathRound(attacker.config_.health_), mathRound(attacker.health_));
-                const healthText = `${attacker.config_.name_} ${health}`;
+                const health = limit(0, mathRound(attacker.config.health), mathRound(attacker.health));
+                const healthText = `${attacker.config.name} ${health}`;
                 drawUIText(gameWidth - 5 - healthText.length * 8, gameHeight - 5 - 8, healthText, 0xffff9999);
             }
             break;

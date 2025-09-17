@@ -1,6 +1,6 @@
 import { images } from "../resources/images";
 import { createCanvas, drawImage, getContext } from "./browser";
-import { mathCeil, mathRandom, randomChancesSelect, randomSelect } from "./math";
+import { mathCeil, mathRandom, randomChancesSelect } from "./math";
 import { createGradient } from "./pattern";
 
 export const generateRandomTileImage = (width: number, height: number, ids: Array<number>, chances: Array<number>): HTMLCanvasElement => {

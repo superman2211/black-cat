@@ -20,8 +20,8 @@ export const start = () => {
     const stage = getStage();
 
     const hero = getHero();
-    hero.position_.x = stage.bounds_.x + 50;
-    hero.position_.y = stage.bounds_.y + stage.bounds_.h / 2;
+    hero.position.x = stage.bounds.x + 50;
+    hero.position.y = stage.bounds.y + stage.bounds.h / 2;
 }
 
 export const startAgain = () => {

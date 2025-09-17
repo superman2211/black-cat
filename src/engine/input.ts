@@ -1,13 +1,12 @@
 import { screenCanvas, screenOffset, screenScale } from "./graphics";
 import { unlockAudio } from "../resources/sound/audio";
-import { domDocument, dpr } from "../utils/browser";
-import { vector2, Vector2 } from "../utils/geom";
-import { HeroInputType, heroInputType, setHeroInputType } from "../game/hero";
+import { domDocument } from "../utils/browser";
+import { HeroInputType, setHeroInputType } from "../game/hero";
 
 export interface TouchData {
     x: number,
     y: number,
-    started_: boolean
+    started: boolean
 }
 
 export const touches: { [key: string]: TouchData } = {};
@@ -56,7 +55,7 @@ export const initInput = () => {
                 {
                     x: clientX / screenScale,
                     y: clientY / screenScale,
-                    started_: false,
+                    started: false,
                 }
             );
         }
@@ -66,7 +65,7 @@ export const initInput = () => {
     screenCanvas.ontouchstart = (e) => {
         anyKey = true;
         setHeroInputType(HeroInputType.TouchJoystick);
-        forTouch(e, (id, t) => { touches[id] = t; t.started_ = true; });
+        forTouch(e, (id, t) => { touches[id] = t; t.started = true; });
     };
 
     screenCanvas.ontouchmove = (e) => {
