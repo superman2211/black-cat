@@ -92,3 +92,19 @@ export const updateGamepad = () => {
         }
     }
 }
+
+export const gamepadVibration = () => {
+    if ('getGamepads' in navigator) {
+        const gamepads = navigator.getGamepads();
+        for (const gamepad of gamepads) {
+            if (gamepad && gamepad.connected) {
+                gamepad.vibrationActuator.playEffect("dual-rumble", {
+                    startDelay: 0,
+                    duration: 100,
+                    weakMagnitude: 1.0,
+                    strongMagnitude: 1.0,
+                });
+            }
+        }
+    }
+}

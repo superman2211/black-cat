@@ -3,6 +3,7 @@ import { playHit, playKick, playWhoosh } from "../resources/sound/audio";
 import { Vector2 } from "../utils/geom";
 import { chance, limit, mathAbs, numberMax, randomChancesSelect, randomRange, randomSelect } from "../utils/math";
 import { deltaS } from "../utils/time";
+import { vibrate } from "../utils/vibration";
 import { animationDuration, AnimationFrame, getFrameImage, isAnimationFinished } from "./animation";
 import { addEffect, hitEffect, hitMiniEffect, hitRedEffect } from "./effect";
 import { entities, removeEntity } from "./entity";
@@ -294,13 +295,17 @@ export const applyUnitsDamage = () => {
                     animations.damage2,
                     animations.knockdown,
                 ], [10, 10, 1]);
+
+                if (!opponent.config.mob) {
+                    vibrate([randomRange(100, 200)]);
+                }
             } else {
                 opponent.state = UnitState.Dead;
                 opponent.animation = randomSelect([animations.dead1, animations.dead2]);
                 opponent.animationTime = 0;
 
-                if (opponent.config.mob) {
-                    // playEnemyKilled();
+                if (!opponent.config.mob) {
+                    vibrate([100, 50, 200, 40, 300]);
                 }
             }
         } else {
