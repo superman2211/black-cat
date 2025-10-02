@@ -40,8 +40,8 @@ export const lastLevel = () => {
 export const initWaves = () => {
     waves = [];
 
-    const reactionStart = 3;
-    const reactionEnd = 2;
+    const reactionStart = 2;
+    const reactionEnd = 1;
 
     const countStart = 2;
     const countEnd = 5;
@@ -105,7 +105,7 @@ export const initWaves = () => {
     )
 }
 
-const names = ["bob", "jay", "jack", "serg", "alex", "john", "mike", "buba", "val", "noah", "levi", "leo", "alan", "ben", "kyle", "ivan"];
+const names = ["bob", "jay", "jack", "serg", "alex", "john", "mike", "buba", "val", "noah", "levi", "leo", "alan", "ben", "kyle", "ivan", "peter"];
 
 export const getZones = (): Array<Box2> => {
     const top = 32;
