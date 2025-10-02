@@ -323,13 +323,12 @@ export const updateMobs = () => {
 
         const mobData = mob.custom as MobData;
 
-        if (!mobData.attackActive) {
-            mobData.reactionTime += deltaS;
-            if (mobData.reactionTime > mobData.reactionTimeout) {
-                mobData.reactionTime = 0;
-                mobData.reactionTimeout = randomRange(mobData.reaction.min, mobData.reaction.max);
-                mobData.attackActive = true;
-            }
+        mobData.attackActive = false;
+        mobData.reactionTime += deltaS;
+        if (mobData.reactionTime > mobData.reactionTimeout) {
+            mobData.reactionTime = 0;
+            mobData.reactionTimeout = randomRange(mobData.reaction.min, mobData.reaction.max);
+            mobData.attackActive = true;
         }
     }
 

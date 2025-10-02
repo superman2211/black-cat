@@ -22,7 +22,7 @@ export const setHeroInputType = (value: HeroInputType) => heroInputType = value;
 const config: UnitConfig = {
     mob: false,
     name: "kate",
-    health: 1000,
+    health: 500,
     walkSpeed: 40,
     offset: { x: 16, y: 29 },
     animations: {
